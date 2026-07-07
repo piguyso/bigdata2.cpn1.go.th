@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>จัดการคลังเอกสาร | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>จัดการคลังเอกสาร | EE CPN1</x-slot>
 
     <div class="py-12 max-w-6xl mx-auto px-6" x-data="documentManager()" x-init="init()">
         <!-- Toast Notification (Floating Glassmorphic) -->
@@ -395,3 +395,4 @@
     </script>
     @endpush
 </x-layout>
+

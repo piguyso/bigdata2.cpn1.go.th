@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>จัดการหลักสูตรอบรม | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>จัดการหลักสูตรอบรม | EE CPN1</x-slot>
 
     <!-- Load Cropper.js from CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -806,3 +806,4 @@
     </script>
     @endpush
 </x-layout>
+

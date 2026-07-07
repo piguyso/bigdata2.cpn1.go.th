@@ -16,7 +16,7 @@ class AdminUserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@abcp.ac.th'],
             [
-                'name' => 'ศูนย์การพัฒนาครูและบุคลากรทางการศึกษา สสวท.',
+                'name' => 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1',
                 'password' => Hash::make('admin1234'), // รหัสผ่านเริ่มต้น สามารถเปลี่ยนได้ภายหลัง
                 'role' => 'admin',
                 'logo' => null,

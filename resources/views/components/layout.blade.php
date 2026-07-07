@@ -2,7 +2,7 @@
     $settings = \Illuminate\Support\Facades\Schema::hasTable('settings') 
         ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all() 
         : [];
-    $webName = $settings['web_name'] ?? 'IPST.CHUMPHON';
+    $webName = $settings['web_name'] ?? 'EE.CPN1';
     $webLogo = $settings['web_logo'] ?? null;
     $contactEmail = $settings['contact_email'] ?? 'info@anubanchumphon.ac.th';
     $contactPhone = $settings['contact_phone'] ?? '077-511124';
@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? ($webName === 'IPST.CHUMPHON' ? 'ศูนย์พัฒนาครู สสวท. จังหวัดชุมพร' : $webName) }}</title>
+    <title>{{ $title ?? ($webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1' : $webName) }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style> 
@@ -41,14 +41,14 @@
                 @endif
                 <div class="flex flex-col justify-center">
                     <span class="brand-title text-base md:text-lg font-extrabold tracking-tight text-slate-900 group-hover:text-emerald-600 transition-colors duration-300 leading-none">
-                        @if($webName === 'IPST.CHUMPHON')
-                            IPST<span class="text-emerald-500">.</span>CHUMPHON
+                        @if($webName === 'EE.CPN1')
+                            EE<span class="text-emerald-500">.</span>CPN1
                         @else
                             {{ $webName }}
                         @endif
                     </span>
                     <span class="text-[9px] md:text-[10px] font-bold text-slate-500 group-hover:text-emerald-600 transition-colors duration-300 leading-none mt-1.5">
-                        ศูนย์พัฒนาครู สสวท. จังหวัดชุมพร
+                        ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
                     </span>
                 </div>
             </a>
@@ -372,15 +372,15 @@
                         </div>
                     @endif
                     <span class="text-xl font-bold tracking-tight text-white">
-                        @if($webName === 'IPST.CHUMPHON')
-                            IPST<span class="text-emerald-400">.</span>CHUMPHON
+                        @if($webName === 'EE.CPN1')
+                            EE<span class="text-emerald-400">.</span>CPN1
                         @else
                             {{ $webName }}
                         @endif
                     </span>
                 </a>
                 <p class="text-xs text-slate-400 leading-relaxed pt-2">
-                    ศูนย์พัฒนาครู สสวท. ระดับประถมศึกษา จังหวัดชุมพร (โรงเรียนอนุบาลชุมพร) มุ่งมั่นยกระดับศักยภาพการจัดการเรียนรู้ด้านวิทยาศาสตร์ คณิตศาสตร์ และเทคโนโลยี เพื่อการพัฒนาครูอย่างยั่งยืน
+                    ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1 มุ่งมั่นยกระดับศักยภาพการจัดการเรียนรู้ เพื่อการพัฒนาวิชาชีพครูและบุคลากรทางการศึกษาอย่างยั่งยืน
                 </p>
             </div>
             <div>
@@ -397,7 +397,7 @@
             <div>
                 <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">ลิงก์ที่เป็นประโยชน์</h4>
                 <ul class="space-y-2 text-xs">
-                    <li><a href="https://www.ipst.ac.th" target="_blank" class="hover:text-emerald-400 transition">สสวท. ส่วนกลาง</a></li>
+                    <li><a href="https://cpn1.go.th" target="_blank" class="hover:text-emerald-400 transition">สพป.ชุมพร เขต 1</a></li>
                     <li><a href="https://www.moe.go.th" target="_blank" class="hover:text-emerald-400 transition">กระทรวงศึกษาธิการ</a></li>
                     <li><a href="/dashboard" class="hover:text-emerald-400 transition">แผงควบคุมระบบ (Dashboard)</a></li>
                 </ul>
@@ -421,7 +421,7 @@
             </div>
         </div>
         <div class="max-w-7xl mx-auto px-6 border-t border-slate-800 mt-12 pt-6 text-center text-xs">
-            <p>© 2026 {{ $webName === 'IPST.CHUMPHON' ? 'IPST Chumphon Center (Anuban Chumphon School)' : $webName }} • All Rights Reserved</p>
+            <p>© 2026 {{ $webName === 'EE.CPN1' ? 'Teachers and Educational Personnel Development Center, Chumphon Primary Education Service Area Office 1' : $webName }} • All Rights Reserved</p>
         </div>
     </footer>
 

@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>จัดการสมาชิกและกำหนดสิทธิ์ | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>จัดการสมาชิกและกำหนดสิทธิ์ | EE CPN1</x-slot>
 
     <div class="py-12 max-w-6xl mx-auto px-6" x-data="userManager()" x-init="init()">
         <!-- Toast Notification (Floating Glassmorphic) -->
@@ -473,3 +473,4 @@
     </script>
     @endpush
 </x-layout>
+

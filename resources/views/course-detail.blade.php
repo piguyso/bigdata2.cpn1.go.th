@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>{{ $course->title }} | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>{{ $course->title }} | EE CPN1</x-slot>
 
     <!-- Custom Style Definitions -->
     <style>
@@ -212,7 +212,7 @@
                                 </div>
                                 <div class="overflow-hidden">
                                     <span class="block text-slate-455 text-[9px] font-bold text-slate-400 uppercase tracking-wider">สถานที่จัดโครงการ</span>
-                                    <span class="text-slate-700 font-extrabold text-xs leading-normal" title="{{ $course->location }}">{{ $course->location ?: 'ศูนย์พัฒนาครู สสวท. ชุมพร' }}</span>
+                                    <span class="text-slate-700 font-extrabold text-xs leading-normal" title="{{ $course->location }}">{{ $course->location ?: 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' }}</span>
                                 </div>
                             </div>
 
@@ -254,7 +254,7 @@
                         </div>
                         <h4 class="font-bold text-sm">ต้องการสอบถามเพิ่มเติม?</h4>
                         <p class="text-[11px] text-slate-300 leading-relaxed">
-                            ติดต่อประสานงานวิชาการโครงการ หรือช่วยเหลือปัญหาเกี่ยวกับการสมัครลงทะเบียนอบรมแกนนำครู สสวท. จังหวัดชุมพร
+                            ติดต่อประสานงานวิชาการโครงการ หรือช่วยเหลือปัญหาเกี่ยวกับการสมัครลงทะเบียนอบรมพัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
                         </p>
                         <a href="/#contact" class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300 hover:text-emerald-400 transition">
                             ดูข้อมูลติดต่อประสานงานวิชาการ <i class="fa-solid fa-chevron-right text-[8px]"></i>
@@ -301,3 +301,4 @@
     </script>
     @endpush
 </x-layout>
+

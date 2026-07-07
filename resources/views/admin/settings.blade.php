@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>ตั้งค่าระบบเว็บไซต์ | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>ตั้งค่าระบบเว็บไซต์ | EE CPN1</x-slot>
 
     <!-- Load Cropper.js from CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -134,7 +134,7 @@
                                x-model="settings.web_name" 
                                required 
                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
-                               placeholder="เช่น IPST.CHUMPHON หรือ ศูนย์พัฒนาครู สสวท. จังหวัดชุมพร">
+                               placeholder="เช่น EE.CPN1 หรือ ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1">
                     </div>
                 </div>
 
@@ -415,7 +415,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">ข้อความกำกับ/ป้าย (Badge Tag)</label>
-                                <input type="text" x-model="slideModal.form.badge" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" placeholder="เช่น ศูนย์พัฒนาครู สสวท. หรือ ข่าวสาร">
+                                <input type="text" x-model="slideModal.form.badge" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" placeholder="เช่น ศูนย์พัฒนาครู หรือ ข่าวสาร">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">ลิงก์ของปุ่มแรก (Button 1 Link)</label>
@@ -532,7 +532,7 @@
                         .then(response => {
                             if (response.data.status === 'success') {
                                 const data = response.data.data;
-                                this.settings.web_name = data.web_name || 'IPST.CHUMPHON';
+                                this.settings.web_name = data.web_name || 'EE.CPN1';
                                 this.settings.contact_email = data.contact_email || 'info@anubanchumphon.ac.th';
                                 this.settings.contact_phone = data.contact_phone || '077-511124';
                                 this.settings.contact_address = data.contact_address || 'โรงเรียนอนุบาลชุมพร ถนนปรมินทรมรรคา ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000';
@@ -577,16 +577,16 @@
                                 // Update layout web_name
                                 const navTitle = document.querySelector('nav .brand-title');
                                 if (navTitle && response.data.web_name) {
-                                    if (response.data.web_name === 'IPST.CHUMPHON') {
-                                        navTitle.innerHTML = 'IPST<span class="text-emerald-500">.</span>CHUMPHON';
+                                    if (response.data.web_name === 'EE.CPN1') {
+                                        navTitle.innerHTML = 'EE<span class="text-emerald-500">.</span>CPN1';
                                     } else {
                                         navTitle.textContent = response.data.web_name;
                                     }
                                 }
                                 const footerTitle = document.querySelector('footer span.tracking-tight');
                                 if (footerTitle && response.data.web_name) {
-                                    if (response.data.web_name === 'IPST.CHUMPHON') {
-                                        footerTitle.innerHTML = 'IPST<span class="text-emerald-400">.</span>CHUMPHON';
+                                    if (response.data.web_name === 'EE.CPN1') {
+                                        footerTitle.innerHTML = 'EE<span class="text-emerald-400">.</span>CPN1';
                                     } else {
                                         footerTitle.textContent = response.data.web_name;
                                     }
@@ -841,3 +841,4 @@
     </script>
     @endpush
 </x-layout>
+

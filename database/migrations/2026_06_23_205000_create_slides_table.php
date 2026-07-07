@@ -30,8 +30,8 @@ return new class extends Migration
         // Insert default slides to preserve layout contents
         DB::table('slides')->insert([
             [
-                'badge' => 'ศูนย์พัฒนาครู สสวท. จังหวัดชุมพร',
-                'title' => 'ยกระดับศักยภาพครู สสวท.',
+                'badge' => 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1',
+                'title' => 'ยกระดับศักยภาพครูและบุคลากรทางการศึกษา',
                 'highlight' => 'สู่นวัตกรรมการเรียนรู้เชิงรุก',
                 'slogan' => 'ขับเคลื่อนความรู้เชิงรุก (Active Learning) บูรณาการวิทยาศาสตร์ คณิตศาสตร์ และเทคโนโลยี เพื่อการพัฒนาการศึกษาที่ยั่งยืนในท้องถิ่น',
                 'image' => 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1920&q=80',

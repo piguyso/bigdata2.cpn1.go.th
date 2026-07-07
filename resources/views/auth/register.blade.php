@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>ลงทะเบียนครูใหม่ | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>ลงทะเบียนครูใหม่ | EE CPN1</x-slot>
 
     <div class="min-h-[90vh] flex items-center justify-center px-6 py-12 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-100 rounded-full blur-[100px] opacity-40"></div>

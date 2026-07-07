@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>เข้าสู่ระบบ | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>เข้าสู่ระบบ | EE CPN1</x-slot>
 
     <div class="min-h-[80vh] flex items-center justify-center px-6 relative overflow-hidden">
         <div class="absolute top-20 left-10 w-64 h-64 bg-emerald-200 rounded-full blur-[100px] opacity-30 animate-pulse"></div>

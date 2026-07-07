@@ -2,7 +2,7 @@
     $settings = \Illuminate\Support\Facades\Schema::hasTable('settings') 
         ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all() 
         : [];
-    $webName = $settings['web_name'] ?? 'IPST.CHUMPHON';
+    $webName = $settings['web_name'] ?? 'EE.CPN1';
     $contactEmail = $settings['contact_email'] ?? 'info@anubanchumphon.ac.th';
     $contactPhone = $settings['contact_phone'] ?? '077-511124';
     $contactAddress = $settings['contact_address'] ?? 'โรงเรียนอนุบาลชุมพร ถนนปรมินทรมรรคา ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000';
@@ -14,7 +14,7 @@
 
 <x-layout>
     <x-slot:title>
-        {{ $webName === 'IPST.CHUMPHON' ? 'ศูนย์พัฒนาครู สสวท. จังหวัดชุมพร | โรงเรียนอนุบาลชุมพร' : $webName }}
+        {{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1' : $webName }}
     </x-slot>
 
     <!-- Custom Modern Style Definitions -->
@@ -208,7 +208,7 @@
                         บทบาทหน้าที่ของศูนย์ฯ <br>ในจังหวัดชุมพร
                     </h2>
                     <p class="text-slate-500 leading-relaxed text-sm md:text-base">
-                        มุ่งเน้นการถ่ายทอดกระบวนการสอนแนวใหม่ โดยใช้หลักสูตรมาตรฐานของ สสวท. เป็นแกนกลาง เพื่อปรับปรุงคุณภาพการจัดการเรียนการสอนวิทยาศาสตร์ คณิตศาสตร์ และคอมพิวเตอร์ระดับประถมศึกษาให้ทัดเทียมมาตรฐานสากล
+                        มุ่งเน้นการถ่ายทอดกระบวนการสอนแนวใหม่ โดยใช้มาตรฐานหลักสูตรแกนกลางเป็นบรรทัดฐาน เพื่อปรับปรุงคุณภาพการจัดการเรียนการสอนวิทยาศาสตร์ คณิตศาสตร์ เทคโนโลยี และการจัดกระบวนการเรียนรู้ระดับประถมศึกษาให้ทัดเทียมมาตรฐานสากล
                     </p>
                     <div class="pt-2">
                         <a href="#contact" class="text-sm font-bold text-emerald-600 hover:text-emerald-700 transition flex items-center gap-1">
@@ -247,7 +247,7 @@
                             </div>
                             <div class="text-left space-y-1">
                                 <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700 transition duration-300">การขับเคลื่อนมาตรฐานของศูนย์ฯ</h4>
-                                <p class="text-xs text-slate-500 leading-relaxed">ดำเนินงานและขับเคลื่อน ศูนย์พัฒนาครูและบุคลากรทางการศึกษาของ สสวท. ระดับประถมศึกษา ประจำจังหวัดชุมพร ให้มีประสิทธิภาพตามมาตรฐาน</p>
+                                <p class="text-xs text-slate-500 leading-relaxed">ดำเนินงานและขับเคลื่อน ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1 ให้มีประสิทธิภาพตามมาตรฐานวิชาชีพ</p>
                             </div>
                         </div>
                         <div class="group relative flex gap-4 p-5 bg-white border border-slate-100 rounded-2xl hover:shadow-lg hover:-translate-y-0.5 hover:border-emerald-500/20 transition duration-300">
@@ -291,7 +291,7 @@
                             </div>
                             <div class="space-y-1.5">
                                 <h4 class="font-bold text-slate-800 text-sm group-hover:text-sky-700 transition duration-300">พัฒนาครูจัด Active Learning</h4>
-                                <p class="text-xs text-slate-500 leading-relaxed">เพื่อพัฒนาศักยภาพครูผู้สอนวิทยาศาสตร์ คณิตศาสตร์ และเทคโนโลยี (ระดับประถมศึกษา) ให้มีความรู้ ความเข้าใจ และสามารถจัดกิจกรรมการเรียนรู้เชิงรุก (Active Learning) ตามแนวทาง สสวท.</p>
+                                <p class="text-xs text-slate-500 leading-relaxed">เพื่อพัฒนาศักยภาพครูผู้สอนและบุคลากรทางการศึกษา ให้มีความรู้ ความเข้าใจ และสามารถจัดกิจกรรมการเรียนรู้เชิงรุก (Active Learning) ได้อย่างมีคุณภาพและบรรลุผลการเรียนรู้สูงสุด</p>
                             </div>
                         </div>
                         <div class="group relative bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4 hover:border-sky-500/20 hover:shadow-lg hover:-translate-y-1 transition duration-300 text-left">
@@ -321,7 +321,7 @@
                             </div>
                             <div class="space-y-1.5">
                                 <h4 class="font-bold text-slate-800 text-sm group-hover:text-sky-700 transition duration-300">คลังสื่อและอุปกรณ์การสอน</h4>
-                                <p class="text-xs text-slate-500 leading-relaxed">เพื่อเป็นแหล่งเผยแพร่สื่อ อุปกรณ์ และคลังนวัตกรรมการสอนที่สอดคล้องกับหลักสูตรมาตรฐานของ สสวท.</p>
+                                <p class="text-xs text-slate-500 leading-relaxed">เพื่อเป็นแหล่งเผยแพร่สื่อ อุปกรณ์ และคลังนวัตกรรมการสอนที่สอดคล้องกับมาตรฐานหลักสูตรและการเรียนรู้สมัยใหม่</p>
                             </div>
                         </div>
                     </div>
@@ -394,7 +394,7 @@
                     หลักสูตรฝึกอบรมที่เปิดรับสมัคร
                 </h2>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    เพิ่มพูนความรู้ ความเข้าใจ และเก็บชั่วโมงพัฒนาวิชาชีพด้วยหลักสูตรการสอนมาตรฐานจาก สสวท.
+                    เพิ่มพูนความรู้ ความเข้าใจ และเก็บชั่วโมงพัฒนาวิชาชีพด้วยหลักสูตรการสอนที่ได้รับการรับรองและเป็นไปตามมาตรฐานวิชาชีพ
                 </p>
             </div>
 
@@ -501,7 +501,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <i class="fa-solid fa-location-dot text-slate-355 w-4"></i>
-                                        <span>สถานที่: <strong class="text-slate-600 truncate max-w-[200px]" x-text="course.location || 'ศูนย์พัฒนาครู สสวท. ชุมพร'"></strong></span>
+                                        <span>สถานที่: <strong class="text-slate-600 truncate max-w-[200px]" x-text="course.location || 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1'"></strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -598,7 +598,7 @@
                     เอกสารเผยแพร่ล่าสุด
                 </h2>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    คู่มือ สื่อการสอน แบบฟอร์ม และรายงานกิจกรรมของศูนย์พัฒนาครู สสวท. จังหวัดชุมพร
+                    คู่มือ สื่อการสอน แบบฟอร์ม และรายงานกิจกรรมของศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
                 </p>
             </div>
 
@@ -638,7 +638,7 @@
                         ติดต่อประสานงานวิชาการ
                     </h2>
                     <p class="text-slate-500 text-sm leading-relaxed">
-                        ยินดีให้บริการข้อมูลเกี่ยวกับการจัดอบรม การประสานงานวิชาการ หรือข้อสงสัยเกี่ยวกับโครงการของทางศูนย์พัฒนาครู สสวท. จังหวัดชุมพร
+                        ยินดีให้บริการข้อมูลเกี่ยวกับการจัดอบรม การประสานงานวิชาการ หรือข้อสงสัยเกี่ยวกับโครงการของทางศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
                     </p>
                     
                     <div class="space-y-4 pt-4">

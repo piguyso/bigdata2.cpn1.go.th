@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>ลืมรหัสผ่าน | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>ลืมรหัสผ่าน | EE CPN1</x-slot>
 
     <div class="min-h-[80vh] flex items-center justify-center px-6 relative overflow-hidden">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-50 rounded-full blur-[120px] opacity-60"></div>

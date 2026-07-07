@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>แดชบอร์ด | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>แดชบอร์ด | EE CPN1</x-slot>
 
     <div class="py-12 max-w-7xl mx-auto px-6">
         

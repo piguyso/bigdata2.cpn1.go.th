@@ -1,5 +1,5 @@
-<x-layout>
-    <x-slot:title>จัดการโรงเรียนเครือข่าย | IPST Chumphon</x-slot>
+﻿<x-layout>
+    <x-slot:title>จัดการโรงเรียนเครือข่าย | EE CPN1</x-slot>
 
     <!-- Load Cropper.js from CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -29,7 +29,7 @@
         <header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">จัดการโรงเรียนเครือข่าย</h2>
-                <p class="text-slate-500 text-sm mt-1">เพิ่ม แก้ไข และลบข้อมูลสถาบันการศึกษาในกลุ่มภาคีเครือข่าย สสวท. ชุมพร</p>
+                <p class="text-slate-500 text-sm mt-1">เพิ่ม แก้ไข และลบข้อมูลสถาบันการศึกษาในกลุ่มภาคีเครือข่ายพัฒนาครู ชุมพร เขต 1</p>
             </div>
             <div class="flex items-center gap-3">
                 <a href="/dashboard" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
@@ -492,3 +492,4 @@
     </script>
     @endpush
 </x-layout>
+
