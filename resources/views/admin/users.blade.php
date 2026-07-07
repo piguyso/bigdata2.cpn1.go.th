@@ -1,4 +1,4 @@
-﻿<x-layout>
+<x-layout>
     <x-slot:title>จัดการสมาชิกและกำหนดสิทธิ์ | EE CPN1</x-slot>
 
     <div class="py-12 max-w-6xl mx-auto px-6" x-data="userManager()" x-init="init()">
@@ -25,10 +25,10 @@
         <header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">จัดการสมาชิกและกำหนดสิทธิ์</h2>
-                <p class="text-slate-500 text-sm mt-1">เพิ่ม แก้ไขสิทธิ์ และจัดการบทบาทของผู้ดูแลระบบ ครูผู้สอน และสมาชิกโรงเรียนเครือข่าย</p>
+                <p class="text-slate-500 text-sm mt-1">เพิ่ม แก้ไขสิทธิ์ และจัดการบทบาทของผู้ดูแลระบบ ครูผู้สอน และสมาชิกเครือข่ายสถานศึกษา</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="/dashboard" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
+                <a href="{{ route('dashboard') }}" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
                     ← กลับแดชบอร์ด
                 </a>
                 <button type="button" @click="openCreateModal()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-md shadow-emerald-100 flex items-center gap-2">
@@ -108,7 +108,10 @@
                                         <template x-if="user.logo_url">
                                             <img :src="user.logo_url" alt="Logo" class="w-full h-full object-cover">
                                         </template>
-                                        <template x-if="!user.logo_url">
+                                        <template x-if="!user.logo_url && user.profile_image_url">
+                                            <img :src="user.profile_image_url" alt="Profile" class="w-full h-full object-cover">
+                                        </template>
+                                        <template x-if="!user.logo_url && !user.profile_image_url">
                                             <span class="text-xs font-bold text-emerald-600 uppercase" x-text="user.name.charAt(0)"></span>
                                         </template>
                                     </div>
@@ -455,18 +458,7 @@
 
                 formatDate(dateStr) {
                     if (!dateStr) return '-';
-                    try {
-                        const date = new Date(dateStr);
-                        return date.toLocaleDateString('th-TH', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                    } catch (e) {
-                        return dateStr;
-                    }
+                    return window.formatThaiDateTime(dateStr);
                 }
             };
         }

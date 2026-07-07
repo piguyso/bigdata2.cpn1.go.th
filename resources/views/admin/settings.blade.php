@@ -31,7 +31,7 @@
                 <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">ตั้งค่าระบบเว็บไซต์</h2>
                 <p class="text-slate-500 text-sm mt-1">ส่วนจัดการข้อมูลทั่วไปและตราสัญลักษณ์หลักสำหรับผู้ดูแลระบบ</p>
             </div>
-            <a href="/dashboard" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
+            <a href="{{ route('dashboard') }}" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
                 ← กลับแดชบอร์ด
             </a>
         </header>
@@ -193,7 +193,7 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">โรงเรียนเครือข่าย (Network Schools)</label>
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">เครือข่ายสถานศึกษา (Network Schools)</label>
                             <input type="text" 
                                    x-model="settings.stat_schools" 
                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 

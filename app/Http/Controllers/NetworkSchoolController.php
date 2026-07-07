@@ -81,6 +81,7 @@ class NetworkSchoolController extends Controller
                 'id' => ['nullable', 'integer'],
                 'name' => ['required', 'string', 'max:255'],
                 'district' => ['required', 'string', 'in:อำเภอเมืองชุมพร,อำเภอหลังสวน,อำเภอละแม,อำเภอพะโต๊ะ,อำเภอสวี,อำเภอทุ่งตะโก,อำเภอท่าแซะ,อำเภอปะทิว'],
+                'school_group' => ['required', 'string', 'max:255'],
                 'address' => ['nullable', 'string', 'max:1000'],
                 'website' => ['nullable', 'url', 'max:255'],
                 'logo_data' => ['nullable', 'string'],
@@ -135,6 +136,7 @@ class NetworkSchoolController extends Controller
             $dataToSave = [
                 'name' => $request->input('name'),
                 'district' => $request->input('district'),
+                'school_group' => $request->input('school_group'),
                 'address' => $request->input('address'),
                 'website' => $request->input('website'),
                 'logo' => $logoPath,

@@ -37,9 +37,9 @@
                     <h4 class="font-bold text-emerald-600 mb-4">เมนูจัดการระบบ</h4>
                     <ul class="space-y-3 text-sm">
                         @if(Auth::user()->role === 'admin')
-                            <li><a href="{{ route('admin.schools.index') }}" class="hover:underline">🏫 จัดการโรงเรียนเครือข่าย</a></li>
+                            <li><a href="{{ route('admin.schools.index') }}" class="hover:underline">🏫 จัดการเครือข่ายสถานศึกษา</a></li>
                         @else
-                            <li><span class="text-slate-300 cursor-not-allowed" title="เฉพาะแอดมิน">🏫 จัดการโรงเรียนเครือข่าย</span></li>
+                            <li><span class="text-slate-300 cursor-not-allowed" title="เฉพาะแอดมิน">🏫 จัดการเครือข่ายสถานศึกษา</span></li>
                         @endif
                         <li><a href="{{ route('admin.courses.index') }}" class="hover:underline">📚 อัปเดตหลักสูตรอบรม</a></li>
                     </ul>

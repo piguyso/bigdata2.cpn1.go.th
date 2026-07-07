@@ -66,28 +66,80 @@ class CourseController extends Controller
     /**
      * Get all courses for public landing page display.
      */
-    public function getPublicList()
+    public function getPublicList(Request $request)
     {
         try {
-            $courses = DB::table('courses')
-                ->orderBy('sort_order', 'asc')
-                ->orderBy('id', 'desc')
+            $userId = Auth::id() ?: 0;
+            
+            $courses = DB::table('lms_courses as c')
+                ->select([
+                    'c.id',
+                    'c.title',
+                    'c.description',
+                    'c.cover_url',
+                    'c.status',
+                    DB::raw("(SELECT COUNT(*) FROM lms_lessons l WHERE l.course_id = c.id) as lesson_count"),
+                    DB::raw("(SELECT COUNT(*) FROM lms_enrollments e WHERE e.course_id = c.id) as learner_count"),
+                    DB::raw($userId ? "(SELECT COUNT(*) FROM lms_lesson_progress p WHERE p.user_id = $userId AND p.course_id = c.id) as completed_lessons" : "0 as completed_lessons"),
+                    DB::raw($userId ? "(SELECT COUNT(*) FROM lms_enrollments e WHERE e.user_id = $userId AND e.course_id = c.id) as enrolled" : "0 as enrolled")
+                ])
+                ->where('c.status', 'published')
+                ->orderBy('c.created_at', 'desc')
                 ->get()
-                ->map(function ($course) {
-                    $course->cover_image_url = $course->cover_image ? asset('storage/' . $course->cover_image) : null;
+                ->map(function ($course) use ($userId) {
+                    $courseId = (int)$course->id;
+                    $lessonCount = (int)$course->lesson_count;
+                    $completed = (int)$course->completed_lessons;
+                    $course->progress_pct = $lessonCount > 0 ? (int)round(($completed / $lessonCount) * 100) : 0;
+                    $course->enrolled = (int)$course->enrolled > 0;
                     
-                    $reportImages = json_decode($course->report_images, true) ?: [];
-                    $course->report_images_urls = array_map(function ($path) {
-                        return asset('storage/' . $path);
-                    }, $reportImages);
+                    // Fallback cover image
+                    $course->cover_image_url = $course->cover_url ?: null;
 
-                    $reportFiles = json_decode($course->report_files, true) ?: [];
-                    $course->report_files_urls = array_map(function ($file) {
-                        return [
-                            'name' => $file['name'],
-                            'url' => asset('storage/' . $file['path'])
-                        ];
-                    }, $reportFiles);
+                    // Get pre-quiz & post-quiz percents
+                    $prePercent = null;
+                    $postPercent = null;
+                    $improvement = null;
+
+                    if ($userId > 0) {
+                        $quizzes = DB::table('lms_quizzes')
+                            ->where('course_id', $courseId)
+                            ->where('is_active', 1)
+                            ->get();
+
+                        $preQuiz = $quizzes->where('quiz_type', 'pre')->first();
+                        $postQuiz = $quizzes->where('quiz_type', 'post')->first();
+
+                        if ($preQuiz) {
+                            $preAttempt = DB::table('lms_quiz_attempts')
+                                ->where('quiz_id', $preQuiz->id)
+                                ->where('user_id', $userId)
+                                ->orderBy('id', 'desc')
+                                ->first();
+                            if ($preAttempt) {
+                                $prePercent = (float)$preAttempt->percent;
+                            }
+                        }
+
+                        if ($postQuiz) {
+                            $postAttempt = DB::table('lms_quiz_attempts')
+                                ->where('quiz_id', $postQuiz->id)
+                                ->where('user_id', $userId)
+                                ->orderBy('id', 'desc')
+                                ->first();
+                            if ($postAttempt) {
+                                $postPercent = (float)$postAttempt->percent;
+                            }
+                        }
+
+                        if ($prePercent !== null && $postPercent !== null) {
+                            $improvement = $postPercent - $prePercent;
+                        }
+                    }
+
+                    $course->pre_percent = $prePercent;
+                    $course->post_percent = $postPercent;
+                    $course->improvement = $improvement;
 
                     return $course;
                 });

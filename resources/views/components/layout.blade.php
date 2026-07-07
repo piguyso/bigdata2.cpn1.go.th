@@ -56,54 +56,7 @@
             <div class="hidden md:flex gap-8 items-center font-semibold text-slate-500">
                 <a href="/" class="nav-link hover:text-emerald-600 transition">หน้าหลัก</a>
 
-                <!-- Dropdown: ข้อมูลศูนย์พัฒนาครู -->
-                <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                    <button type="button" class="nav-link hover:text-emerald-600 transition flex items-center gap-1 font-semibold text-slate-500 py-2 cursor-pointer outline-none">
-                        ข้อมูลศูนย์ฯ <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
-                    </button>
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-150"
-                         x-transition:enter-start="opacity-0 translate-y-1"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 translate-y-1"
-                         class="absolute left-0 mt-1 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 p-2 space-y-0.5 text-left"
-                         x-cloak>
-                         <a href="/#about" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
-                             <i class="fa-solid fa-circle-info w-4 text-center text-slate-400 text-[13px]"></i> เกี่ยวกับศูนย์ฯ
-                         </a>
-                         <a href="/org" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
-                             <i class="fa-solid fa-sitemap w-4 text-center text-slate-400 text-[13px]"></i> โครงสร้างบุคลากร
-                         </a>
-                         <a href="/#schools" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
-                             <i class="fa-solid fa-school w-4 text-center text-slate-400 text-[13px]"></i> โรงเรียนในเครือข่าย
-                         </a>
-                    </div>
-                </div>
 
-                <!-- Dropdown: บริการวิชาการ -->
-                <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                    <button type="button" class="nav-link hover:text-emerald-600 transition flex items-center gap-1 font-semibold text-slate-500 py-2 cursor-pointer outline-none">
-                        หลักสูตรและคลังสื่อ <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
-                    </button>
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-150"
-                         x-transition:enter-start="opacity-0 translate-y-1"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 translate-y-1"
-                         class="absolute left-0 mt-1 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 p-2 space-y-0.5 text-left"
-                         x-cloak>
-                         <a href="/#courses" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
-                             <i class="fa-solid fa-graduation-cap w-4 text-center text-slate-400 text-[13px]"></i> หลักสูตรอบรมครู
-                         </a>
-                         <a href="/documents" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
-                             <i class="fa-solid fa-folder-open w-4 text-center text-slate-400 text-[13px]"></i> คลังเอกสารเผยแพร่
-                         </a>
-                    </div>
-                </div>
 
                 <a href="/#contact" class="nav-link hover:text-emerald-600 transition">ติดต่อเรา</a>
             </div>
@@ -160,17 +113,13 @@
                                 </div>
                             </div>
 
-                            <!-- Dashboard Link Submenu -->
-                            <a href="/dashboard" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
-                                <i class="fa-solid fa-table-columns text-slate-450 w-4 text-center text-slate-400"></i>
-                                Dashboard (แผงควบคุม)
-                            </a>
+
 
                             <!-- Dynamic Management Links Based on Roles -->
                             @if(Auth::user()->role === 'admin')
                                 <a href="{{ route('admin.schools.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
                                     <i class="fa-solid fa-school text-slate-450 w-4 text-center text-slate-400"></i>
-                                    จัดการโรงเรียนเครือข่าย
+                                    จัดการเครือข่ายสถานศึกษา
                                 </a>
                             @endif
 
@@ -201,9 +150,15 @@
                             @endif
                             
                             <!-- Profile Link Submenu -->
-                            <a href="/profile" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
+                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
                                 <i class="fa-regular fa-user text-slate-450 w-4 text-center text-slate-400"></i>
                                 จัดการข้อมูลส่วนตัว
+                            </a>
+                            
+                            <!-- Password Change Link -->
+                            <a href="{{ route('profile.password.edit') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
+                                <i class="fa-solid fa-key text-slate-450 w-4 text-center text-slate-400"></i>
+                                เปลี่ยนรหัสผ่าน
                             </a>
 
                             <hr class="border-slate-50 my-1">
@@ -219,10 +174,7 @@
                         </div>
                     </div>
                 @else
-                    <a href="/login" class="text-sm font-bold text-slate-400 hover:text-slate-600 transition px-3">ลงชื่อเข้าใช้</a>
-                    <a href="/register" class="hidden sm:inline-block bg-emerald-500 text-white px-7 py-3 rounded-2xl font-bold text-sm hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-100 hover:-translate-y-0.5 transition-transform duration-200">
-                        เข้าร่วมโครงการ
-                    </a>
+                    <a href="{{ route('login') }}" class="text-sm font-bold text-slate-400 hover:text-slate-600 transition px-3">ลงชื่อเข้าใช้</a>
                 @endauth
 
                 <!-- Hamburger Menu Button -->
@@ -245,55 +197,13 @@
             
             <a href="/" class="block text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2" @click="mobileMenuOpen = false">หน้าหลัก</a>
 
-            <!-- Mobile Dropdown: ข้อมูลศูนย์พัฒนาครู -->
-            <div x-data="{ open: false }" class="space-y-1">
-                <button @click="open = !open" type="button" class="w-full flex items-center justify-between text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2 text-left cursor-pointer outline-none">
-                    <span>ข้อมูลศูนย์ฯ</span>
-                    <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
-                </button>
-                <div x-show="open" 
-                     x-transition:enter="transition ease-out duration-150"
-                     x-transition:enter-start="opacity-0 -translate-y-1"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     class="pl-4 space-y-2 py-1.5 border-l border-slate-100">
-                    <a href="/#about" class="flex items-center gap-2.5 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 transition" @click="mobileMenuOpen = false">
-                        <i class="fa-solid fa-circle-info w-4 text-center text-slate-400"></i> เกี่ยวกับศูนย์ฯ
-                    </a>
-                    <a href="/org" class="flex items-center gap-2.5 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 transition" @click="mobileMenuOpen = false">
-                        <i class="fa-solid fa-sitemap w-4 text-center text-slate-400"></i> โครงสร้างบุคลากร
-                    </a>
-                    <a href="/#schools" class="flex items-center gap-2.5 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 transition" @click="mobileMenuOpen = false">
-                        <i class="fa-solid fa-school w-4 text-center text-slate-400"></i> โรงเรียนในเครือข่าย
-                    </a>
-                </div>
-            </div>
 
-            <!-- Mobile Dropdown: บริการวิชาการ -->
-            <div x-data="{ open: false }" class="space-y-1">
-                <button @click="open = !open" type="button" class="w-full flex items-center justify-between text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2 text-left cursor-pointer outline-none">
-                    <span>หลักสูตรและคลังสื่อ</span>
-                    <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
-                </button>
-                <div x-show="open" 
-                     x-transition:enter="transition ease-out duration-150"
-                     x-transition:enter-start="opacity-0 -translate-y-1"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     class="pl-4 space-y-2 py-1.5 border-l border-slate-100">
-                    <a href="/#courses" class="flex items-center gap-2.5 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 transition" @click="mobileMenuOpen = false">
-                        <i class="fa-solid fa-graduation-cap w-4 text-center text-slate-400"></i> หลักสูตรอบรมครู
-                    </a>
-                    <a href="/documents" class="flex items-center gap-2.5 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 transition" @click="mobileMenuOpen = false">
-                        <i class="fa-solid fa-folder-open w-4 text-center text-slate-400"></i> คลังเอกสารเผยแพร่
-                    </a>
-                </div>
-            </div>
 
             <a href="/#contact" class="block text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2" @click="mobileMenuOpen = false">ติดต่อเรา</a>
 
             @guest
                 <div class="pt-4 border-t border-slate-100 flex flex-col gap-2">
-                    <a href="/login" class="w-full flex items-center justify-center py-2.5 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-xl border border-slate-100 transition" @click="mobileMenuOpen = false">ลงชื่อเข้าใช้</a>
-                    <a href="/register" class="w-full flex items-center justify-center py-2.5 text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl transition shadow-lg shadow-emerald-100" @click="mobileMenuOpen = false">เข้าร่วมโครงการ</a>
+                    <a href="{{ route('login') }}" class="w-full flex items-center justify-center py-2.5 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-xl border border-slate-100 transition" @click="mobileMenuOpen = false">ลงชื่อเข้าใช้</a>
                 </div>
             @endguest
 
@@ -312,13 +222,11 @@
                             <span class="block text-xs font-extrabold text-slate-800 truncate">{{ Auth::user()->name }}</span>
                         </div>
                     </div>
-                    <a href="/dashboard" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" @click="mobileMenuOpen = false">
-                        <i class="fa-solid fa-table-columns w-4 text-center text-slate-400"></i> Dashboard (แผงควบคุม)
-                    </a>
+
                     
                     @if(Auth::user()->role === 'admin')
                         <a href="{{ route('admin.schools.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" @click="mobileMenuOpen = false">
-                            <i class="fa-solid fa-school w-4 text-center text-slate-400"></i> จัดการโรงเรียนเครือข่าย
+                            <i class="fa-solid fa-school w-4 text-center text-slate-400"></i> จัดการเครือข่ายสถานศึกษา
                         </a>
                     @endif
 
@@ -343,8 +251,12 @@
                         </a>
                     @endif
 
-                    <a href="/profile" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" @click="mobileMenuOpen = false">
+                    <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" @click="mobileMenuOpen = false">
                         <i class="fa-regular fa-user w-4 text-center text-slate-400"></i> จัดการข้อมูลส่วนตัว
+                    </a>
+                    
+                    <a href="{{ route('profile.password.edit') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" @click="mobileMenuOpen = false">
+                        <i class="fa-solid fa-key w-4 text-center text-slate-400"></i> เปลี่ยนรหัสผ่าน
                     </a>
                     
                     <form method="POST" action="{{ route('logout') }}" class="block w-full">
@@ -388,10 +300,10 @@
                 <ul class="space-y-2 text-xs">
                     <li><a href="/" class="hover:text-emerald-400 transition">หน้าหลัก</a></li>
                     <li><a href="/#about" class="hover:text-emerald-400 transition">เกี่ยวกับเรา</a></li>
-                    <li><a href="/org" class="hover:text-emerald-400 transition">โครงสร้างศูนย์</a></li>
+                    <li><a href="{{ route('org.public') }}" class="hover:text-emerald-400 transition">โครงสร้างศูนย์</a></li>
                     <li><a href="/#courses" class="hover:text-emerald-400 transition">หลักสูตรอบรม</a></li>
-                    <li><a href="/#schools" class="hover:text-emerald-400 transition">โรงเรียนเครือข่าย</a></li>
-                    <li><a href="/documents" class="hover:text-emerald-400 transition">เอกสารเผยแพร่</a></li>
+                    <li><a href="/#schools" class="hover:text-emerald-400 transition">เครือข่ายสถานศึกษา</a></li>
+                    <li><a href="{{ route('documents.public') }}" class="hover:text-emerald-400 transition">เอกสารเผยแพร่</a></li>
                 </ul>
             </div>
             <div>
@@ -399,7 +311,7 @@
                 <ul class="space-y-2 text-xs">
                     <li><a href="https://cpn1.go.th" target="_blank" class="hover:text-emerald-400 transition">สพป.ชุมพร เขต 1</a></li>
                     <li><a href="https://www.moe.go.th" target="_blank" class="hover:text-emerald-400 transition">กระทรวงศึกษาธิการ</a></li>
-                    <li><a href="/dashboard" class="hover:text-emerald-400 transition">แผงควบคุมระบบ (Dashboard)</a></li>
+                    <li><a href="{{ route('profile.edit') }}" class="hover:text-emerald-400 transition">จัดการข้อมูลส่วนตัว (Profile)</a></li>
                 </ul>
             </div>
             <div>

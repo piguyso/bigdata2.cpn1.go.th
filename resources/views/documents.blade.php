@@ -1,4 +1,4 @@
-﻿<x-layout>
+<x-layout>
     <x-slot:title>คลังเอกสารเผยแพร่ | EE CPN1</x-slot>
 
     <!-- Custom Style Definitions -->
@@ -143,16 +143,7 @@
 
                 formatDate(dateStr) {
                     if (!dateStr) return '';
-                    try {
-                        const date = new Date(dateStr);
-                        return date.toLocaleDateString('th-TH', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                        });
-                    } catch (e) {
-                        return dateStr;
-                    }
+                    return window.formatThaiDate(dateStr);
                 }
             };
         }

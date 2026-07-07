@@ -1,4 +1,4 @@
-﻿<x-layout>
+<x-layout>
     <x-slot:title>เข้าสู่ระบบ | EE CPN1</x-slot>
 
     <div class="min-h-[80vh] flex items-center justify-center px-6 relative overflow-hidden">
@@ -16,10 +16,10 @@
                 <form method="POST" action="{{ route('login') }}" class="space-y-6">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Email Address</label>
-                        <input type="email" name="email" required autofocus 
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Username / Email</label>
+                        <input type="text" name="email" required autofocus 
                             class="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-400 outline-none transition-all font-medium"
-                            placeholder="example@mail.com">
+                            placeholder="Username or email">
                         <x-input-error :messages="$errors->get('email')" class="mt-2 text-xs text-rose-500 font-bold" />
                     </div>
 
@@ -44,10 +44,6 @@
                     <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-lg hover:bg-emerald-600 transition-all shadow-xl shadow-slate-200 active:scale-95">
                         เข้าสู่ระบบ 
                     </button>
-
-                    <p class="text-center text-sm font-medium text-slate-400 pt-4">
-                        ยังไม่มีบัญชี? <a href="{{ route('register') }}" class="text-emerald-600 font-bold hover:underline">ลงทะเบียนครูใหม่</a>
-                    </p>
                 </form>
             </div>
         </div>

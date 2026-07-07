@@ -27,7 +27,11 @@ class UserController extends Controller
     {
         try {
             $users = User::orderBy('id', 'desc')->get()->map(function ($user) {
+                $teacher = \Illuminate\Support\Facades\DB::table('teacher_profile')
+                    ->where('email', $user->email)
+                    ->first();
                 $user->logo_url = $user->logo ? asset('storage/' . $user->logo) : null;
+                $user->profile_image_url = ($teacher && $teacher->profile_image_path) ? asset('storage/' . $teacher->profile_image_path) : null;
                 return $user;
             });
 

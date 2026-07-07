@@ -25,16 +25,22 @@ Route::get('/', function () {
     return view('welcome', compact('slides'));
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 use App\Http\Controllers\SettingsController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.password.edit');
+    Route::get('/api/school-search', [ProfileController::class, 'searchSchools'])->name('api.schools.search');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Axios / API — no page refresh
+    Route::post('/api/profile/update', [ProfileController::class, 'updateApi'])->name('api.profile.update');
+    Route::post('/api/profile/password', [ProfileController::class, 'updatePasswordApi'])->name('api.profile.password');
+    Route::post('/api/profile/teacher', [ProfileController::class, 'updateTeacherApi'])->name('api.profile.teacher');
+    Route::get('/api/profile/teacher', [ProfileController::class, 'getTeacherData'])->name('api.profile.teacher.get');
 });
 
 // Admin settings routes
@@ -105,7 +111,7 @@ Route::post('/logout', function (Request $request) {
 
 // Route สำหรับหน้า Dashboard (เบื้องต้นให้แสดง view ชื่อ dashboard)
 Route::get('/dashboard', function () {
-    return view('dashboard'); // คุณต้องมีไฟล์ resources/views/dashboard.blade.php
+    return redirect()->route('profile.edit');
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';

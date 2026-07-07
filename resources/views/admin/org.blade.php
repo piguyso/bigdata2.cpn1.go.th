@@ -32,7 +32,7 @@
                 <p class="text-slate-500 text-sm mt-1">อัปเดตสมาชิก ที่ปรึกษา และคณะทำงานของศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="/dashboard" class="bg-white border border-slate-200 text-slate-655 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
+                <a href="{{ route('dashboard') }}" class="bg-white border border-slate-200 text-slate-655 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
                     ← กลับแดชบอร์ด
                 </a>
                 <button type="button" @click="openCreateModal()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-md shadow-emerald-100 flex items-center gap-2">

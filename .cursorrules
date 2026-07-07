@@ -158,3 +158,22 @@ Every time we design, build, or modify pages in this project, we must follow the
   * การเข้าถึงส่วนจัดการระบบ (Admin Page)
   * การพยายามเรียกใช้ข้อมูลข้ามขีดจำกัดสิทธิ์ (Unauthorized access)
 * **Backend**: **ห้ามบันทึกข้อมูลอ่อนไหว** เช่น รหัสผ่าน, ข้อมูลบัตรเครดิต, เลขบัตรประชาชน ลงใน Log ไฟล์โดยตรงเด็ดขาด
+
+---
+
+## 💾 MariaDB Local Installation Details
+
+For any local database operations, CLI commands, or backups, use the following paths:
+* **MariaDB Directory / Binaries**: `C:\Program Files\MariaDB 12.2\bin\` (contains `mysql.exe`, `mysqld.exe`, `mysqldump.exe`)
+* **Configuration File**: `C:\Program Files\MariaDB 12.2\data\my.ini`
+* **Data Directory**: `C:\Program Files\MariaDB 12.2\data\`
+
+---
+
+## 🔒 GDCC Connection & Server Management Guidelines (คำแนะนำในการเชื่อมต่อและแก้ไขระบบ)
+
+* **VPN Connection**: Must connect to the VPN using **FortiClient** before editing any website contents (ควรเชื่อมต่อ VPN ด้วย FortiClient และเข้าแก้ไขเนื้อหาเว็บไซต์).
+* **Direct Server Edits**: Connect directly to the Web Server machine to edit website contents locally on the Server (ควรเชื่อมต่อไปยัง Web Server และเข้าแก้ไขเว็บไซต์เนื้อหาภายในเครื่อง Server).
+* **Exception Request**: In case a URL is blocked by the GDCC WAF, administrators can request an exception by emailing GDCC Security Center to whitelist/exclude specific URLs under OWASP 10:2021 protection (ผู้ดูแลระบบสามารถขอ Add Exception สำหรับบาง URL ที่ถูกระงับได้ที่ GDCC Security Center).
+
+

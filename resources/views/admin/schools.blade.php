@@ -1,5 +1,5 @@
-﻿<x-layout>
-    <x-slot:title>จัดการโรงเรียนเครือข่าย | EE CPN1</x-slot>
+<x-layout>
+    <x-slot:title>จัดการเครือข่ายสถานศึกษา | EE CPN1</x-slot>
 
     <!-- Load Cropper.js from CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -28,11 +28,11 @@
 
         <header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">จัดการโรงเรียนเครือข่าย</h2>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">จัดการเครือข่ายสถานศึกษา</h2>
                 <p class="text-slate-500 text-sm mt-1">เพิ่ม แก้ไข และลบข้อมูลสถาบันการศึกษาในกลุ่มภาคีเครือข่ายพัฒนาครู ชุมพร เขต 1</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="/dashboard" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
+                <a href="{{ route('dashboard') }}" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
                     ← กลับแดชบอร์ด
                 </a>
                 <button type="button" @click="openCreateModal()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-md shadow-emerald-100 flex items-center gap-2">
@@ -44,7 +44,7 @@
         <!-- Loading State -->
         <div x-show="loading" class="bg-white border border-slate-100 rounded-2xl p-12 text-center shadow-sm" x-transition>
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent mb-4"></div>
-            <p class="text-slate-400 text-xs font-bold">กำลังดาวน์โหลดข้อมูลโรงเรียนเครือข่าย...</p>
+            <p class="text-slate-400 text-xs font-bold">กำลังดาวน์โหลดข้อมูลเครือข่ายสถานศึกษา...</p>
         </div>
 
         <!-- Schools List View (No refresh table) -->
@@ -66,7 +66,7 @@
                             <tr>
                                 <td colspan="6" class="py-12 text-center text-slate-400 font-medium">
                                     <div class="mb-2 text-2xl">🏫</div>
-                                    ยังไม่มีข้อมูลโรงเรียนเครือข่ายในระบบ กดเพิ่มโรงเรียนเครือข่ายได้เลย
+                                    ยังไม่มีข้อมูลเครือข่ายสถานศึกษาในระบบ กดเพิ่มเครือข่ายสถานศึกษาได้เลย
                                 </td>
                             </tr>
                         </template>
@@ -83,8 +83,11 @@
                                     </div>
                                 </td>
                                 <td class="py-4 px-6 font-bold text-slate-800" x-text="school.name"></td>
-                                <td class="py-4 px-6">
-                                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-bold rounded-md" x-text="school.district"></span>
+                                <td class="py-4 px-6 flex flex-col gap-1 items-start">
+                                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-bold rounded-md text-[10px]" x-text="school.district"></span>
+                                    <template x-if="school.school_group">
+                                        <span class="px-2.5 py-1 bg-slate-100 text-slate-600 font-bold rounded-md text-[10px]" x-text="school.school_group"></span>
+                                    </template>
                                 </td>
                                 <td class="py-4 px-6 text-slate-500" x-text="school.address || '-'"></td>
                                 <td class="py-4 px-6">
@@ -120,7 +123,7 @@
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-school text-emerald-500"></i>
-                        <span x-text="cropping ? 'ครอบตัดตราโลโก้โรงเรียน (1:1)' : (form.id ? 'แก้ไขข้อมูลโรงเรียนเครือข่าย' : 'เพิ่มโรงเรียนเครือข่ายใหม่')"></span>
+                        <span x-text="cropping ? 'ครอบตัดตราโลโก้โรงเรียน (1:1)' : (form.id ? 'แก้ไขข้อมูลเครือข่ายสถานศึกษา' : 'เพิ่มเครือข่ายสถานศึกษาใหม่')"></span>
                     </h3>
                     <button type="button" @click="cropping ? closeCropper() : (modal.open = false)" class="text-slate-400 hover:text-slate-650 transition">
                         <i class="fa-solid fa-xmark text-lg"></i>
@@ -150,6 +153,26 @@
                                 <option value="อำเภอเมืองชุมพร">อำเภอเมืองชุมพร</option>
                                 <option value="อำเภอท่าแซะ">อำเภอท่าแซะ</option>
                                 <option value="อำเภอปะทิว">อำเภอปะทิว</option>
+                            </select>
+                        </div>
+
+                        <!-- School Network Selector -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">เครือข่ายสถานศึกษา (Network Group) *</label>
+                            <select x-model="form.school_group" 
+                                    required 
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                                <option value="">เลือกเครือข่าย...</option>
+                                <option value="เมืองชุมพร 1">เมืองชุมพร 1</option>
+                                <option value="เมืองชุมพร 2">เมืองชุมพร 2</option>
+                                <option value="เมืองชุมพร 3">เมืองชุมพร 3</option>
+                                <option value="เมืองชุมพร 4">เมืองชุมพร 4</option>
+                                <option value="เมืองชุมพร 5">เมืองชุมพร 5</option>
+                                <option value="ท่าแซะ 1">ท่าแซะ 1</option>
+                                <option value="ท่าแซะ 2">ท่าแซะ 2</option>
+                                <option value="ท่าแซะ 3">ท่าแซะ 3</option>
+                                <option value="ปะทิว 1">ปะทิว 1</option>
+                                <option value="ปะทิว 2">ปะทิว 2</option>
                             </select>
                         </div>
 
@@ -291,6 +314,7 @@
                     id: null,
                     name: '',
                     district: '',
+                    school_group: '',
                     address: '',
                     website: '',
                     logo_data: '',
@@ -343,6 +367,7 @@
                     this.form.id = school.id;
                     this.form.name = school.name;
                     this.form.district = school.district;
+                    this.form.school_group = school.school_group || '';
                     this.form.address = school.address || '';
                     this.form.website = school.website || '';
                     this.form.previewUrl = school.logo_url;
@@ -353,6 +378,7 @@
                     this.form.id = null;
                     this.form.name = '';
                     this.form.district = '';
+                    this.form.school_group = '';
                     this.form.address = '';
                     this.form.website = '';
                     this.form.logo_data = '';
@@ -426,6 +452,7 @@
                         id: this.form.id,
                         name: this.form.name,
                         district: this.form.district,
+                        school_group: this.form.school_group,
                         address: this.form.address,
                         website: this.form.website,
                         logo_data: this.form.logo_data,
@@ -475,7 +502,7 @@
                         })
                         .catch(error => {
                             console.error('Delete School Error:', error);
-                            this.showToast('เกิดข้อผิดพลาดในการลบโรงเรียนเครือข่าย', 'error');
+                            this.showToast('เกิดข้อผิดพลาดในการลบเครือข่ายสถานศึกษา', 'error');
                         });
                 },
 
