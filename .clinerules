@@ -1,0 +1,160 @@
+# Rules for SPA-like Dynamic Development (API + Client, No-Refresh UI)
+
+Every time we design, build, or modify pages in this project, we must follow these guidelines:
+
+## 1. No Full-Page Refreshes (SPA Behavior)
+- Avoid traditional standard HTML form submissions and standard anchor link reloads for inner-site navigation.
+- Use AJAX / Fetch API (via `fetch` or `axios`) to communicate with the backend.
+- Dynamically update the DOM on the client side using JavaScript (or Alpine.js) instead of waiting for a full page reload.
+
+## 2. API + Client Separation
+- **Backend (Laravel)**: Serves clean JSON API endpoints for data operations, or returns clean HTML fragments when dynamic partial rendering is required.
+- **Frontend (Blade + Alpine.js)**: Handles UI state, user interactions, form validation, and transition animations.
+
+## 3. Dynamic Page Loading (Progressive SPA Transitions)
+- When a user navigates between pages or sections (e.g. Dashboard, Profile, Settings):
+  1. Fetch the corresponding HTML fragment or JSON data from the server asynchronously.
+  2. Smoothly swap the content in the main container.
+  3. Use HTML5 History API (`history.pushState` and `window.onpopstate`) to update the browser URL bar, so the back/forward buttons work properly.
+  4. Ensure that typing the URL directly in the browser address bar still renders the page correctly from the backend (Progressive Enhancement).
+
+## 4. UI Transitions & Loading States
+- Always show loading indicators, progress bars, or skeleton screens during asynchronous operations.
+- Use Tailwind CSS transition classes or Alpine.js `x-transition` to animate DOM inserts, removals, and updates smoothly.
+- Prevent layout shifts by keeping card and wrapper sizes consistent during data loading.
+
+## 5. Security & CSRF
+- Always include the Laravel CSRF token in the headers (`X-CSRF-TOKEN` or `X-XSRF-TOKEN`) for all POST, PATCH, PUT, and DELETE API requests.
+
+---
+
+# กฎการเขียนโค้ดเว็บให้ปลอดภัยตามข้อปฏิบัติ GDCC (Developer Secure Coding Rules)
+*(สำหรับนักพัฒนาซอฟต์แวร์ - โฟกัสเฉพาะการเขียนโค้ดหน้าบ้านและหลังบ้าน โดยไม่ต้องตั้งค่า Server)*
+
+คู่มือนี้จัดทำขึ้นสำหรับนักพัฒนา (Developer) เพื่อใช้เป็นแนวทางในการเขียนโค้ด (Coding) ทั้งฝั่ง **Frontend (Client)** และ **Backend (Server)** ให้สอดคล้องกับข้อกำหนดความปลอดภัยของ GDCC (OWASP Top 10:2021) โดยเน้นวิธีที่จัดการได้ด้วยโค้ด 100%
+
+---
+
+## 🛠️ ส่วนที่ 1: กฎการป้องกันการโดน WAF บล็อก (จากเหตุการณ์จริง)
+
+จากตัวอย่างปัญหาที่ WAF บล็อกโค้ด HTML ที่มี inline JavaScript (`onerror`) ให้นักพัฒนาปฏิบัติตามกฎสองข้อนี้ทันที:
+
+### Rule 1.1: ห้ามเขียน JavaScript ในแอตทริบิวต์ของ HTML (No Inline JavaScript)
+* **❌ ห้ามทำ**: เขียนโค้ดรันงานใน attribute เช่น `onerror`, `onload`, `onclick`, `onmouseover` ใน HTML tag ที่ส่งระหว่าง Client-Server
+* **✅ วิธีแก้ไข**: ให้ใช้การดักจับเหตุการณ์ (Event Listener) ผ่านไฟล์ JavaScript หรือกลไกของ UI Framework (React, Vue) แยกต่างหาก
+  ```javascript
+  // แทนที่จะใช้ onerror="..." ใน tag img ให้ใช้ตัวจัดการใน JS แทน
+  const imgElement = document.querySelector('#avatar');
+  imgElement.addEventListener('error', () => {
+      imgElement.src = '/images/default-avatar.png'; // ซ่อนหรือเปลี่ยนรูปเมื่อโหลดไม่ขึ้น
+  });
+  ```
+
+### Rule 1.2: ห้ามส่งโค้ด HTML ดิบผ่าน HTTP Request (Data-Presentation Separation)
+* **❌ ห้ามทำ**: ส่ง Tag HTML (เช่น `<img>`, `<a>`, `<ul>`) จาก Frontend ไปเก็บในฐานข้อมูลหรือประมวลผลที่ Backend ตรง ๆ เพราะ WAF จะมองว่าเป็นช่องโหว่ XSS/Injection ทันที
+* **✅ วิธีแก้ไข**: ส่งเฉพาะข้อมูลดิบ (Raw Data) ในรูปแบบ JSON แล้วส่งไปให้ฝั่งผู้รับแปลงเป็น HTML เอง
+  ```json
+  // ส่งเฉพาะ Data (JSON)
+  {
+      "imageUrl": "https://e.abcp.ac.th/upload/avatar_1615_1781830013.png",
+      "imageAlt": "User Avatar"
+  }
+  ```
+
+---
+
+## 🔒 ส่วนที่ 2: กฎการเขียนโค้ดตามมาตรฐาน GDCC (OWASP Top 10)
+
+เพื่อตอบสนองข้อปฏิบัติตั้งแต่ข้อ 1-10 ของ GDCC โดยใช้กระบวนการเขียนโค้ด (Coding) เท่านั้น:
+
+### 1. การป้องกันการแทรกคำสั่ง (Injection)
+* **Backend (SQL/NoSQL)**: ห้ามเชื่อมต่อข้อความ (String Concatenation) เพื่อสร้างคิวรีฐานข้อมูลโดยเด็ดขาด ให้ใช้ **Parameterized Queries** หรือใช้ **ORM** (เช่น Prisma, Sequelize, Mongoose, Entity Framework, Laravel Eloquent)
+  ```javascript
+  // ❌ ห้ามทำ (เสี่ยง SQL Injection)
+  const query = `SELECT * FROM users WHERE username = '${req.body.username}'`;
+  
+  // ✅ วิธีแก้ไข (ใช้ Parameterized Query / ORM)
+  const query = 'SELECT * FROM users WHERE username = ?';
+  db.execute(query, [req.body.username]);
+  ```
+* **Backend (OS Command)**: หลีกเลี่ยงการใช้คำสั่งระบบปฏิบัติการผ่านโค้ด เช่น `eval()`, `exec()`, `system()` หากจำเป็นต้องใช้ ต้องคัดกรองข้อมูลนำเข้าให้เป็นแบบเจาะจง (Whitelist Validation) เท่านั้น
+
+### 2. การจัดการยืนยันตัวตน (Broken Authentication)
+* **Backend**: ห้ามจัดเก็บรหัสผ่านเป็นข้อความธรรมดา (Plain text) หรือเข้ารหัสแบบย้อนกลับได้ (reversible) เด็ดขาด ให้ใช้การเข้ารหัสทางเดียว (Hashing) ที่มีความปลอดภัยสูง เช่น **bcrypt** หรือ **Argon2** ร่วมกับ Salt
+* **Backend**: สำหรับการยืนยันตัวตนผ่าน Token (เช่น JWT) ต้องตั้งเวลาหมดอายุ (Expiration Time) ของ Token ให้สั้น (เช่น 15-30 นาที) และต้องตรวจสอบลายเซ็น (Signature Verification) ที่ฝั่ง Server เสมอ
+* **Frontend**: ห้ามเก็บรหัสผ่านหรือข้อมูลการยืนยันตัวตนไว้ในตัวแปร Global หรือ LocalStorage แบบไม่มีการป้องกัน ควรใช้ **HttpOnly Cookie** ในการเก็บ Session ID/Token เพื่อป้องกันไม่ให้ถูกโจรกรรมข้อมูลผ่านสคริปต์หน้าเว็บ
+
+### 3. การป้องกันข้อมูลสำคัญรั่วไหล (Sensitive Data Exposure)
+* **Backend**: กรองข้อมูลที่ไม่จำเป็นออกก่อนส่งกลับไปหา Client (เช่น ลบฟิลด์ `password`, `salt` หรือข้อมูลส่วนตัวอื่น ๆ ออกจากออบเจกต์ก่อนแปลงเป็น JSON)
+  ```javascript
+  // ✅ วิธีแก้ไข: เลือกส่งเฉพาะฟิลด์ที่จำเป็นต่อการแสดงผลจริง ๆ
+  const userResponse = {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName
+  };
+  res.json(userResponse);
+  ```
+* **Backend**: หากต้องบันทึกข้อมูลสำคัญในฐานข้อมูล (เช่น เลขบัตรประชาชน, เบอร์โทรศัพท์) ให้เขียนโค้ดเพื่อเข้ารหัสข้อมูล (Encryption) ก่อนบันทึก และถอดรหัส (Decryption) เมื่อนำมาใช้
+* **Frontend**: ห้ามใส่ข้อมูลลับ เช่น API Keys, Client Secrets หรือรหัสผ่านลงในโค้ดฝั่ง Client (เช่น ไฟล์ JavaScript ที่เบราว์เซอร์ดาวน์โหลดได้)
+
+### 4. การจัดการ XML (XML External Entities - XXE)
+* **Backend**: หลีกเลี่ยงการประมวลผลข้อมูลในรูปแบบ XML ให้เลือกใช้ **JSON** เป็นหลักในการรับส่งข้อมูล
+* **Backend**: หากเลี่ยงไม่ได้และจำเป็นต้องแปลงข้อมูล XML (XML Parsing) ให้เขียนโค้ดตั้งค่าปิดการทำงานของ External Entities (DTD) ใน Parser ที่เลือกใช้
+
+### 5. การควบคุมสิทธิ์การเข้าถึง (Broken Access Control)
+* **Backend**: ห้ามเชื่อใจข้อมูลสิทธิ์การเข้าถึงที่ส่งมาจากฝั่ง Client เด็ดขาด ฝั่ง Server ต้องตรวจสอบสิทธิ์ผู้ใช้ (Authorization) ทุกครั้งก่อนดำเนินกิจกรรมสำคัญ
+  ```javascript
+  // ❌ ห้ามทำ: ตรวจสอบสิทธิ์โดยยึดข้อมูลที่ส่งมาจาก Frontend เท่านั้น
+  router.delete('/post/:id', (req, res) => { ... }); 
+  
+  // ✅ วิธีแก้ไข: ใช้ Session/Token ของฝั่ง Server ยืนยันว่าคนลบคือเจ้าของโพสต์จริง
+  router.delete('/post/:id', verifyToken, async (req, res) => {
+      const post = await db.findPost(req.params.id);
+      if (post.userId !== req.user.id) { // req.user.id ได้มาจาก Token ที่เข้ารหัสปลอดภัย
+          return res.status(403).send("ไม่มีสิทธิ์ลบโพสต์นี้");
+      }
+      // ทำการลบโพสต์...
+  });
+  ```
+
+### 6. การจัดการการตั้งค่าซอฟต์แวส์ (Security Misconfigurations)
+* **Backend**: ปิดการแสดงผลข้อผิดพลาดแบบละเอียด (Debug stack trace) แก่ผู้ใช้งานทั่วไป ให้ใช้การดักจับข้อผิดพลาด (Try-Catch) และแสดงข้อความที่เป็นมิตรแทน ส่วนข้อมูลข้อผิดพลาดจริง ๆ ให้บันทึกลงไฟล์ Log ภายในระบบเท่านั้น
+  ```javascript
+  // ❌ ห้ามทำ: ปล่อยให้ Error ดิบแสดงออกไปที่หน้าเว็บ
+  try { ... } catch (err) { res.status(500).send(err.stack); }
+  
+  // ✅ วิธีแก้ไข: ซ่อนรายละเอียดความผิดพลาด และส่งเฉพาะ Error Code
+  try { ... } catch (err) {
+      logger.error(err); // บันทึกลงระบบ Log ภายใน
+      res.status(500).json({ error: "เกิดข้อผิดพลาดภายในระบบ กรุณาติดต่อผู้ดูแล" });
+  }
+  ```
+
+### 7. การป้องกันสคริปต์ข้ามไซต์ (Cross-Site Scripting - XSS)
+* **Frontend**: ปฏิบัติตามกฎการไม่ใช้ Inline JavaScript (ในส่วนที่ 1)
+* **Frontend**: หลีกเลี่ยงคำสั่งที่เรนเดอร์ HTML โดยตรงโดยไม่มีการตรวจสอบ เช่น `v-html` (Vue) หรือ `dangerouslySetInnerHTML` (React) หากจำเป็นต้องใช้ ต้องทำความสะอาดข้อมูลด้วย library **DOMPurify** ก่อนเสมอ
+  ```javascript
+  import DOMPurify from 'dompurify';
+  
+  // กรองสิ่งที่เป็นอันตรายออกก่อนจะแสดงผล HTML
+  const cleanHtml = DOMPurify.sanitize(userInput);
+  ```
+* **Frontend**: ใช้การกรองและการแปลงอักขระพิเศษ (Output Encoding) เพื่อเปลี่ยนอักขระควบคุมของ HTML (เช่น `<` เป็น `&lt;` หรือ `>` เป็น `&gt;`) เมื่อนำข้อมูลมาแสดงผลในระบบทั่วไป
+
+### 8. การแปลงข้อมูลเป็นวัตถุที่ไม่ปลอดภัย (Insecure Deserialization)
+* **Backend**: ห้ามทำการ Deserialize หรือแปลงข้อมูล JSON/Object ที่ส่งมาจากภายนอกให้กลายเป็นคลาสทำงานทันที หากข้อมูลนั้นสามารถรันสคริปต์ทำงานได้
+* **Backend**: ใช้การรับส่งข้อมูลในรูปแบบมาตรฐานที่ไม่รองรับการรันโค้ดภายใน เช่น JSON เปล่า หรือทำการสร้าง Schema เพื่อตรวจสอบโครงสร้างข้อมูล (เช่น การใช้ library **Zod** หรือ **Joi** ในการตรวจสอบโครงสร้างของ JSON ที่รับเข้ามาก่อนการนำไปใช้งาน)
+
+### 9. การอัปเดต Library ที่ใช้ (Using Components with Known Vulnerabilities)
+* **Developer**: รันคำสั่งตรวจสอบช่องโหว่ของ Dependency ที่นำมาใช้ในโปรเจกต์เป็นประจำ เช่น
+  * สำหรับ Node.js: รัน `npm audit` หรือ `yarn audit`
+  * สำหรับ Python: รัน `pip-audit`
+* **Developer**: ทำการอัปเดตเวอร์ชันของ Library ที่มีช่องโหว่ด้านความปลอดภัยทันทีเมื่อพบรายงานจากผู้พัฒนาต้นทาง
+
+### 10. การบันทึกและตรวจสอบเหตุการณ์ (Insufficient Logging and Monitoring)
+* **Backend**: เขียนคำสั่งบันทึกประวัติการทำงาน (Logging) สำหรับเหตุการณ์สำคัญในโค้ด เช่น:
+  * การล็อกอินสำเร็จ/ล้มเหลว
+  * การเข้าถึงส่วนจัดการระบบ (Admin Page)
+  * การพยายามเรียกใช้ข้อมูลข้ามขีดจำกัดสิทธิ์ (Unauthorized access)
+* **Backend**: **ห้ามบันทึกข้อมูลอ่อนไหว** เช่น รหัสผ่าน, ข้อมูลบัตรเครดิต, เลขบัตรประชาชน ลงใน Log ไฟล์โดยตรงเด็ดขาด
