@@ -9,18 +9,7 @@
     <x-slot:title>จัดการข้อมูลส่วนตัว | {{ $webName }}</x-slot>
 
     <main class="py-16 md:py-24 bg-slate-50/50 min-h-screen">
-        <!-- Header Section -->
-        <section class="max-w-7xl mx-auto px-6 text-center space-y-4 mb-16">
-            <div class="inline-block px-3.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
-                การตั้งค่าบัญชี
-            </div>
-            <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
-                โปรไฟล์ผู้ใช้งาน
-            </h2>
-            <p class="text-slate-500 text-sm max-w-2xl mx-auto leading-relaxed">
-                อัปเดตโลโก้ส่วนตัว ชื่อแสดงผล ข้อมูลประวัติครู รวมถึงการเปลี่ยนรหัสผ่านเพื่อความมั่นคงปลอดภัย
-            </p>
-        </section>
+        <div class="h-8"></div>
 
         <!-- Profile Content Containers -->
         <section class="max-w-6xl mx-auto px-6 space-y-10">

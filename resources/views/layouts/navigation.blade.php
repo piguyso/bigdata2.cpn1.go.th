@@ -43,6 +43,12 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
+                            <x-dropdown-link :href="route('admin.lms.courses.index')">
+                                การตั้งค่า LMS
+                            </x-dropdown-link>
+                        @endif
+
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
@@ -58,7 +64,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                    {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -102,6 +108,12 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                @if(Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
+                    <x-responsive-nav-link :href="route('admin.lms.courses.index')">
+                        การตั้งค่า LMS
+                    </x-responsive-nav-link>
+                @endif
+
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>

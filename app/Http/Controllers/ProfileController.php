@@ -21,7 +21,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         $teacherProfile = \Illuminate\Support\Facades\DB::table('teacher_profile')
-            ->where('email', $user->email)
+            ->where('user_id', $user->id)
             ->first();
 
         $teacherData = null;
@@ -207,7 +207,7 @@ class ProfileController extends Controller
         try {
             $user = $request->user();
             $teacherProfile = \Illuminate\Support\Facades\DB::table('teacher_profile')
-                ->where('email', $user->email)
+                ->where('user_id', $user->id)
                 ->first();
 
             if (!$teacherProfile) {
@@ -238,6 +238,17 @@ class ProfileController extends Controller
                 $data['personalid_masked'] = substr($pid, 0, 3) . '-xxxx-' . substr($pid, -4);
             } else {
                 $data['personalid_masked'] = '';
+            }
+
+            // Resolve profile image URL:
+            // - New uploads: teacher_images/xxx.jpg → serve from storage
+            // - Legacy from e.cpn1.go.th: profile_image_url already has full URL
+            if (!empty($data['profile_image_path']) && str_starts_with($data['profile_image_path'], 'teacher_images/')) {
+                $data['profile_image_url_resolved'] = asset('storage/' . $data['profile_image_path']);
+            } elseif (!empty($data['profile_image_url'])) {
+                $data['profile_image_url_resolved'] = $data['profile_image_url'];
+            } else {
+                $data['profile_image_url_resolved'] = null;
             }
 
             return response()->json(['status' => 'success', 'data' => $data]);
@@ -354,24 +365,24 @@ class ProfileController extends Controller
             }
 
             $recordData = [
-                'school_code'         => $request->input('school_code', ''),
-                'school_name'         => $request->input('school_name', ''),
-                'school_network'      => $request->input('school_network', ''),
-                'prefix'              => $request->input('prefix', ''),
-                'first_name'          => $request->input('first_name', ''),
-                'last_name'           => $request->input('last_name', ''),
+                'school_code'         => $request->input('school_code') ?? '',
+                'school_name'         => $request->input('school_name') ?? '',
+                'school_network'      => $request->input('school_network') ?? '',
+                'prefix'              => $request->input('prefix') ?? '',
+                'first_name'          => $request->input('first_name') ?? '',
+                'last_name'           => $request->input('last_name') ?? '',
                 'birth_date'          => $request->input('birth_date') ?: null,
                 'birth_year_be'       => $request->input('birth_year_be') ?: null,
                 'age'                 => $request->input('age') ?: null,
-                'position'            => $request->input('position', ''),
-                'academic_rank'       => $request->input('academic_rank', ''),
-                'recruitment_subject' => $request->input('recruitment_subject', ''),
+                'position'            => $request->input('position') ?? '',
+                'academic_rank'       => $request->input('academic_rank') ?? '',
+                'recruitment_subject' => $request->input('recruitment_subject'),
                 'appointed_date'      => $request->input('appointed_date') ?: null,
                 'appointed_year_be'   => $request->input('appointed_year_be') ?: null,
-                'bachelor_major'      => $request->input('bachelor_major', ''),
-                'master_major'        => $request->input('master_major', ''),
-                'doctoral_major'      => $request->input('doctoral_major', ''),
-                'other_workload'      => $request->input('other_workload', ''),
+                'bachelor_major'      => $request->input('bachelor_major'),
+                'master_major'        => $request->input('master_major'),
+                'doctoral_major'      => $request->input('doctoral_major'),
+                'other_workload'      => $request->input('other_workload'),
                 'profile_image_path'  => $imagePath,
                 'profile_image_name'  => $imageName,
             ];

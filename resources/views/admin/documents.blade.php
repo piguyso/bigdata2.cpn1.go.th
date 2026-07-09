@@ -1,4 +1,4 @@
-﻿<x-layout>
+<x-layout>
     <x-slot:title>จัดการคลังเอกสาร | EE CPN1</x-slot>
 
     <div class="py-12 max-w-6xl mx-auto px-6" x-data="documentManager()" x-init="init()">
@@ -136,7 +136,7 @@
                     <!-- Description -->
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-slate-700">รายละเอียดเพิ่มเติม (ระบุหรือไม่ก็ได้)</label>
-                        <textarea x-model="form.description" rows="3" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold text-slate-800" placeholder="อธิบายสั้น ๆ เกี่ยวกับเนื้อหาในเอกสาร"></button></textarea>
+                        <textarea x-model="form.description" rows="3" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold text-slate-800" placeholder="อธิบายสั้น ๆ เกี่ยวกับเนื้อหาในเอกสาร"></textarea>
                     </div>
 
                     <!-- File input -->
@@ -365,7 +365,9 @@
                 async executeDelete() {
                     this.deleteModal.deleting = true;
                     try {
-                        const res = await axios.delete(`/admin/documents/${this.deleteModal.id}`);
+                        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+                        const headers = csrfTokenMeta ? { 'X-CSRF-TOKEN': csrfTokenMeta.content } : {};
+                        const res = await axios.delete(`{{ url('/admin/documents') }}/${this.deleteModal.id}`, { headers });
                         if (res.data.status === 'success') {
                             this.showToast('success', res.data.message);
                             this.deleteModal.open = false;

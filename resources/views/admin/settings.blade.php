@@ -1,4 +1,4 @@
-﻿<x-layout>
+<x-layout>
     <x-slot:title>ตั้งค่าระบบเว็บไซต์ | EE CPN1</x-slot>
 
     <!-- Load Cropper.js from CDN -->
@@ -136,6 +136,15 @@
                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
                                placeholder="เช่น EE.CPN1 หรือ ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1">
                     </div>
+
+                    <!-- Web Subtitle Field -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">คำบรรยายใต้ชื่อเว็บ / ข้อมูลแถวที่ 2 (Website Subtitle)</label>
+                        <input type="text" 
+                               x-model="settings.web_subtitle" 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                               placeholder="เช่น ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1">
+                    </div>
                 </div>
 
                 <!-- Tab 2: Contact Info -->
@@ -230,6 +239,62 @@
                         <button type="button" @click="openSlideModal()" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm flex items-center gap-2">
                             <i class="fa-solid fa-plus"></i> เพิ่มสไลด์ใหม่
                         </button>
+                    </div>
+
+                    <!-- Slide Interval Setting Card -->
+                    <div class="bg-gradient-to-br from-slate-50 to-slate-100/60 border border-slate-200/70 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                <i class="fa-solid fa-clock-rotate-left text-emerald-600 text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-extrabold text-slate-700">ระยะเวลาการเปลี่ยนสไลด์อัตโนมัติ</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">กำหนดว่าสไลด์จะเปลี่ยนหน้าทุกกี่วินาที (Auto-advance interval)</p>
+                            </div>
+                        </div>
+
+                        <!-- Preset Buttons -->
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mr-1">เลือกด่วน:</span>
+                            <template x-for="preset in [3, 5, 7, 10, 15]" :key="preset">
+                                <button type="button"
+                                        @click="settings.slide_interval = preset"
+                                        :class="settings.slide_interval == preset
+                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-100'
+                                            : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300 hover:text-emerald-600'"
+                                        class="px-3.5 py-1.5 rounded-xl border font-bold text-xs transition-all duration-200 active:scale-95"
+                                        x-text="preset + ' วิ'">
+                                </button>
+                            </template>
+                        </div>
+
+                        <!-- Custom Input + Save Row -->
+                        <div class="flex items-center gap-3">
+                            <div class="relative flex items-center">
+                                <input type="number"
+                                       x-model.number="settings.slide_interval"
+                                       min="2" max="60"
+                                       class="w-24 bg-white border border-slate-200 rounded-xl pl-4 pr-8 py-2.5 text-sm font-extrabold text-slate-800 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition text-center">
+                                <span class="absolute right-3 text-[10px] font-bold text-slate-400 pointer-events-none">วิ</span>
+                            </div>
+                            <div class="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-300"
+                                     :style="'width: ' + Math.min(Math.max((settings.slide_interval / 60) * 100, 3), 100) + '%'"></div>
+                            </div>
+                            <button type="button"
+                                    @click="saveSettings()"
+                                    :disabled="saving"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-bold text-xs transition shadow-sm active:scale-95">
+                                <template x-if="saving">
+                                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                </template>
+                                <template x-if="!saving">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                </template>
+                                <span x-text="saving ? 'กำลังบันทึก...' : 'บันทึก'"></span>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-slate-400"><i class="fa-solid fa-circle-info mr-1"></i>ค่าที่แนะนำ: 5–10 วินาที · ช่วง: 2–60 วินาที</p>
                     </div>
 
                     <!-- List of Slides -->
@@ -481,6 +546,7 @@
                 saving: false,
                 settings: {
                     web_name: '',
+                    web_subtitle: '',
                     contact_email: '',
                     contact_phone: '',
                     contact_address: '',
@@ -488,6 +554,7 @@
                     stat_schools: '',
                     stat_districts: '',
                     stat_courses: '',
+                    slide_interval: 7,
                 },
                 previewUrl: null,
                 webLogoData: '',
@@ -533,6 +600,7 @@
                             if (response.data.status === 'success') {
                                 const data = response.data.data;
                                 this.settings.web_name = data.web_name || 'EE.CPN1';
+                                this.settings.web_subtitle = data.web_subtitle || 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1';
                                 this.settings.contact_email = data.contact_email || 'info@anubanchumphon.ac.th';
                                 this.settings.contact_phone = data.contact_phone || '077-511124';
                                 this.settings.contact_address = data.contact_address || 'โรงเรียนอนุบาลชุมพร ถนนปรมินทรมรรคา ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000';
@@ -540,6 +608,7 @@
                                 this.settings.stat_schools = data.stat_schools || '50+';
                                 this.settings.stat_districts = data.stat_districts || '8+';
                                 this.settings.stat_courses = data.stat_courses || '15+';
+                                this.settings.slide_interval = parseInt(data.slide_interval) || 7;
                                 
                                 if (data.web_logo) {
                                     this.previewUrl = '/storage/' + data.web_logo;
@@ -582,6 +651,11 @@
                                     } else {
                                         navTitle.textContent = response.data.web_name;
                                     }
+                                }
+                                // Update layout web_subtitle
+                                const navSubtitle = document.querySelector('nav .brand-subtitle');
+                                if (navSubtitle && response.data.web_subtitle) {
+                                    navSubtitle.textContent = response.data.web_subtitle;
                                 }
                                 const footerTitle = document.querySelector('footer span.tracking-tight');
                                 if (footerTitle && response.data.web_name) {

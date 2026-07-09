@@ -450,3 +450,11 @@ this.modal.open = false;
 this.form.logo_data = '';
 if (this.$refs.logoInput) this.$refs.logoInput.value = '';
 ```
+
+---
+
+## Mandatory Code Validation & Health Check
+
+1. **Automatic Code Verification**:
+   * **Rule:** The assistant **MUST** run the validation command `$env:PATH += ";C:\php\php-8.4.19-nts-Win32-vs17-x64"; php validate_code.php` after making any edits to PHP/Blade code files, before ending its turn or reporting task completion.
+   * This ensures that any syntax errors or Laravel routing compile issues are caught and resolved immediately before delivery.

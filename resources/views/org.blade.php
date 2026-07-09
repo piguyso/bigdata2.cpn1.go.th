@@ -1,5 +1,11 @@
-﻿<x-layout>
-    <x-slot:title>โครงสร้างหน่วยงาน | EE CPN1</x-slot>
+@php
+    $settings = \Illuminate\Support\Facades\Schema::hasTable('settings') 
+        ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all() 
+        : [];
+    $webName = $settings['web_name'] ?? 'EE.CPN1';
+@endphp
+<x-layout>
+    <x-slot:title>โครงสร้างหน่วยงาน | {{ $webName }}</x-slot>
 
     <!-- Custom Style Definitions -->
     <style>
@@ -169,7 +175,7 @@
                 โครงสร้างบุคลากรดำเนินงานประจำศูนย์
             </h2>
             <p class="text-slate-500 text-sm max-w-2xl mx-auto leading-relaxed">
-                คณะกรรมการและที่ปรึกษาผู้ร่วมจัดตั้งและขับเคลื่อนทางวิชาการ เพื่อส่งเสริมกระบวนการเรียนรู้อย่างยั่งยืน ประจำศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
+                คณะกรรมการและที่ปรึกษาผู้ร่วมจัดตั้งและขับเคลื่อนทางวิชาการ เพื่อส่งเสริมกระบวนการเรียนรู้อย่างยั่งยืน ประจำ{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' : $webName }}
             </p>
         </section>
 

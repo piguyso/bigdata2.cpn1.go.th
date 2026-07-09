@@ -1,5 +1,11 @@
-﻿<x-layout>
-    <x-slot:title>{{ $course->title }} | EE CPN1</x-slot>
+@php
+    $settings = \Illuminate\Support\Facades\Schema::hasTable('settings') 
+        ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all() 
+        : [];
+    $webName = $settings['web_name'] ?? 'EE.CPN1';
+@endphp
+<x-layout>
+    <x-slot:title>{{ $course->title }} | {{ $webName }}</x-slot>
 
     <!-- Custom Style Definitions -->
     <style>
@@ -212,7 +218,7 @@
                                 </div>
                                 <div class="overflow-hidden">
                                     <span class="block text-slate-455 text-[9px] font-bold text-slate-400 uppercase tracking-wider">สถานที่จัดโครงการ</span>
-                                    <span class="text-slate-700 font-extrabold text-xs leading-normal" title="{{ $course->location }}">{{ $course->location ?: 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' }}</span>
+                                    <span class="text-slate-700 font-extrabold text-xs leading-normal" title="{{ $course->location }}">{{ $course->location ?: ($webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' : $webName) }}</span>
                                 </div>
                             </div>
 

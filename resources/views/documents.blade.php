@@ -1,5 +1,11 @@
+@php
+    $settings = \Illuminate\Support\Facades\Schema::hasTable('settings') 
+        ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all() 
+        : [];
+    $webName = $settings['web_name'] ?? 'EE.CPN1';
+@endphp
 <x-layout>
-    <x-slot:title>คลังเอกสารเผยแพร่ | EE CPN1</x-slot>
+    <x-slot:title>คลังเอกสารเผยแพร่ | {{ $webName }}</x-slot>
 
     <!-- Custom Style Definitions -->
     <style>
@@ -26,7 +32,7 @@
                 คลังเอกสารและแบบฟอร์ม
             </h2>
             <p class="text-slate-500 text-sm max-w-2xl mx-auto leading-relaxed">
-                ดาวน์โหลดคู่มือการอบรม แผนการสอน แบบฟอร์มอิเล็กทรอนิกส์ และเอกสารวิชาการต่างๆ ของศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
+                ดาวน์โหลดคู่มือการอบรม แผนการสอน แบบฟอร์มอิเล็กทรอนิกส์ และเอกสารวิชาการต่างๆ ของ{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' : $webName }}
             </p>
         </section>
 

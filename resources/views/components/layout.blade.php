@@ -13,6 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? ($webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1' : $webName) }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,8 +25,6 @@
         [x-cloak] { display: none !important; }
     </style>
     <link class="icon-tag" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="icon" type="image/svg+xml" 
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><path fill='%2310b981' d='M440.8 318.1c-16.1 44.5-54.3 78.4-98.8 88.3 11 16 17.5 35.3 17.5 56.1 0 53-43 96-96 96s-96-43-96-96c0-20.8 6.5-40.1 17.5-56.1-44.5-9.9-82.7-43.8-98.8-88.3-17.7-48.9-10.4-100.2 18.6-139.6-18.1-15.6-29.5-38.6-29.5-64.4 0-46.4 37.6-84 84-84s84 37.6 84 84c0 25.8-11.4 48.8-29.5 64.4 29 39.4 36.3 90.7 18.6 139.6zm-177.3 33.1c11.5 3.1 23.5 4.8 35.9 4.8s24.4-1.7 35.9-4.8c-23.2-36.2-56.2-64.8-95-81.9 23.1 25.4 39.5 54.7 43.1 81.9zm-38.9-198c-28.7 0-52 23.3-52 52s23.3 52 52 52 52-23.3 52-52-23.3-52-52-52zm112.5 125.1c-38.8 17.1-71.8 45.7-95 81.9 11.5 3.1 23.5 4.8 35.9 4.8s24.4-1.7 35.9-4.8c3.6-27.2 20-56.5 43.1-81.9z'/></svg>">
 </head>
 <body class="antialiased selection:bg-emerald-500 selection:text-white">
 
@@ -47,18 +46,29 @@
                             {{ $webName }}
                         @endif
                     </span>
-                    <span class="text-[9px] md:text-[10px] font-bold text-slate-500 group-hover:text-emerald-600 transition-colors duration-300 leading-none mt-1.5">
-                        ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
+                    <span class="brand-subtitle text-[9px] md:text-[10px] font-bold text-slate-500 group-hover:text-emerald-600 transition-colors duration-300 leading-none mt-1.5">
+                        {{ $settings['web_subtitle'] ?? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' }}
                     </span>
                 </div>
             </a>
             
             <div class="hidden md:flex gap-8 items-center font-semibold text-slate-500">
-                <a href="/" class="nav-link hover:text-emerald-600 transition">หน้าหลัก</a>
-
-
-
-                <a href="/#contact" class="nav-link hover:text-emerald-600 transition">ติดต่อเรา</a>
+                <a href="/" class="nav-link hover:text-emerald-600 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-house text-emerald-500"></i> หน้าหลัก
+                </a>
+                <a href="{{ route('reports.index') }}" class="nav-link hover:text-emerald-600 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-users text-emerald-500"></i> ข้อมูลบุคลากร
+                </a>
+                @auth
+                <a href="{{ route('profile.edit') }}" class="nav-link hover:text-emerald-600 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-user text-emerald-500"></i> ข้อมูลของฉัน
+                </a>
+                @endauth
+                @auth
+                <a href="{{ route('plc.index') }}" class="nav-link hover:text-emerald-600 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-users-gear text-emerald-500"></i> PLC
+                </a>
+                @endauth
             </div>
 
             <div class="flex items-center gap-3">
@@ -124,11 +134,16 @@
                             @endif
 
                             @if(in_array(Auth::user()->role, ['admin', 'teacher']))
-                                <a href="{{ route('admin.courses.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
+                                <a href="{{ route('admin.lms.courses.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
                                     <i class="fa-solid fa-graduation-cap text-slate-450 w-4 text-center text-slate-400"></i>
-                                    อัปเดตหลักสูตรอบรม
+                                    การตั้งค่า LMS
                                 </a>
                             @endif
+
+                                <a href="{{ route('plc.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
+                                    <i class="fa-solid fa-users-gear text-slate-450 w-4 text-center text-slate-400"></i>
+                                    กระบวนการ PLC
+                                </a>
 
                             @if(Auth::user()->role === 'admin')
                                 <a href="{{ route('admin.org.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition duration-200">
@@ -174,7 +189,9 @@
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="text-sm font-bold text-slate-400 hover:text-slate-600 transition px-3">ลงชื่อเข้าใช้</a>
+                    <a href="{{ route('login') }}" class="text-sm font-bold text-slate-500 hover:text-emerald-600 transition px-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-right-to-bracket text-emerald-500"></i> ลงชื่อเข้าใช้
+                    </a>
                 @endauth
 
                 <!-- Hamburger Menu Button -->
@@ -195,15 +212,28 @@
              class="md:hidden bg-white border-t border-slate-100 px-6 py-4 space-y-4 shadow-xl relative z-40"
              x-cloak>
             
-            <a href="/" class="block text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2" @click="mobileMenuOpen = false">หน้าหลัก</a>
-
-
-
-            <a href="/#contact" class="block text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2" @click="mobileMenuOpen = false">ติดต่อเรา</a>
+            <a href="/" class="block text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                <i class="fa-solid fa-house text-emerald-500 w-4 text-center"></i> หน้าหลัก
+            </a>
+            <a href="{{ route('reports.index') }}" class="block text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                <i class="fa-solid fa-users text-emerald-500 w-4 text-center"></i> ข้อมูลบุคลากร
+            </a>
+            @auth
+            <a href="{{ route('profile.edit') }}" class="block text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                <i class="fa-solid fa-user text-emerald-500 w-4 text-center"></i> ข้อมูลของฉัน
+            </a>
+            @endauth
+            @auth
+            <a href="{{ route('plc.index') }}" class="block text-sm font-bold text-slate-600 hover:text-emerald-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                <i class="fa-solid fa-users-gear text-emerald-500 w-4 text-center"></i> PLC
+            </a>
+            @endauth
 
             @guest
                 <div class="pt-4 border-t border-slate-100 flex flex-col gap-2">
-                    <a href="{{ route('login') }}" class="w-full flex items-center justify-center py-2.5 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-xl border border-slate-100 transition" @click="mobileMenuOpen = false">ลงชื่อเข้าใช้</a>
+                    <a href="{{ route('login') }}" class="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-xl border border-slate-100 transition" @click="mobileMenuOpen = false">
+                        <i class="fa-solid fa-right-to-bracket text-emerald-500"></i> ลงชื่อเข้าใช้
+                    </a>
                 </div>
             @endguest
 
@@ -231,8 +261,8 @@
                     @endif
 
                     @if(in_array(Auth::user()->role, ['admin', 'teacher']))
-                        <a href="{{ route('admin.courses.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" @click="mobileMenuOpen = false">
-                            <i class="fa-solid fa-graduation-cap w-4 text-center text-slate-400"></i> อัปเดตหลักสูตรอบรม
+                        <a href="{{ route('admin.lms.courses.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" @click="mobileMenuOpen = false">
+                            <i class="fa-solid fa-graduation-cap w-4 text-center text-slate-400"></i> การตั้งค่า LMS
                         </a>
                     @endif
 
@@ -292,7 +322,7 @@
                     </span>
                 </a>
                 <p class="text-xs text-slate-400 leading-relaxed pt-2">
-                    ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1 มุ่งมั่นยกระดับศักยภาพการจัดการเรียนรู้ เพื่อการพัฒนาวิชาชีพครูและบุคลากรทางการศึกษาอย่างยั่งยืน
+                    {{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1' : $webName }} มุ่งมั่นยกระดับศักยภาพการจัดการเรียนรู้ เพื่อการพัฒนาวิชาชีพครูและบุคลากรทางการศึกษาอย่างยั่งยืน
                 </p>
             </div>
             <div>
@@ -315,7 +345,7 @@
                 </ul>
             </div>
             <div>
-                <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">ติดต่อศูนย์พัฒนาครู</h4>
+                <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">ติดต่อ{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครู' : $webName }}</h4>
                 <ul class="space-y-2 text-xs leading-relaxed">
                     <li class="flex items-start gap-2">
                         <i class="fa-solid fa-location-dot mt-0.5 text-emerald-500"></i>
@@ -336,6 +366,62 @@
             <p>© 2026 {{ $webName === 'EE.CPN1' ? 'Teachers and Educational Personnel Development Center, Chumphon Primary Education Service Area Office 1' : $webName }} • All Rights Reserved</p>
         </div>
     </footer>
+
+    <!-- Global Custom Confirm Modal -->
+    <div x-data x-show="$store.confirm.open" 
+         class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-end="opacity-0"
+         x-cloak>
+        <div x-show="$store.confirm.open"
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+             class="bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-sm p-6 overflow-hidden text-center relative"
+             @click.outside="$store.confirm.open = false">
+            
+            <!-- Danger Icon -->
+            <template x-if="$store.confirm.type === 'danger'">
+                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-xl mx-auto mb-4 border border-rose-100">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </template>
+
+            <!-- Warning Icon -->
+            <template x-if="$store.confirm.type === 'warning'">
+                <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl mx-auto mb-4 border border-amber-100">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </template>
+
+            <!-- Title -->
+            <h3 class="font-extrabold text-slate-800 text-sm mb-2" x-text="$store.confirm.title"></h3>
+            
+            <!-- Description -->
+            <p class="text-slate-500 text-[10.5px] leading-relaxed mb-6 px-2" x-text="$store.confirm.text"></p>
+            
+            <!-- Buttons -->
+            <div class="flex gap-3">
+                <button type="button" @click="$store.confirm.open = false" 
+                        class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-650 font-bold py-2.5 rounded-xl text-xs transition cursor-pointer border border-slate-200 shadow-sm">
+                    <span x-text="$store.confirm.cancelButtonText"></span>
+                </button>
+                <button type="button" 
+                        @click="$store.confirm.open = false; if($store.confirm.onConfirm) $store.confirm.onConfirm()" 
+                        class="flex-1 font-bold py-2.5 rounded-xl text-xs transition cursor-pointer shadow-lg"
+                        :class="$store.confirm.type === 'danger' 
+                            ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-100' 
+                            : 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-100'">
+                    <span x-text="$store.confirm.confirmButtonText"></span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     @stack('scripts')
 </body>

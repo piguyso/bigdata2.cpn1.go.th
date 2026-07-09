@@ -10,18 +10,18 @@
     </header>
 
     <div class="flex flex-col md:flex-row gap-8 items-start">
-        <!-- Profile Image -->
         <div class="shrink-0 flex flex-col items-center gap-3">
             <div class="w-28 h-28 rounded-2xl overflow-hidden border-4 border-emerald-500/20 shadow-md bg-emerald-50 flex items-center justify-center">
                 @if(!empty($teacherProfile['profile_image_path']))
                     <img src="{{ asset('storage/' . $teacherProfile['profile_image_path']) }}"
                          alt="Teacher Profile"
                          class="w-full h-full object-cover"
-                         onerror="this.style.display='none'">
+                         onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.classList.remove('hidden');">
+                    <div class="hidden w-full h-full flex items-center justify-center">
+                        <i class="fa-solid fa-users text-emerald-600 text-4xl"></i>
+                    </div>
                 @else
-                    <span class="text-4xl font-extrabold text-emerald-600 uppercase select-none">
-                        {{ mb_substr($teacherProfile['first_name'] ?? '?', 0, 1) }}
-                    </span>
+                    <i class="fa-solid fa-users text-emerald-600 text-4xl"></i>
                 @endif
             </div>
             <span class="px-3 py-1 bg-emerald-50 text-emerald-700 font-extrabold rounded-full text-[9px] uppercase tracking-wider text-center">

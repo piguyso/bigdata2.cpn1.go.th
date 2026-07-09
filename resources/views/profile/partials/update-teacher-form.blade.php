@@ -42,11 +42,11 @@
                         <template x-if="form.preview_url">
                             <img :src="form.preview_url" alt="รูปโปรไฟล์" class="w-full h-full object-cover">
                         </template>
-                        <template x-if="!form.preview_url && form.profile_image_path">
-                            <img :src="'/storage/' + form.profile_image_path" alt="รูปโปรไฟล์" class="w-full h-full object-cover">
+                        <template x-if="!form.preview_url && form.profile_image_url_resolved && !imageLoadError">
+                            <img :src="form.profile_image_url_resolved" alt="รูปโปรไฟล์" class="w-full h-full object-cover" x-on:error="imageLoadError = true">
                         </template>
-                        <template x-if="!form.preview_url && !form.profile_image_path">
-                            <i class="fa-solid fa-user text-3xl text-slate-300"></i>
+                        <template x-if="!form.preview_url && (!form.profile_image_url_resolved || imageLoadError)">
+                            <i class="fa-solid fa-users text-4xl text-slate-300"></i>
                         </template>
                         <div class="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                             <i class="fa-solid fa-camera text-white text-xl"></i>
@@ -373,9 +373,21 @@
             <template x-for="(subject, idx) in form.subjects" :key="idx">
                 <div class="grid grid-cols-12 gap-3 items-end bg-slate-50 p-4 rounded-2xl border border-slate-100 group relative">
                     <div class="col-span-5">
-                        <label class="block text-[10px] font-bold text-slate-500 mb-1">วิชาที่สอน</label>
-                        <input type="text" x-model="subject.subject_name" placeholder="ชื่อวิชา"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none transition bg-white">
+                        <label class="block text-[10px] font-bold text-slate-500 mb-1">กลุ่มสาระการเรียนรู้ที่สอน</label>
+                        <select x-model="subject.subject_name" required
+                            class="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none transition">
+                            <option value="">-- เลือกกลุ่มสาระ --</option>
+                            <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                            <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+                            <option value="วิทยาการคำนวณ">วิทยาการคำนวณ</option>
+                            <option value="ภาษาไทย">ภาษาไทย</option>
+                            <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                            <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+                            <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+                            <option value="ศิลปะ">ศิลปะ</option>
+                            <option value="การงานอาชีพ">การงานอาชีพ</option>
+                            <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน</option>
+                        </select>
                     </div>
                     <div class="col-span-4">
                         <label class="block text-[10px] font-bold text-slate-500 mb-1">ชั้นปีที่สอน</label>
@@ -735,6 +747,7 @@ function teacherProfileForm() {
         saving: false,
         schoolLookupStatus: '',
         toast: { show: false, message: '', type: 'success' },
+        imageLoadError: false,
         errors: {},
         schoolSearchList: [],
         showSchoolDropdown: false,
@@ -760,6 +773,7 @@ function teacherProfileForm() {
             educations: [],
             other_workload: '',
             profile_image_path: '',
+            profile_image_url_resolved: '',
             profile_image_data: '',
             preview_url: '',
             subjects: [],
@@ -776,6 +790,7 @@ function teacherProfileForm() {
 
         fetchData() {
             this.loading = true;
+            this.imageLoadError = false;
             axios.get('{{ route("api.profile.teacher.get") }}')
                 .then(res => {
                     if (res.data.status === 'success' && res.data.data) {
@@ -815,6 +830,7 @@ function teacherProfileForm() {
                         }
                         this.form.other_workload   = d.other_workload || '';
                         this.form.profile_image_path = d.profile_image_path || '';
+                        this.form.profile_image_url_resolved = d.profile_image_url_resolved || '';
                         this.form.subjects = (d.subjects || []).map(s => ({
                             subject_name:  s.subject_name  || '',
                             subject_grade: s.subject_grade || '',
@@ -969,6 +985,7 @@ function teacherProfileForm() {
 
         // -- Image cropping methods using Cropper.js --
         onImageSelected(event) {
+            this.imageLoadError = false;
             const file = event.target.files[0];
             if (!file) return;
             if (file.size > 5 * 1024 * 1024) {

@@ -22,12 +22,15 @@ Route::get('/', function () {
                 'btn2Link' => $slide->btn2_link ?: ''
             ];
         });
-    return view('welcome', compact('slides'));
+        $slideInterval = (int) \Illuminate\Support\Facades\DB::table('settings')
+        ->where('key', 'slide_interval')->value('value') ?: 7;
+    return view('welcome', compact('slides', 'slideInterval'));
 });
 
 
 
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\LmsController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -41,6 +44,37 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/profile/password', [ProfileController::class, 'updatePasswordApi'])->name('api.profile.password');
     Route::post('/api/profile/teacher', [ProfileController::class, 'updateTeacherApi'])->name('api.profile.teacher');
     Route::get('/api/profile/teacher', [ProfileController::class, 'getTeacherData'])->name('api.profile.teacher.get');
+
+    // Reports & Directory
+    Route::get('/reports', [App\Http\Controllers\SurveyReportController::class, 'index'])->name('reports.index');
+    Route::get('/api/reports/data', [App\Http\Controllers\SurveyReportController::class, 'getData'])->name('api.reports.data');
+
+    // Dashboard Statistics & Drilldown (Public for logged in users)
+    Route::get('/dashboard', [App\Http\Controllers\SurveyDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/api/dashboard/stats', [App\Http\Controllers\SurveyDashboardController::class, 'getStats'])->name('api.dashboard.stats');
+    Route::get('/api/dashboard/drilldown', [App\Http\Controllers\SurveyDashboardController::class, 'getDrilldownData'])->name('api.dashboard.drilldown');
+
+    // LMS routes
+    Route::get('/lms/courses/{id}', [LmsController::class, 'courseShow'])->name('lms.courses.show');
+    Route::post('/lms/courses/{id}/enroll', [LmsController::class, 'enroll'])->name('lms.courses.enroll');
+    Route::post('/lms/courses/{id}/unenroll', [LmsController::class, 'unenroll'])->name('lms.courses.unenroll');
+    Route::get('/lms/lessons/{id}', [LmsController::class, 'lessonShow'])->name('lms.lessons.show');
+    Route::post('/lms/lessons/{id}/complete', [LmsController::class, 'completeLesson'])->name('lms.lessons.complete');
+    Route::post('/lms/lessons/{id}/submit', [LmsController::class, 'submitAssignment'])->name('lms.lessons.submit');
+    Route::get('/lms/quiz', [LmsController::class, 'quizShow'])->name('lms.quiz.show');
+    Route::post('/lms/quizzes/{id}/submit', [LmsController::class, 'submitQuiz'])->name('lms.quizzes.submit');
+    Route::get('/lms/courses/{id}/certificate', [LmsController::class, 'downloadCertificate'])->name('lms.courses.certificate');
+
+    // PLC Management Routes (Accessible by any authenticated user)
+    Route::get('/plc', [App\Http\Controllers\PlcController::class, 'index'])->name('plc.index');
+    Route::get('/plc/data', [App\Http\Controllers\PlcController::class, 'getData'])->name('plc.data');
+    Route::post('/plc/save', [App\Http\Controllers\PlcController::class, 'storeGroup'])->name('plc.save');
+    Route::delete('/plc/{id}', [App\Http\Controllers\PlcController::class, 'destroyGroup'])->name('plc.delete');
+    Route::post('/plc/steps/save', [App\Http\Controllers\PlcController::class, 'saveStep'])->name('plc.steps.save');
+    Route::post('/plc/steps/upload', [App\Http\Controllers\PlcController::class, 'uploadStepFiles'])->name('plc.steps.upload');
+    Route::post('/plc/steps/delete-file', [App\Http\Controllers\PlcController::class, 'deleteStepFile'])->name('plc.steps.delete_file');
+    Route::get('/plc/teacher/{userId}', [App\Http\Controllers\PlcController::class, 'getTeacherDetail'])->name('plc.teacher.detail');
+    Route::post('/plc/steps/comment', [App\Http\Controllers\PlcController::class, 'saveComment'])->name('plc.steps.comment');
 });
 
 // Admin settings routes
@@ -61,6 +95,10 @@ Route::get('/documents/download/{id}', [App\Http\Controllers\DocumentController:
 Route::get('/courses/{id}', [App\Http\Controllers\CourseController::class, 'publicShow'])->name('courses.show');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Admin Report Operations
+    Route::get('/admin/reports/export', [App\Http\Controllers\SurveyReportController::class, 'exportExcel'])->name('admin.reports.export');
+    Route::delete('/admin/reports/{id}', [App\Http\Controllers\SurveyReportController::class, 'destroy'])->name('admin.reports.delete');
+
     Route::get('/admin/settings', [SettingsController::class, 'edit'])->name('admin.settings.edit');
     Route::get('/admin/settings/data', [SettingsController::class, 'getData'])->name('admin.settings.data');
     Route::post('/admin/settings/save', [SettingsController::class, 'saveSettings'])->name('admin.settings.save');
@@ -94,24 +132,47 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/admin/users/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('admin.users.delete');
 });
 
+use App\Http\Controllers\LmsAdminController;
+
 Route::middleware(['auth', 'role:admin,teacher'])->group(function () {
     Route::get('/admin/courses', [CourseController::class, 'index'])->name('admin.courses.index');
     Route::get('/admin/courses/data', [CourseController::class, 'getData'])->name('admin.courses.data');
     Route::post('/admin/courses/save', [CourseController::class, 'store'])->name('admin.courses.save');
     Route::delete('/admin/courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.delete');
+
+    // LMS Admin Management
+    Route::get('/admin/lms/courses', [LmsAdminController::class, 'coursesIndex'])->name('admin.lms.courses.index');
+    Route::get('/admin/lms/courses/data', [LmsAdminController::class, 'coursesData'])->name('admin.lms.courses.data');
+    Route::post('/admin/lms/courses/save', [LmsAdminController::class, 'courseStore'])->name('admin.lms.courses.save');
+    Route::delete('/admin/lms/courses/{id}', [LmsAdminController::class, 'courseDestroy'])->name('admin.lms.courses.delete');
+
+    Route::get('/admin/lms/lessons', [LmsAdminController::class, 'lessonsIndex'])->name('admin.lms.lessons.index');
+    Route::get('/admin/lms/lessons/data', [LmsAdminController::class, 'lessonsData'])->name('admin.lms.lessons.data');
+    Route::post('/admin/lms/lessons/save', [LmsAdminController::class, 'lessonStore'])->name('admin.lms.lessons.save');
+    Route::delete('/admin/lms/lessons/{id}', [LmsAdminController::class, 'lessonDestroy'])->name('admin.lms.lessons.delete');
+
+    Route::get('/admin/lms/quizzes', [LmsAdminController::class, 'quizzesIndex'])->name('admin.lms.quizzes.index');
+    Route::get('/admin/lms/quizzes/data', [LmsAdminController::class, 'quizzesData'])->name('admin.lms.quizzes.data');
+    Route::post('/admin/lms/quizzes/save', [LmsAdminController::class, 'quizStore'])->name('admin.lms.quizzes.save');
+    Route::delete('/admin/lms/quizzes/{id}', [LmsAdminController::class, 'quizDestroy'])->name('admin.lms.quizzes.delete');
+
+    Route::get('/admin/lms/questions', [LmsAdminController::class, 'questionsIndex'])->name('admin.lms.questions.index');
+    Route::get('/admin/lms/questions/data', [LmsAdminController::class, 'questionsData'])->name('admin.lms.questions.data');
+    Route::post('/admin/lms/questions/save', [LmsAdminController::class, 'questionStore'])->name('admin.lms.questions.save');
+    Route::delete('/admin/lms/questions/{id}', [LmsAdminController::class, 'questionDestroy'])->name('admin.lms.questions.delete');
+
+    Route::get('/admin/lms/submissions', [LmsAdminController::class, 'submissionsIndex'])->name('admin.lms.submissions.index');
+    Route::get('/admin/lms/submissions/data', [LmsAdminController::class, 'submissionsData'])->name('admin.lms.submissions.data');
+    Route::post('/admin/lms/submissions/{id}/evaluate', [LmsAdminController::class, 'submissionEvaluate'])->name('admin.lms.submissions.evaluate');
 });
 
+
 // Route สำหรับออกจากระบบ
-Route::post('/logout', function (Request $request) {
+Route::post('/logout', function (\Illuminate\Http\Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
     return redirect('/');
 })->name('logout');
-
-// Route สำหรับหน้า Dashboard (เบื้องต้นให้แสดง view ชื่อ dashboard)
-Route::get('/dashboard', function () {
-    return redirect()->route('profile.edit');
-})->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';

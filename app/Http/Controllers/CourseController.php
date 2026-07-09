@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -63,28 +64,32 @@ class CourseController extends Controller
         }
     }
 
-    /**
-     * Get all courses for public landing page display.
-     */
     public function getPublicList(Request $request)
     {
         try {
             $userId = Auth::id() ?: 0;
+            $isAdmin = $userId && (Auth::user()->role === 'admin');
             
-            $courses = DB::table('lms_courses as c')
+            $query = DB::table('lms_courses as c')
                 ->select([
                     'c.id',
                     'c.title',
                     'c.description',
                     'c.cover_url',
+                    'c.category',
+                    'c.level',
                     'c.status',
                     DB::raw("(SELECT COUNT(*) FROM lms_lessons l WHERE l.course_id = c.id) as lesson_count"),
                     DB::raw("(SELECT COUNT(*) FROM lms_enrollments e WHERE e.course_id = c.id) as learner_count"),
                     DB::raw($userId ? "(SELECT COUNT(*) FROM lms_lesson_progress p WHERE p.user_id = $userId AND p.course_id = c.id) as completed_lessons" : "0 as completed_lessons"),
                     DB::raw($userId ? "(SELECT COUNT(*) FROM lms_enrollments e WHERE e.user_id = $userId AND e.course_id = c.id) as enrolled" : "0 as enrolled")
-                ])
-                ->where('c.status', 'published')
-                ->orderBy('c.created_at', 'desc')
+                ]);
+
+            if (!$isAdmin) {
+                $query->where('c.status', 'published');
+            }
+
+            $courses = $query->orderBy('c.created_at', 'desc')
                 ->get()
                 ->map(function ($course) use ($userId) {
                     $courseId = (int)$course->id;
@@ -94,7 +99,17 @@ class CourseController extends Controller
                     $course->enrolled = (int)$course->enrolled > 0;
                     
                     // Fallback cover image
-                    $course->cover_image_url = $course->cover_url ?: null;
+                    $coverUrl = $course->cover_url;
+                    if ($coverUrl) {
+                        if (str_starts_with($coverUrl, '/1/uploads/')) {
+                            $coverUrl = 'storage/' . substr($coverUrl, 3);
+                        } elseif (str_starts_with($coverUrl, '1/uploads/')) {
+                            $coverUrl = 'storage/' . substr($coverUrl, 2);
+                        }
+                        $course->cover_image_url = asset($coverUrl);
+                    } else {
+                        $course->cover_image_url = null;
+                    }
 
                     // Get pre-quiz & post-quiz percents
                     $prePercent = null;

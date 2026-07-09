@@ -6,10 +6,22 @@
     $contactEmail = $settings['contact_email'] ?? 'info@anubanchumphon.ac.th';
     $contactPhone = $settings['contact_phone'] ?? '077-511124';
     $contactAddress = $settings['contact_address'] ?? 'โรงเรียนอนุบาลชุมพร ถนนปรมินทรมรรคา ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000';
-    $statTeachers = $settings['stat_teachers'] ?? '1,200+';
-    $statSchools = $settings['stat_schools'] ?? '50+';
-    $statDistricts = $settings['stat_districts'] ?? '8+';
-    $statCourses = $settings['stat_courses'] ?? '15+';
+    
+    // 1. Dynamic Statistics
+    $statTeachers = \Illuminate\Support\Facades\Schema::hasTable('teacher_profile')
+        ? \Illuminate\Support\Facades\DB::table('teacher_profile')->count()
+        : 0;
+    $statSchools = \Illuminate\Support\Facades\Schema::hasTable('system_school')
+        ? \Illuminate\Support\Facades\DB::table('system_school')->count()
+        : 0;
+
+    // 2. School Networks (from system_group)
+    $schoolGroups = \Illuminate\Support\Facades\Schema::hasTable('system_group')
+        ? \Illuminate\Support\Facades\DB::table('system_group')
+            ->orderByRaw('CAST(code AS UNSIGNED) ASC')
+            ->pluck('name')
+            ->toArray()
+        : [];
 @endphp
 
 <x-layout>
@@ -70,7 +82,7 @@
             startAutoplay() {
                 this.autoplayInterval = setInterval(() => {
                     this.next();
-                }, 7000);
+                }, {{ ($slideInterval ?? 7) * 1000 }});
             },
             stopAutoplay() {
                 clearInterval(this.autoplayInterval);
@@ -159,8 +171,8 @@
                         <i class="fa-solid fa-chalkboard-user"></i>
                     </div>
                     <div class="text-left space-y-0.5">
-                        <span class="block text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">{{ $statTeachers }}</span>
-                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">ครูผ่านการอบรม</span>
+                        <span class="block text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">{{ number_format($statTeachers) }}</span>
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">ครูทั้งหมด</span>
                     </div>
                 </div>
                 <!-- Stat Card 2 -->
@@ -169,28 +181,28 @@
                         <i class="fa-solid fa-school"></i>
                     </div>
                     <div class="text-left space-y-0.5">
-                        <span class="block text-2xl md:text-3xl font-extrabold text-sky-600 tracking-tight">{{ $statSchools }}</span>
-                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">โรงเรียนเครือข่าย</span>
+                        <span class="block text-2xl md:text-3xl font-extrabold text-sky-600 tracking-tight">{{ number_format($statSchools) }}</span>
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">โรงเรียนทั้งหมด</span>
                     </div>
                 </div>
                 <!-- Stat Card 3 -->
                 <div class="bg-slate-50/50 p-5 rounded-2xl border border-slate-100/50 flex items-center gap-4 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                     <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-xl shrink-0 shadow-inner">
-                        <i class="fa-solid fa-map-location-dot"></i>
+                        <i class="fa-solid fa-network-wired"></i>
                     </div>
                     <div class="text-left space-y-0.5">
-                        <span class="block text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">{{ $statDistricts }}</span>
-                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">อำเภอครอบคลุม</span>
+                        <span class="block text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">{{ $settings['stat_schools'] ?? '50+' }}</span>
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">เครือข่ายสถานศึกษา</span>
                     </div>
                 </div>
                 <!-- Stat Card 4 -->
                 <div class="bg-slate-50/50 p-5 rounded-2xl border border-slate-100/50 flex items-center gap-4 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                     <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center text-xl shrink-0 shadow-inner">
-                        <i class="fa-solid fa-graduation-cap"></i>
+                        <i class="fa-solid fa-map-location-dot"></i>
                     </div>
                     <div class="text-left space-y-0.5">
-                        <span class="block text-2xl md:text-3xl font-extrabold text-amber-600 tracking-tight">{{ $statCourses }}</span>
-                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">หลักสูตรจัดอบรม</span>
+                        <span class="block text-2xl md:text-3xl font-extrabold text-amber-600 tracking-tight">{{ $settings['stat_districts'] ?? '8+' }}</span>
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">อำเภอทั้งหมด</span>
                     </div>
                 </div>
             </div>
@@ -247,7 +259,7 @@
                             </div>
                             <div class="text-left space-y-1">
                                 <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700 transition duration-300">การขับเคลื่อนมาตรฐานของศูนย์ฯ</h4>
-                                <p class="text-xs text-slate-500 leading-relaxed">ดำเนินงานและขับเคลื่อน ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1 ให้มีประสิทธิภาพตามมาตรฐานวิชาชีพ</p>
+                                <p class="text-xs text-slate-500 leading-relaxed">ดำเนินงานและขับเคลื่อน {{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1' : $webName }} ให้มีประสิทธิภาพตามมาตรฐานวิชาชีพ</p>
                             </div>
                         </div>
                         <div class="group relative flex gap-4 p-5 bg-white border border-slate-100 rounded-2xl hover:shadow-lg hover:-translate-y-0.5 hover:border-emerald-500/20 transition duration-300">
@@ -334,7 +346,7 @@
                                     <i class="fa-solid fa-users-viewfinder"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-extrabold text-slate-800 text-sm md:text-base">กลุ่มเป้าหมายหลักของศูนย์พัฒนาครูฯ</h4>
+                                    <h4 class="font-extrabold text-slate-800 text-sm md:text-base">กลุ่มเป้าหมายหลักของ{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูฯ' : $webName }}</h4>
                                     <p class="text-[10px] text-purple-500 font-bold uppercase tracking-wider">Target Group Details</p>
                                 </div>
                             </div>
@@ -375,7 +387,7 @@
                                 </div>
                                 <div class="space-y-0.5">
                                     <span class="block font-extrabold text-xs text-emerald-800">ขอบเขตพื้นที่ให้บริการ</span>
-                                    <span class="block text-xs text-emerald-700 font-semibold">ครอบคลุมโรงเรียนเครือข่ายประถมศึกษาทั่วทั้ง 8 อำเภอของจังหวัดชุมพร</span>
+                                    <span class="block text-xs text-emerald-700 font-semibold">ครอบคลุมโรงเรียนเครือข่ายประถมศึกษาทั่วทั้ง {{ $settings['stat_districts'] ?? '8' }} อำเภอ</span>
                                 </div>
                             </div>
                         </div>
@@ -460,48 +472,58 @@
                                 
                                 <!-- Status Badge -->
                                 <div class="absolute top-4 left-4">
-                                    <template x-if="course.status === 'open'">
-                                        <span class="px-2.5 py-1.5 bg-emerald-500 text-white font-bold rounded-xl text-[10px] shadow-sm tracking-wide">เปิดรับสมัคร</span>
+                                    <template x-if="course.status === 'published'">
+                                        <span class="px-2.5 py-1.5 bg-emerald-500 text-white font-bold rounded-xl text-[10px] shadow-sm tracking-wide">เผยแพร่แล้ว</span>
                                     </template>
-                                    <template x-if="course.status === 'ongoing'">
-                                        <span class="px-2.5 py-1.5 bg-sky-500 text-white font-bold rounded-xl text-[10px] shadow-sm tracking-wide">กำลังดำเนินการ</span>
-                                    </template>
-                                    <template x-if="course.status === 'upcoming'">
-                                        <span class="px-2.5 py-1.5 bg-amber-500 text-white font-bold rounded-xl text-[10px] shadow-sm tracking-wide">เตรียมเปิดสมัคร</span>
-                                    </template>
-                                    <template x-if="course.status === 'closed'">
-                                        <span class="px-2.5 py-1.5 bg-slate-600 text-white font-bold rounded-xl text-[10px] shadow-sm tracking-wide">เสร็จสิ้นโครงการ</span>
+                                    <template x-if="course.status === 'draft'">
+                                        <span class="px-2.5 py-1.5 bg-amber-500 text-white font-bold rounded-xl text-[10px] shadow-sm tracking-wide font-extrabold">ฉบับร่าง (Draft)</span>
                                     </template>
                                 </div>
 
-                                <!-- Hours Badge -->
+                                <!-- Passing Threshold Badge -->
                                 <div class="absolute bottom-4 right-4">
-                                    <span class="px-2 py-1 bg-slate-950/60 backdrop-blur-md text-emerald-300 font-bold rounded-lg text-[10px] border border-white/10" x-text="course.hours ? course.hours + ' ชั่วโมงอบรม' : 'ไม่มีชั่วโมงพัฒนา'"></span>
+                                    <span class="px-2 py-1 bg-slate-950/60 backdrop-blur-md text-emerald-300 font-bold rounded-lg text-[10px] border border-white/10" x-text="'เกณฑ์ผ่าน ' + course.pass_threshold + '%'"></span>
                                 </div>
                             </div>
 
                             <!-- Content Details -->
                             <div class="p-6 md:p-8 space-y-4 text-left">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider" x-text="course.duration_text || 'กำหนดการจะแจ้งให้ทราบภายหลัง'"></span>
-                                    <template x-if="course.academic_year">
-                                        <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded text-[9px] tracking-wide shrink-0" x-text="'ปีการศึกษา ' + course.academic_year"></span>
+                                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">เรียนออนไลน์ 24 ชม.</span>
+                                    <template x-if="course.category">
+                                        <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded text-[9px] tracking-wide shrink-0" x-text="course.category"></span>
+                                    </template>
+                                    <template x-if="course.level">
+                                        <span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 font-bold rounded text-[9px] tracking-wide shrink-0" x-text="'ระดับ ' + course.level"></span>
                                     </template>
                                 </div>
                                 <h4 class="text-base md:text-lg font-bold text-slate-800 leading-snug line-clamp-2 group-hover:text-emerald-600 transition-colors" x-text="course.title"></h4>
-                                <p class="text-slate-500 text-xs leading-relaxed line-clamp-3" x-text="course.objectives || 'ไม่มีรายละเอียดเนื้อหาเบื้องต้นในระบบ'"></p>
+                                <p class="text-slate-500 text-xs leading-relaxed line-clamp-3" x-html="course.description || 'ไม่มีรายละเอียดเนื้อหาเบื้องต้นในระบบ'"></p>
                                 
+                                <!-- Progress bar if enrolled -->
+                                <template x-if="course.enrolled">
+                                    <div class="mt-4 p-3.5 bg-emerald-50/50 border border-emerald-100/60 rounded-2xl space-y-1.5">
+                                        <div class="flex justify-between items-center text-[10px] font-bold text-emerald-800">
+                                            <span>ความคืบหน้าการเรียนของคุณ</span>
+                                            <span x-text="course.progress_pct + '%'"></span>
+                                        </div>
+                                        <div class="h-1.5 w-full bg-slate-150 rounded-full overflow-hidden">
+                                            <div class="h-full bg-emerald-500 rounded-full transition-all duration-300" :style="'width: ' + course.progress_pct + '%'"></div>
+                                        </div>
+                                    </div>
+                                </template>
+
                                 <hr class="border-slate-50">
                                 
                                 <!-- Meta fields -->
                                 <div class="space-y-2 text-xs text-slate-400">
                                     <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-user-group text-slate-350 w-4"></i>
-                                        <span>กลุ่มเป้าหมาย: <strong class="text-slate-600" x-text="course.target_group || 'ครูและบุคลากรทางการศึกษา'"></strong></span>
+                                        <i class="fa-solid fa-book-open text-slate-350 w-4"></i>
+                                        <span>บทเรียนในหลักสูตร: <strong class="text-slate-600" x-text="course.lesson_count + ' บทเรียน'"></strong></span>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-location-dot text-slate-355 w-4"></i>
-                                        <span>สถานที่: <strong class="text-slate-600 truncate max-w-[200px]" x-text="course.location || 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1'"></strong></span>
+                                        <i class="fa-solid fa-users text-slate-350 w-4"></i>
+                                        <span>ผู้เรียนทั้งหมด: <strong class="text-slate-600" x-text="course.learner_count + ' คน'"></strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -509,17 +531,17 @@
 
                         <!-- Card Actions -->
                         <div class="px-6 md:px-8 pb-6 md:pb-8 pt-4 border-t border-slate-50 mt-auto flex gap-3 items-center">
-                            <a :href="'/courses/' + course.id" class="flex-1 text-center py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl transition duration-200">
+                            <a :href="'/lms/courses/' + course.id" class="flex-1 text-center py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl transition duration-200">
                                 รายละเอียดเพิ่มเติม
                             </a>
-                            <template x-if="course.status === 'open' && course.registration_link">
-                                <a :href="course.registration_link" target="_blank" class="flex-1 text-center py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-100 hover:shadow-lg transition duration-200 flex items-center justify-center gap-1">
-                                    ลงทะเบียนเข้าร่วม <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                            <template x-if="course.enrolled">
+                                <a :href="'/lms/courses/' + course.id" class="flex-1 text-center py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md transition duration-200">
+                                    เข้าเรียนต่อ <i class="fa-solid fa-arrow-right text-[8px] ml-1"></i>
                                 </a>
                             </template>
-                            <template x-if="course.status !== 'open' || !course.registration_link">
-                                <button disabled class="flex-1 text-center py-3 bg-slate-100 text-slate-400 font-bold text-xs rounded-xl cursor-not-allowed">
-                                    ยังไม่เปิดสมัคร
+                            <template x-if="!course.enrolled">
+                                <button type="button" @click="enrollInCourse(course.id)" class="flex-1 text-center py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition duration-200 cursor-pointer">
+                                    ลงทะเบียนเข้าเรียน
                                 </button>
                             </template>
                         </div>
@@ -539,15 +561,12 @@
                         เครือข่ายโรงเรียน
                     </div>
                     <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
-                        โรงเรียนเครือข่ายพัฒนาครู จังหวัดชุมพร
+                        โรงเรียนเครือข่ายพัฒนาครู {{ $webName === 'EE.CPN1' ? 'จังหวัดชุมพร' : $webName }}
                     </h2>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        ร่วมขับเคลื่อนกระบวนการจัดการเรียนการสอนวิทยาศาสตร์และคณิตศาสตร์ ครอบคลุมทั่วถึง 8 อำเภอในจังหวัดชุมพร
-                    </p>
                 </div>
 
                 <!-- Interactive Filters & School Search Box -->
-                <div class="mb-10 space-y-4 bg-white p-5 border border-slate-100 rounded-2xl shadow-sm max-w-4xl mx-auto">
+                <div class="mb-10 space-y-4 bg-white p-6 border border-slate-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] w-full">
                     <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
                         <!-- Search input box -->
                         <div class="relative w-full md:max-w-xs shrink-0">
@@ -564,24 +583,26 @@
                         </span>
                     </div>
 
-                    <!-- Scrollable Districts filter buttons bar -->
-                    <div class="border-t border-slate-100 pt-4 flex gap-1.5 overflow-x-auto no-scrollbar scroll-smooth">
-                        <button data-district="all" class="district-btn px-4 py-2 rounded-xl font-bold text-xs transition duration-200 shrink-0 bg-emerald-600 text-white shadow-sm">
+                    <!-- Groups filter buttons bar (Wrap for multiple rows) -->
+                    <div class="border-t border-slate-100 pt-4 flex flex-wrap gap-2">
+                        <button data-group="all" class="group-btn px-4 py-2 rounded-xl font-bold text-xs transition duration-200 bg-emerald-600 text-white shadow-sm">
                             ทั้งหมด
                         </button>
-                        @php
-                            $zones = ["อำเภอเมืองชุมพร", "อำเภอท่าแซะ", "อำเภอปะทิว"];
-                        @endphp
-                        @foreach ($zones as $zone)
-                            <button data-district="{{ $zone }}" class="district-btn px-4 py-2 rounded-xl font-bold text-xs transition duration-200 shrink-0 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
-                                {{ $zone }}
+                        @foreach ($schoolGroups as $g)
+                            <button data-group="{{ $g }}" class="group-btn px-4 py-2 rounded-xl font-bold text-xs transition duration-200 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                                {{ $g }}
                             </button>
                         @endforeach
                     </div>
                 </div>
 
                 <!-- Dynamic Schools Cards Grid Container -->
-                <div id="school-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-opacity duration-300 min-h-[120px]">
+                <div id="school-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-300 min-h-[120px]">
+                    <!-- Rendered dynamically by script below -->
+                </div>
+
+                <!-- School Pagination Controls -->
+                <div id="school-pagination" class="flex flex-wrap items-center justify-center gap-1.5 mt-10">
                     <!-- Rendered dynamically by script below -->
                 </div>
             </div>
@@ -598,7 +619,7 @@
                     เอกสารเผยแพร่ล่าสุด
                 </h2>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    คู่มือ สื่อการสอน แบบฟอร์ม และรายงานกิจกรรมของศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
+                    คู่มือ สื่อการสอน แบบฟอร์ม และรายงานกิจกรรมของ{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' : $webName }}
                 </p>
             </div>
 
@@ -638,7 +659,7 @@
                         ติดต่อประสานงานวิชาการ
                     </h2>
                     <p class="text-slate-500 text-sm leading-relaxed">
-                        ยินดีให้บริการข้อมูลเกี่ยวกับการจัดอบรม การประสานงานวิชาการ หรือข้อสงสัยเกี่ยวกับโครงการของทางศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
+                        ยินดีให้บริการข้อมูลเกี่ยวกับการจัดอบรม การประสานงานวิชาการ หรือข้อสงสัยเกี่ยวกับโครงการของทาง{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' : $webName }}
                     </p>
                     
                     <div class="space-y-4 pt-4">
@@ -647,7 +668,7 @@
                                 <i class="fa-solid fa-map-location-dot"></i>
                             </div>
                             <div class="space-y-1 text-left">
-                                <h4 class="font-bold text-slate-800 text-xs md:text-sm">ที่ตั้งศูนย์พัฒนาครู</h4>
+                                <h4 class="font-bold text-slate-800 text-xs md:text-sm">ที่ตั้ง{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครู' : $webName }}</h4>
                                 <p class="text-xs text-slate-450 leading-relaxed text-slate-500">
                                     {{ $contactAddress }}
                                 </p>
@@ -721,6 +742,8 @@
 
     @push('scripts')
     <script>
+        window.isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+
         // 1. Alpine.js Course Viewer Component
         function courseViewer() {
             return {
@@ -755,17 +778,35 @@
                         const searchLower = this.searchQuery.toLowerCase();
                         const matchesSearch = 
                             course.title.toLowerCase().includes(searchLower) ||
-                            (course.objectives && course.objectives.toLowerCase().includes(searchLower)) ||
-                            (course.target_group && course.target_group.toLowerCase().includes(searchLower)) ||
-                            (course.location && course.location.toLowerCase().includes(searchLower));
+                            (course.description && course.description.toLowerCase().includes(searchLower));
 
                         if (this.statusFilter === 'all') return matchesSearch;
-                        if (this.statusFilter === 'open') return matchesSearch && course.status === 'open';
-                        if (this.statusFilter === 'ongoing') return matchesSearch && (course.status === 'ongoing' || course.status === 'upcoming');
-                        if (this.statusFilter === 'closed') return matchesSearch && course.status === 'closed';
+                        if (this.statusFilter === 'open') return matchesSearch && course.status === 'published';
+                        if (this.statusFilter === 'ongoing') return matchesSearch && course.status === 'published';
+                        if (this.statusFilter === 'closed') return matchesSearch && course.status === 'draft';
 
                         return matchesSearch;
                     });
+                },
+
+                enrollInCourse(id) {
+                    if (!window.isAuthenticated) {
+                        window.location.href = '{{ route('login') }}';
+                        return;
+                    }
+                    this.loading = true;
+                    axios.post(`/lms/courses/${id}/enroll`)
+                        .then(response => {
+                            if (response.data.status === 'success') {
+                                window.location.href = `/lms/courses/${id}`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error enrolling in course:', error);
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
                 },
 
                 // Fallback Images depending on Title keywords
@@ -774,15 +815,15 @@
                     
                     const lower = title.toLowerCase();
                     if (lower.includes('ai') || lower.includes('ปัญญาประดิษฐ์') || lower.includes('คอมพิวเตอร์') || lower.includes('เทคโนโลยี') || lower.includes('ดิจิทัล')) {
-                        return 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80'; // AI / modern tech
+                        return 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80';
                     }
                     if (lower.includes('วิทย') || lower.includes('โลก') || lower.includes(' climate') || lower.includes('สิ่งแวดล้อม') || lower.includes('สเต็ม') || lower.includes('stem')) {
-                        return 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&q=80'; // Science / learning
+                        return 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&q=80';
                     }
                     if (lower.includes('คณิต') || lower.includes('คำนวณ') || lower.includes('วิเคราะห์') || lower.includes('คิด') || lower.includes('pisa')) {
-                        return 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=80'; // Mathematical logic
+                        return 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=80';
                     }
-                    return 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80'; // general book banner
+                    return 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80';
                 }
             };
         }
@@ -790,30 +831,33 @@
         // 2. Vanilla School Listing, Filter & Search
         (function() { 
             let schoolData = [];
-            let currentDistrict = 'all';
+            let currentGroup = 'all';
             let searchQuery = '';
+            let schoolPage = 1;
+            const schoolPerPage = 12;
 
             function render() {
                 const container = document.getElementById('school-container');
-                const buttons = document.querySelectorAll('.district-btn');
+                const paginationContainer = document.getElementById('school-pagination');
+                const buttons = document.querySelectorAll('.group-btn');
                 const countEl = document.getElementById('school-count');
                 if (!container) return;
 
                 // Update Filter buttons visual state
                 buttons.forEach(btn => {
-                    if (btn.getAttribute('data-district') === currentDistrict) {
-                        btn.className = "district-btn px-4 py-2 rounded-xl font-bold text-xs transition duration-200 shrink-0 bg-emerald-600 text-white shadow-sm";
+                    if (btn.getAttribute('data-group') === currentGroup) {
+                        btn.className = "group-btn px-4 py-2 rounded-xl font-bold text-xs transition duration-200 bg-emerald-600 text-white shadow-sm";
                     } else {
-                        btn.className = "district-btn px-4 py-2 rounded-xl font-bold text-xs transition duration-200 shrink-0 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800";
+                        btn.className = "group-btn px-4 py-2 rounded-xl font-bold text-xs transition duration-200 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800";
                     }
                 });
 
                 // Apply dynamic filters
                 const filtered = schoolData.filter(s => {
-                    const matchesDistrict = (currentDistrict === 'all' || s.district === currentDistrict);
+                    const matchesGroup = (currentGroup === 'all' || s.school_group === currentGroup);
                     const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                          s.district.toLowerCase().includes(searchQuery.toLowerCase());
-                    return matchesDistrict && matchesSearch;
+                                          (s.school_group && s.school_group.toLowerCase().includes(searchQuery.toLowerCase()));
+                    return matchesGroup && matchesSearch;
                 });
                 
                 // Update school count indicator
@@ -821,18 +865,28 @@
                     countEl.textContent = `พบทั้งหมด ${filtered.length} โรงเรียน`;
                 }
 
+                // Paginate data
+                const totalPages = Math.ceil(filtered.length / schoolPerPage);
+                if (schoolPage > totalPages) {
+                    schoolPage = totalPages || 1;
+                }
+                const start = (schoolPage - 1) * schoolPerPage;
+                const paginated = filtered.slice(start, start + schoolPerPage);
+
                 container.style.opacity = '0';
                 setTimeout(() => {
                     if (filtered.length === 0) {
                         container.innerHTML = `
                             <div class="col-span-full py-16 text-center text-slate-400 font-medium bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
                                 <div class="mb-3 text-3xl">🏫</div>
-                                <h5 class="font-bold text-slate-650 text-xs text-slate-500">ไม่มีข้อมูลโรงเรียนแกนนำในเงื่อนไขการค้นหานี้</h5>
-                                <p class="text-[10px] text-slate-400 mt-1">กรุณาลองพิมพ์ข้อความค้นหาใหม่หรือปรับเปลี่ยนเขตอำเภอ</p>
+                                <h5 class="font-bold text-slate-500 text-xs">ไม่มีข้อมูลโรงเรียนเครือข่ายในเงื่อนไขการค้นหานี้</h5>
+                                <p class="text-[10px] text-slate-400 mt-1">กรุณาลองพิมพ์ข้อความค้นหาใหม่หรือปรับเปลี่ยนเครือข่ายสถานศึกษา</p>
                             </div>
                         `;
+                        if (paginationContainer) paginationContainer.innerHTML = '';
                     } else {
-                        container.innerHTML = filtered.map(school => {
+                        // Render school cards
+                        container.innerHTML = paginated.map(school => {
                             const hasWeb = !!school.website;
                             const tagOpen = hasWeb ? `<a href="${school.website}" target="_blank"` : `<div`;
                             const tagClose = hasWeb ? `</a>` : `</div>`;
@@ -840,10 +894,8 @@
                                 ? 'hover:border-sky-500/40 hover:shadow-sky-100 hover:shadow-md cursor-pointer' 
                                 : 'hover:border-emerald-500/25 hover:shadow-md';
                             
-                            // Emulate a school letter shield icon logo if database logo path is empty
                             const firstLetter = school.name.replace("โรงเรียน", "").trim().charAt(0);
                             
-                            // Random gradient class depending on the school's ID to keep aesthetics high
                             const gradients = [
                                 'from-emerald-400 to-teal-500',
                                 'from-sky-400 to-blue-500',
@@ -856,14 +908,16 @@
                                 ? `<img src="${school.logo_url}" alt="${school.name} Logo" class="max-w-full max-h-full object-contain">`
                                 : `<div class="w-full h-full bg-gradient-to-br ${selectGradient} text-white flex items-center justify-center font-bold text-xs shadow-inner uppercase">${firstLetter}</div>`;
 
+                            const groupText = school.school_group ? `เครือข่าย ${school.school_group}` : school.district;
+
                             return `
-                                ${tagOpen} class="bg-white p-5 rounded-2xl border border-slate-100 ${hoverClasses} transition duration-300 group flex items-start gap-4 transform hover:-translate-y-0.5">
+                                ${tagOpen} class="bg-white p-5 rounded-2xl border border-slate-100 ${hoverClasses} transition duration-300 group flex items-start gap-4 transform hover:-translate-y-0.5 h-full w-full">
                                     <div class="w-11 h-11 rounded-xl flex items-center justify-center shadow-sm shrink-0 overflow-hidden group-hover:scale-105 transition duration-300">
                                         ${logoEl}
                                     </div>
                                     <div class="space-y-0.5 overflow-hidden text-left flex-1">
                                         <h4 class="font-bold text-slate-800 text-xs md:text-sm leading-snug truncate" title="${school.name}">${school.name}</h4>
-                                        <p class="text-[9px] text-emerald-600 font-semibold uppercase tracking-wider">${school.district}</p>
+                                        <p class="text-[9px] text-emerald-600 font-semibold uppercase tracking-wider">${groupText}</p>
                                         <div class="flex items-center gap-1.5 pt-1">
                                             <span class="px-1.5 py-0.5 bg-slate-50 text-slate-400 border border-slate-100 rounded text-[8px] font-bold flex items-center gap-0.5">
                                                 <i class="fa-solid fa-shield-halved text-emerald-500/80"></i> แกนนำ
@@ -876,10 +930,83 @@
                                 ${tagClose}
                             `;
                         }).join('');
+
+                        // Render pagination controls
+                        if (paginationContainer) {
+                            if (totalPages <= 1) {
+                                paginationContainer.innerHTML = '';
+                            } else {
+                                let pagHtml = '';
+                                
+                                // Prev Button
+                                pagHtml += `
+                                    <button type="button" 
+                                            class="h-9 w-9 rounded-xl border border-slate-200 bg-white text-slate-500 text-xs font-bold flex items-center justify-center transition active:scale-95 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                            ${schoolPage === 1 ? 'disabled' : ''}
+                                            onclick="window.setSchoolPage(${schoolPage - 1})">
+                                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                                    </button>
+                                `;
+
+                                // Sliding window pagination
+                                const maxWindow = 2; // current +- 2
+                                let startPage = Math.max(1, schoolPage - maxWindow);
+                                let endPage = Math.min(totalPages, schoolPage + maxWindow);
+
+                                if (startPage > 1) {
+                                    pagHtml += `
+                                        <button type="button" class="h-9 min-w-[36px] px-2.5 rounded-xl border border-slate-100 bg-white text-slate-600 text-xs font-extrabold transition active:scale-95 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700" onclick="window.setSchoolPage(1)">1</button>
+                                    `;
+                                    if (startPage > 2) {
+                                        pagHtml += `<span class="h-9 w-9 flex items-center justify-center text-slate-400 text-xs font-extrabold select-none pointer-events-none">...</span>`;
+                                    }
+                                }
+
+                                for (let p = startPage; p <= endPage; p++) {
+                                    const activeClass = p === schoolPage 
+                                        ? 'bg-emerald-600 text-white shadow-md shadow-emerald-100 ring-2 ring-emerald-300'
+                                        : 'border border-slate-100 bg-white text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700';
+                                    pagHtml += `
+                                        <button type="button" class="h-9 min-w-[36px] px-2.5 rounded-xl text-xs font-extrabold transition active:scale-95 ${activeClass}" onclick="window.setSchoolPage(${p})">${p}</button>
+                                    `;
+                                }
+
+                                if (endPage < totalPages) {
+                                    if (endPage < totalPages - 1) {
+                                        pagHtml += `<span class="h-9 w-9 flex items-center justify-center text-slate-400 text-xs font-extrabold select-none pointer-events-none">...</span>`;
+                                    }
+                                    pagHtml += `
+                                        <button type="button" class="h-9 min-w-[36px] px-2.5 rounded-xl border border-slate-100 bg-white text-slate-600 text-xs font-extrabold transition active:scale-95 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700" onclick="window.setSchoolPage(${totalPages})">${totalPages}</button>
+                                    `;
+                                }
+
+                                // Next Button
+                                pagHtml += `
+                                    <button type="button" 
+                                            class="h-9 w-9 rounded-xl border border-slate-200 bg-white text-slate-500 text-xs font-bold flex items-center justify-center transition active:scale-95 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                            ${schoolPage === totalPages ? 'disabled' : ''}
+                                            onclick="window.setSchoolPage(${schoolPage + 1})">
+                                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                    </button>
+                                `;
+
+                                paginationContainer.innerHTML = pagHtml;
+                            }
+                        }
                     }
                     container.style.opacity = '1';
                 }, 150);
             }
+
+            // Expose globally so inline onclick events can call it
+            window.setSchoolPage = function(p) {
+                schoolPage = p;
+                render();
+                const target = document.getElementById('schools');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            };
 
             function fetchSchools() {
                 axios.get('{{ route('api.schools.list') }}')
@@ -896,22 +1023,23 @@
                     });
             }
 
-            // Input Event listener for live searching
             const searchInput = document.getElementById('school-search');
             if (searchInput) {
                 searchInput.addEventListener('input', (e) => {
                     searchQuery = e.target.value;
+                    schoolPage = 1;
                     render();
                 });
             }
 
-            // Button Event listeners for district filters
-            document.querySelectorAll('.district-btn').forEach(btn => {
+            document.querySelectorAll('.group-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    currentDistrict = btn.getAttribute('data-district');
+                    currentGroup = btn.getAttribute('data-group');
+                    schoolPage = 1;
                     render();
                 });
             });
+
 
             // 2.2 Documents Listing
             let documentData = [];

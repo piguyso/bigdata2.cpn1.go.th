@@ -100,5 +100,30 @@ window.thaiDatePickerData = function (getIso, setIso, onChange) {
     };
 };
 
+// Register global Confirm Modal store
+Alpine.store('confirm', {
+    open: false,
+    title: '',
+    text: '',
+    confirmButtonText: 'ยืนยัน',
+    cancelButtonText: 'ยกเลิก',
+    type: 'danger',
+    onConfirm: null,
+    
+    show(opts) {
+        this.title = opts.title;
+        this.text = opts.text;
+        this.confirmButtonText = opts.confirmButtonText || 'ยืนยัน';
+        this.cancelButtonText = opts.cancelButtonText || 'ยกเลิก';
+        this.type = opts.type || 'danger';
+        this.onConfirm = opts.onConfirm;
+        this.open = true;
+    }
+});
+
+window.showConfirm = function (opts) {
+    window.Alpine.store('confirm').show(opts);
+};
+
 Alpine.start();
 
