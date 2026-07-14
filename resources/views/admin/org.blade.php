@@ -1,5 +1,5 @@
 ﻿<x-layout>
-    <x-slot:title>จัดการโครงสร้างศูนย์ | EE CPN1</x-slot>
+    <x-slot:title>จัดการโครงสร้างศูนย์ | BigData สพป.ชพ.1</x-slot>
 
     <!-- Load Cropper.js from CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -29,13 +29,13 @@
         <header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">จัดการโครงสร้างบุคลากรศูนย์</h2>
-                <p class="text-slate-500 text-sm mt-1">อัปเดตสมาชิก ที่ปรึกษา และคณะทำงานของศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1</p>
+                <p class="text-slate-500 text-sm mt-1">อัปเดตสมาชิก ที่ปรึกษา และคณะทำงานของฐานข้อมูล BigData สพป.ชพ. 1</p>
             </div>
             <div class="flex items-center gap-3">
                 <a href="{{ route('dashboard') }}" class="bg-white border border-slate-200 text-slate-655 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
                     ← กลับแดชบอร์ด
                 </a>
-                <button type="button" @click="openCreateModal()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-md shadow-emerald-100 flex items-center gap-2">
+                <button type="button" @click="openCreateModal()" class="bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-orange-700 transition shadow-md shadow-orange-100 flex items-center gap-2">
                     <i class="fa-solid fa-plus"></i> เพิ่มบุคลากรใหม่
                 </button>
             </div>
@@ -43,7 +43,7 @@
 
         <!-- Loading State -->
         <div x-show="loading" class="bg-white border border-slate-100 rounded-2xl p-12 text-center shadow-sm" x-transition>
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent mb-4"></div>
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent mb-4"></div>
             <p class="text-slate-400 text-xs font-bold">กำลังดาวน์โหลดโครงสร้างบุคลากร...</p>
         </div>
 
@@ -51,22 +51,22 @@
         <div x-show="!loading" class="mb-6 flex p-1 bg-slate-100 rounded-2xl w-fit overflow-x-auto no-scrollbar border border-slate-200/50 shadow-inner" x-cloak x-transition>
             <button @click="selectedCommittee = 'operations'" 
                     class="px-4 py-2.5 rounded-xl font-bold text-xs transition duration-200"
-                    :class="selectedCommittee === 'operations' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
+                    :class="selectedCommittee === 'operations' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
                 คณะที่ปรึกษา
             </button>
             <button @click="selectedCommittee = 'executive'" 
                     class="px-4 py-2.5 rounded-xl font-bold text-xs transition duration-200"
-                    :class="selectedCommittee === 'executive' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
+                    :class="selectedCommittee === 'executive' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
                 1. คณะกรรมการอำนวยการ
             </button>
             <button @click="selectedCommittee = 'academic'" 
                     class="px-4 py-2.5 rounded-xl font-bold text-xs transition duration-200"
-                    :class="selectedCommittee === 'academic' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
+                    :class="selectedCommittee === 'academic' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
                 2. คณะกรรมการวิชาการ
             </button>
             <button @click="selectedCommittee = 'finance'" 
                     class="px-4 py-2.5 rounded-xl font-bold text-xs transition duration-200"
-                    :class="selectedCommittee === 'finance' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
+                    :class="selectedCommittee === 'finance' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
                 3. คณะกรรมการการเงิน & สถานที่
             </button>
         </div>
@@ -114,7 +114,7 @@
                                         <span class="px-2.5 py-1 bg-purple-50 text-purple-700 font-bold rounded-md">ที่ปรึกษา</span>
                                     </template>
                                     <template x-if="member.role === 'member'">
-                                        <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-bold rounded-md">กรรมการ / คณะทำงาน</span>
+                                        <span class="px-2.5 py-1 bg-orange-50 text-orange-700 font-bold rounded-md">กรรมการ / คณะทำงาน</span>
                                     </template>
                                     <template x-if="member.role_title">
                                         <span class="block text-[10px] text-slate-500 mt-1 font-semibold" x-text="member.role_title"></span>
@@ -124,7 +124,7 @@
                                 <td class="py-4 px-6 text-center font-bold text-slate-500" x-text="member.sort_order"></td>
                                 <td class="py-4 px-6 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button type="button" @click="openEditModal(member)" class="text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 px-2 py-2 rounded-lg transition" title="แก้ไขข้อมูล">
+                                        <button type="button" @click="openEditModal(member)" class="text-slate-500 hover:text-orange-600 hover:bg-orange-50 px-2 py-2 rounded-lg transition" title="แก้ไขข้อมูล">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                         <button type="button" @click="confirmDelete(member)" class="text-slate-500 hover:text-rose-600 hover:bg-rose-50 px-2 py-2 rounded-lg transition" title="ลบข้อมูล">
@@ -144,7 +144,7 @@
             <form @submit.prevent="saveMember()" class="bg-white rounded-[2rem] max-w-xl w-full overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[90vh] md:max-h-[85vh]">
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-sitemap text-emerald-500"></i>
+                        <i class="fa-solid fa-sitemap text-orange-500"></i>
                         <span x-text="cropping ? 'ครอบตัดรูปภาพบุคลากร (4:5)' : (form.id ? 'แก้ไขข้อมูลบุคลากร' : 'เพิ่มบุคลากรใหม่')"></span>
                     </h3>
                     <button type="button" @click="cropping ? closeCropper() : (modal.open = false)" class="text-slate-400 hover:text-slate-650 transition">
@@ -161,7 +161,7 @@
                             <input type="text" 
                                    x-model="form.name" 
                                    required 
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                    placeholder="เช่น นายอภิเดช เกื้อกูล">
                         </div>
 
@@ -171,7 +171,7 @@
                             <input type="text" 
                                    x-model="form.position" 
                                    required 
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                    placeholder="เช่น ประธานคณะทำงานศูนย์ฯ หรือ ครูวิทยากรแกนนำ">
                         </div>
 
@@ -181,7 +181,7 @@
                                 <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">คณะกรรมการ / กลุ่มงาน *</label>
                                 <select x-model="form.committee" 
                                         required 
-                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition">
                                     <option value="operations">คณะที่ปรึกษา</option>
                                     <option value="executive">1. คณะกรรมการอำนวยการ</option>
                                     <option value="academic">2. คณะกรรมการวิชาการ</option>
@@ -195,7 +195,7 @@
                                 <input type="text" 
                                        x-model="form.role_title" 
                                        required 
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                        placeholder="เช่น ประธาน, รองประธาน, กรรมการ, เลขานุการ">
                             </div>
                         </div>
@@ -206,7 +206,7 @@
                                 <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">ประเภทบุคลากร *</label>
                                 <select x-model="form.role" 
                                         required 
-                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition">
                                     <option value="member">กรรมการ / คณะทำงาน</option>
                                     <option value="advisor">ที่ปรึกษา</option>
                                 </select>
@@ -219,7 +219,7 @@
                                        x-model.number="form.level" 
                                        required 
                                        min="1"
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                        placeholder="เช่น 1 (บนสุด), 2, 3">
                             </div>
 
@@ -230,7 +230,7 @@
                                        x-model.number="form.sort_order" 
                                        required 
                                        min="1"
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                        placeholder="เช่น 1 (ซ้ายสุด), 2, 3">
                             </div>
                         </div>
@@ -275,16 +275,16 @@
                         <div class="flex justify-between items-center bg-white text-slate-500">
                             <span class="text-[10px] font-medium text-slate-400">ขนาดบังคับอัตราส่วนแนวตั้ง 4:5</span>
                             <div class="flex gap-2">
-                                <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="หมุนซ้าย" @click="cropper.rotate(-90)">
+                                <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition" title="หมุนซ้าย" @click="cropper.rotate(-90)">
                                     <i class="fa-solid fa-rotate-left text-xs"></i>
                                 </button>
-                                <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="หมุนขวา" @click="cropper.rotate(90)">
+                                <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition" title="หมุนขวา" @click="cropper.rotate(90)">
                                     <i class="fa-solid fa-rotate-right text-xs"></i>
                                 </button>
-                                <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="ซูมเข้า" @click="cropper.zoom(0.1)">
+                                <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition" title="ซูมเข้า" @click="cropper.zoom(0.1)">
                                     <i class="fa-solid fa-magnifying-glass-plus text-xs"></i>
                                 </button>
-                                <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="ซูมออก" @click="cropper.zoom(-0.1)">
+                                <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition" title="ซูมออก" @click="cropper.zoom(-0.1)">
                                     <i class="fa-solid fa-magnifying-glass-minus text-xs"></i>
                                 </button>
                             </div>
@@ -299,7 +299,7 @@
                     </button>
                     <button type="submit" 
                             :disabled="saving" 
-                            class="px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 disabled:opacity-50 transition shadow-lg shadow-emerald-100 flex items-center gap-2">
+                            class="px-6 py-2.5 bg-orange-600 text-white rounded-xl font-bold text-xs hover:bg-orange-700 disabled:opacity-50 transition shadow-lg shadow-orange-100 flex items-center gap-2">
                         <template x-if="saving">
                             <i class="fa-solid fa-circle-notch animate-spin"></i>
                         </template>
@@ -312,7 +312,7 @@
                     <button type="button" @click="closeCropper()" class="px-4 py-2 bg-white border border-slate-200 text-slate-650 rounded-lg font-bold text-[10px] hover:bg-slate-50 transition">
                         ยกเลิก
                     </button>
-                    <button type="button" @click="cropImage()" class="px-5 py-2 bg-emerald-600 text-white rounded-lg font-bold text-[10px] hover:bg-emerald-700 transition">
+                    <button type="button" @click="cropImage()" class="px-5 py-2 bg-orange-600 text-white rounded-lg font-bold text-[10px] hover:bg-orange-700 transition">
                         บันทึกการครอบตัด
                     </button>
                 </div>

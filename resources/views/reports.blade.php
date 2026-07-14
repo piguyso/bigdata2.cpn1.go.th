@@ -1,5 +1,5 @@
 <x-layout>
-    <x-slot:title>ข้อมูลบุคลากรทั้งหมด | EE CPN1</x-slot>
+    <x-slot:title>ข้อมูลบุคลากรทั้งหมด | BigData สพป.ชพ.1</x-slot>
 
     <div class="py-12 max-w-7xl mx-auto px-6" x-data="reportManager()" x-init="init()">
         
@@ -21,7 +21,7 @@
         <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    <a href="/" class="hover:text-emerald-600 transition">หน้าหลัก</a>
+                    <a href="/" class="hover:text-orange-600 transition">หน้าหลัก</a>
                     <i class="fa-solid fa-chevron-right text-[8px]"></i>
                     <span class="text-slate-600">ข้อมูลบุคลากรทั้งหมด</span>
                 </div>
@@ -41,7 +41,7 @@
 
                 @if(auth()->user() && auth()->user()->role === 'admin')
                 <a href="{{ route('admin.reports.export') }}" 
-                   class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-3.5 rounded-2xl transition-all duration-300 flex items-center gap-2 shadow-lg shadow-emerald-100/55 active:scale-95">
+                   class="bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-5 py-3.5 rounded-2xl transition-all duration-300 flex items-center gap-2 shadow-lg shadow-orange-100/55 active:scale-95">
                     <i class="fa-solid fa-file-excel text-sm"></i> ส่งออก Excel (แอดมิน)
                 </a>
                 @endif
@@ -52,19 +52,19 @@
         <div class="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm mb-6 flex flex-wrap gap-4 items-center">
             <div class="relative flex-1 min-w-[240px]">
                 <input type="text" x-model="filters.q_name" @input="debounceSearch()" placeholder="ค้นหา ชื่อ-นามสกุล..." 
-                       class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
+                       class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs outline-none focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             </div>
             
             <div class="relative w-56">
                 <input type="text" x-model="filters.q_school" @input="debounceSearch()" placeholder="ค้นหาชื่อโรงเรียน..." 
-                       class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
+                       class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs outline-none focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all">
                 <i class="fa-solid fa-school absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             </div>
 
             <div class="relative w-48">
                 <input type="text" x-model="filters.q_network" @input="debounceSearch()" placeholder="ค้นหาเครือข่าย..." 
-                       class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
+                       class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs outline-none focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all">
                 <i class="fa-solid fa-network-wired absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             </div>
 
@@ -76,7 +76,7 @@
 
         <!-- Loading State -->
         <div x-show="loading" class="py-20 flex flex-col items-center justify-center gap-3" x-cloak>
-            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-500"></i>
+            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-orange-500"></i>
             <span class="text-xs font-extrabold text-slate-400">กำลังประมวลผลข้อมูล...</span>
         </div>
 
@@ -93,7 +93,7 @@
         <div x-show="!loading && records.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6" x-cloak>
             <template x-for="record in records" :key="record.id">
                 <div @click="openModal(record)" 
-                     class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 cursor-pointer flex flex-col justify-between relative group">
+                     class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-orange-300 transition-all duration-300 cursor-pointer flex flex-col justify-between relative group">
                     
                     <div class="flex items-start gap-4">
                         <!-- Profile Image -->
@@ -110,11 +110,10 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
                                 <h3 class="font-extrabold text-slate-800 text-sm truncate" x-text="`${record.prefix} ${record.first_name} ${record.last_name}`"></h3>
-                                <span class="bg-indigo-50 text-indigo-600 text-[9px] font-extrabold px-2 py-0.5 rounded-full" 
-                                      x-show="record.lms_matched" x-cloak>LMS เชื่อมต่อ</span>
+
                             </div>
                             <p class="text-xs text-slate-500 mt-1 font-semibold" x-text="record.position || 'ไม่ระบุตำแหน่ง'"></p>
-                            <p class="text-[11px] text-emerald-600 font-extrabold mt-0.5" x-text="`วิทยฐานะ: ${record.academic_rank || 'ไม่มีวิทยฐานะ'}`"></p>
+                            <p class="text-[11px] text-orange-600 font-extrabold mt-0.5" x-text="`วิทยฐานะ: ${record.academic_rank || 'ไม่มีวิทยฐานะ'}`"></p>
                             
                             <div class="mt-2 text-[11px] text-slate-600 space-y-1">
                                 <p><span class="font-bold text-slate-400">โรงเรียน:</span> <span x-text="record.school_name"></span></p>
@@ -129,7 +128,7 @@
                             <span class="text-[9px] font-bold text-slate-400 uppercase">ความสอดคล้องวิชาเอก:</span>
                             <span class="mt-1 text-[11px] font-extrabold"
                                   :class="{
-                                      'text-emerald-600': record.alignment.status === 'good',
+                                      'text-orange-600': record.alignment.status === 'good',
                                       'text-amber-600': record.alignment.status === 'partial',
                                       'text-rose-600': record.alignment.status === 'low',
                                       'text-slate-500': record.alignment.status === 'insufficient'
@@ -189,8 +188,8 @@
                         type="button" @click="fetchData(item)"
                         class="h-9 min-w-[36px] px-2.5 rounded-xl text-xs font-extrabold transition active:scale-95"
                         :class="pagination.current_page === item
-                            ? 'bg-emerald-600 text-white shadow-md shadow-emerald-100 ring-2 ring-emerald-300'
-                            : 'border border-slate-100 bg-white text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700'"
+                            ? 'bg-orange-600 text-white shadow-md shadow-orange-100 ring-2 ring-orange-300'
+                            : 'border border-slate-100 bg-white text-slate-600 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700'"
                         x-text="item">
                 </button>
             </template>
@@ -248,29 +247,25 @@
                 <div class="flex border-b border-slate-100 bg-slate-50/50 shrink-0 overflow-x-auto no-scrollbar">
                     <button type="button" @click="modal.activeTab = 'general'" 
                             class="px-5 py-3.5 text-xs font-bold transition-all border-b-2 outline-none shrink-0"
-                            :class="modal.activeTab === 'general' ? 'border-emerald-500 text-emerald-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            :class="modal.activeTab === 'general' ? 'border-orange-500 text-orange-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
                         <i class="fa-solid fa-user mr-1.5 text-[11px]"></i>ข้อมูลทั่วไป
                     </button>
                     <button type="button" @click="modal.activeTab = 'teaching'" 
                             class="px-5 py-3.5 text-xs font-bold transition-all border-b-2 outline-none shrink-0"
-                            :class="modal.activeTab === 'teaching' ? 'border-emerald-500 text-emerald-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            :class="modal.activeTab === 'teaching' ? 'border-orange-500 text-orange-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
                         <i class="fa-solid fa-chalkboard-user mr-1.5 text-[11px]"></i>งานสอน & วิชาเอก
                     </button>
                     <button type="button" @click="modal.activeTab = 'language'" 
                             class="px-5 py-3.5 text-xs font-bold transition-all border-b-2 outline-none shrink-0"
-                            :class="modal.activeTab === 'language' ? 'border-emerald-500 text-emerald-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            :class="modal.activeTab === 'language' ? 'border-orange-500 text-orange-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
                         <i class="fa-solid fa-language mr-1.5 text-[11px]"></i>ทักษะภาษา (CEFR/HSK)
                     </button>
                     <button type="button" @click="modal.activeTab = 'awards'" 
                             class="px-5 py-3.5 text-xs font-bold transition-all border-b-2 outline-none shrink-0"
-                            :class="modal.activeTab === 'awards' ? 'border-emerald-500 text-emerald-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            :class="modal.activeTab === 'awards' ? 'border-orange-500 text-orange-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
                         <i class="fa-solid fa-trophy mr-1.5 text-[11px]"></i>รางวัล & ผลงาน
                     </button>
-                    <button type="button" @click="modal.activeTab = 'lms'" 
-                            class="px-5 py-3.5 text-xs font-bold transition-all border-b-2 outline-none shrink-0"
-                            :class="modal.activeTab === 'lms' ? 'border-emerald-500 text-emerald-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'">
-                        <i class="fa-solid fa-graduation-cap mr-1.5 text-[11px]"></i>คอร์สเรียน LMS
-                    </button>
+
                 </div>
 
                 <!-- TAB CONTENTS (Fixed Height, No Page Scrollbar) -->
@@ -324,7 +319,7 @@
                         <template x-if="modal.data.school">
                             <div class="border border-slate-100 p-4 rounded-2xl space-y-2 bg-gradient-to-br from-slate-50 to-slate-100/50">
                                 <span class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fa-solid fa-school-flag text-emerald-500"></i> ข้อมูลการติดต่อโรงเรียน
+                                    <i class="fa-solid fa-school-flag text-orange-500"></i> ข้อมูลการติดต่อโรงเรียน
                                 </span>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                     <div><span class="font-bold text-slate-400">ที่ตั้งสังกัด:</span> <span x-text="`ต.${modal.data.school.tambon} อ.${modal.data.school.amper}`"></span></div>
@@ -335,7 +330,7 @@
                                 <template x-if="modal.data.school.maplink">
                                     <div class="pt-2">
                                         <a :href="modal.data.school.maplink" target="_blank" 
-                                           class="inline-flex items-center gap-1 bg-white border border-slate-200 px-3 py-1.5 rounded-xl text-[10px] font-bold text-emerald-600 hover:bg-slate-50 shadow-sm transition">
+                                           class="inline-flex items-center gap-1 bg-white border border-slate-200 px-3 py-1.5 rounded-xl text-[10px] font-bold text-orange-600 hover:bg-slate-50 shadow-sm transition">
                                             <i class="fa-solid fa-map-location-dot"></i> ดูแผนที่ตั้งบน Google Maps
                                         </a>
                                     </div>
@@ -347,13 +342,13 @@
                     <!-- TAB 2: TEACHING & ALIGNMENT -->
                     <div x-show="modal.activeTab === 'teaching'" class="space-y-4" x-cloak>
                         <!-- Alignment block -->
-                        <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-100 flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                        <div class="p-4 rounded-xl bg-orange-50/60 border border-orange-100 flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center shrink-0">
                                 <i class="fa-solid fa-square-poll-vertical text-lg"></i>
                             </div>
                             <div class="text-xs">
-                                <span class="block font-extrabold text-emerald-800" x-text="`ระดับความเข้ากันได้กับวิชาเอก: ${modal.data.alignment.label}`"></span>
-                                <p class="text-emerald-700 mt-1" x-text="modal.data.alignment.desc"></p>
+                                <span class="block font-extrabold text-orange-800" x-text="`ระดับความเข้ากันได้กับวิชาเอก: ${modal.data.alignment.label}`"></span>
+                                <p class="text-orange-700 mt-1" x-text="modal.data.alignment.desc"></p>
                             </div>
                         </div>
 
@@ -362,9 +357,9 @@
                             <span class="block text-xs font-bold text-slate-400">รายวิชาที่รับผิดชอบการสอน</span>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <template x-for="sub in modal.data.subjects">
-                                    <div class="flex items-center justify-between text-xs p-3.5 bg-slate-50 rounded-2xl border border-slate-100/50 hover:border-emerald-300 transition duration-200">
+                                    <div class="flex items-center justify-between text-xs p-3.5 bg-slate-50 rounded-2xl border border-slate-100/50 hover:border-orange-300 transition duration-200">
                                         <div class="flex items-center gap-2">
-                                            <div class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">
+                                            <div class="w-6 h-6 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center text-[10px]">
                                                 <i class="fa-solid fa-book"></i>
                                             </div>
                                             <span class="font-bold text-slate-700" x-text="sub.subject_name"></span>
@@ -474,37 +469,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB 5: LMS PROGRESS -->
-                    <div x-show="modal.activeTab === 'lms'" class="space-y-4" x-cloak>
-                        <span class="block text-xs font-bold text-slate-400">ความคืบหน้าการศึกษาอบรมพัฒนาในระบบ LMS</span>
-                        
-                        <div class="space-y-4">
-                            <template x-for="course in modal.data.lms_courses">
-                                <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50 space-y-2.5">
-                                    <div class="flex items-center justify-between gap-4 text-xs">
-                                        <div class="flex items-center gap-2 min-w-0">
-                                            <div class="w-7 h-7 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-[10.5px] shrink-0">
-                                                <i class="fa-solid fa-graduation-cap"></i>
-                                            </div>
-                                            <span class="font-extrabold text-slate-700 truncate" x-text="course.title"></span>
-                                        </div>
-                                        <span class="text-indigo-600 font-extrabold shrink-0" x-text="`${course.progress}%`"></span>
-                                    </div>
-                                    <div class="h-2 w-full bg-slate-200/50 rounded-full overflow-hidden">
-                                        <div class="h-full bg-indigo-500 rounded-full transition-all duration-500" :style="`width: ${course.progress}%`"></div>
-                                    </div>
-                                    <div class="flex justify-between items-center text-[9px] text-slate-400">
-                                        <span>สถานะการเข้าเรียน: <strong class="text-slate-650" x-text="course.progress === 100 ? 'สำเร็จหลักสูตร' : 'กำลังดำเนินการเรียน'"></strong></span>
-                                    </div>
-                                </div>
-                            </template>
-                            <template x-if="!modal.data.lms_courses || modal.data.lms_courses.length === 0">
-                                <div class="p-8 text-center text-slate-400 text-xs font-bold border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-                                    ไม่พบประวัติการลงทะเบียนวิชาเรียนในระบบ LMS
-                                </div>
-                            </template>
-                        </div>
-                    </div>
+
 
                 </div>
 

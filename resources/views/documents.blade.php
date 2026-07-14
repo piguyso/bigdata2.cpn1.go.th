@@ -2,7 +2,7 @@
     $settings = \Illuminate\Support\Facades\Schema::hasTable('settings') 
         ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all() 
         : [];
-    $webName = $settings['web_name'] ?? 'EE.CPN1';
+    $webName = $settings['web_name'] ?? 'BigData สพป.ชพ.1';
 @endphp
 <x-layout>
     <x-slot:title>คลังเอกสารเผยแพร่ | {{ $webName }}</x-slot>
@@ -25,14 +25,14 @@
     <main class="py-16 md:py-24 space-y-12">
         <!-- Header Section -->
         <section class="max-w-7xl mx-auto px-6 text-center space-y-4">
-            <div class="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div class="inline-block px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider">
                 เอกสารเผยแพร่
             </div>
             <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
                 คลังเอกสารและแบบฟอร์ม
             </h2>
             <p class="text-slate-500 text-sm max-w-2xl mx-auto leading-relaxed">
-                ดาวน์โหลดคู่มือการอบรม แผนการสอน แบบฟอร์มอิเล็กทรอนิกส์ และเอกสารวิชาการต่างๆ ของ{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' : $webName }}
+                ดาวน์โหลดคู่มือการอบรม แผนการสอน แบบฟอร์มอิเล็กทรอนิกส์ และเอกสารวิชาการต่างๆ ของ{{ $webName === 'BigData สพป.ชพ.1' ? 'ฐานข้อมูล BigData สพป.ชพ. 1' : $webName }}
             </p>
         </section>
 
@@ -44,7 +44,7 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
                 <input type="text" x-model="searchQuery" 
-                       class="w-full bg-white border border-slate-200/80 rounded-2xl pl-12 pr-4 py-4 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800" 
+                       class="w-full bg-white border border-slate-200/80 rounded-2xl pl-12 pr-4 py-4 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800" 
                        placeholder="ค้นหาเอกสาร หรือหัวข้อวิชาการที่ต้องการดาวน์โหลด...">
             </div>
 
@@ -67,7 +67,7 @@
 
                     <div class="grid grid-cols-1 gap-4">
                         <template x-for="doc in filteredDocs" :key="doc.id">
-                            <div class="bg-white border border-slate-100 rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 transform hover:-translate-y-0.5">
+                            <div class="bg-white border border-slate-100 rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-orange-500/20 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 transform hover:-translate-y-0.5">
                                 <div class="flex items-start gap-4">
                                     <!-- File Icon Badge -->
                                     <div class="w-12 h-12 rounded-xl flex flex-col items-center justify-center font-extrabold text-[9px] uppercase text-white shadow-sm shrink-0"
@@ -93,10 +93,10 @@
                                 <div class="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-6 border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0 shrink-0">
                                     <div class="text-left sm:text-right shrink-0">
                                         <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wide">ยอดดาวน์โหลด</span>
-                                        <span class="block text-sm font-extrabold text-emerald-600" x-text="doc.download_count + ' ครั้ง'"></span>
+                                        <span class="block text-sm font-extrabold text-orange-600" x-text="doc.download_count + ' ครั้ง'"></span>
                                     </div>
                                     <a :href="'/documents/download/' + doc.id" 
-                                       class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs py-3 px-6 rounded-xl shadow-lg shadow-emerald-100 hover:shadow-emerald-200 transition-all flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto hover:-translate-y-0.5 duration-200">
+                                       class="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs py-3 px-6 rounded-xl shadow-lg shadow-orange-100 hover:shadow-orange-200 transition-all flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto hover:-translate-y-0.5 duration-200">
                                         <i class="fa-solid fa-cloud-arrow-down"></i>
                                         ดาวน์โหลด
                                     </a>
@@ -131,7 +131,7 @@
                     const ext = (type || '').toLowerCase();
                     if (['pdf'].includes(ext)) return 'bg-rose-500 shadow-rose-100';
                     if (['doc', 'docx'].includes(ext)) return 'bg-blue-500 shadow-blue-100';
-                    if (['xls', 'xlsx'].includes(ext)) return 'bg-emerald-600 shadow-emerald-100';
+                    if (['xls', 'xlsx'].includes(ext)) return 'bg-orange-600 shadow-orange-100';
                     if (['ppt', 'pptx'].includes(ext)) return 'bg-orange-500 shadow-orange-100';
                     if (['zip', 'rar', '7z'].includes(ext)) return 'bg-purple-500 shadow-purple-100';
                     return 'bg-slate-500 shadow-slate-100';

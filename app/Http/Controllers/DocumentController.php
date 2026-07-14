@@ -9,6 +9,23 @@ use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
+    private const ALLOWED_DOCUMENT_EXTENSIONS = [
+        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'webp',
+    ];
+
+    private const ALLOWED_DOCUMENT_MIME_TYPES = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+    ];
+
     /**
      * Show the documents management admin page.
      */
@@ -70,7 +87,7 @@ class DocumentController extends Controller
                 'title' => ['required', 'string', 'max:255'],
                 'description' => ['nullable', 'string'],
                 'sort_order' => ['required', 'integer'],
-                'file' => ['nullable', 'file', 'max:15360'], // Max size: 15MB
+                'file' => ['nullable', 'file', 'max:15360', 'mimes:' . implode(',', self::ALLOWED_DOCUMENT_EXTENSIONS), 'mimetypes:' . implode(',', self::ALLOWED_DOCUMENT_MIME_TYPES)],
             ]);
 
             $id = $request->input('id');
@@ -92,7 +109,7 @@ class DocumentController extends Controller
             } else {
                 // If it's a new document, the file is required
                 $request->validate([
-                    'file' => ['required', 'file', 'max:15360'],
+                    'file' => ['required', 'file', 'max:15360', 'mimes:' . implode(',', self::ALLOWED_DOCUMENT_EXTENSIONS), 'mimetypes:' . implode(',', self::ALLOWED_DOCUMENT_MIME_TYPES)],
                 ]);
             }
 
@@ -106,9 +123,18 @@ class DocumentController extends Controller
                 }
 
                 // Get metadata
-                $originalName = $uploadedFile->getClientOriginalName();
                 $extension = strtolower($uploadedFile->getClientOriginalExtension());
                 $sizeBytes = $uploadedFile->getSize();
+                $mimeType = strtolower((string) $uploadedFile->getMimeType());
+
+                if (! in_array($extension, self::ALLOWED_DOCUMENT_EXTENSIONS, true) || ! in_array($mimeType, self::ALLOWED_DOCUMENT_MIME_TYPES, true)) {
+                    return response()->json([
+                        'status' => 'validation_error',
+                        'errors' => [
+                            'file' => ['ชนิดไฟล์นี้ไม่ได้รับอนุญาต'],
+                        ],
+                    ], 422);
+                }
 
                 // Format size
                 if ($sizeBytes >= 1048576) {

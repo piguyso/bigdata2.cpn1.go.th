@@ -1,7 +1,7 @@
 <section class="space-y-6" x-data="profileForm()">
     <header class="border-b border-slate-100 pb-4 mb-6">
         <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-user-gear text-emerald-500"></i> ข้อมูลส่วนตัว
+            <i class="fa-solid fa-user-gear text-orange-500"></i> ข้อมูลส่วนตัว
         </h3>
         <p class="text-xs text-slate-500 mt-1">
             แก้ไขข้อมูลส่วนตัว อีเมล และสัญลักษณ์ประจำตัวของคุณ
@@ -32,7 +32,7 @@
     <!-- Logo Upload Section with Crop -->
     <div class="flex items-center gap-6 mb-8" x-data="logoUploader()" x-on:logo-cropped.window="$dispatch('set-logo', $event.detail)">
         <div class="relative group cursor-pointer shrink-0" @click="$refs.fileInput.click()">
-            <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-emerald-500/20 group-hover:border-emerald-500 transition-all duration-300 shadow-md flex items-center justify-center bg-slate-100 relative">
+            <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-orange-500/20 group-hover:border-orange-500 transition-all duration-300 shadow-md flex items-center justify-center bg-slate-100 relative">
                 <!-- Current Logo Image -->
                 <template x-if="previewUrl">
                     <img :src="previewUrl" alt="Logo Preview" class="w-full h-full object-cover">
@@ -41,7 +41,7 @@
                     @if($user->logo)
                         <img src="{{ asset('storage/' . $user->logo) }}" alt="Logo" class="w-full h-full object-cover">
                     @else
-                        <div class="text-3xl font-bold text-emerald-600 bg-emerald-50 w-full h-full flex items-center justify-center uppercase">
+                        <div class="text-3xl font-bold text-orange-600 bg-orange-50 w-full h-full flex items-center justify-center uppercase">
                             {{ mb_substr($user->name, 0, 1) }}
                         </div>
                     @endif
@@ -58,7 +58,7 @@
         <div>
             <h4 class="font-bold text-slate-800 text-sm">รูปสัญลักษณ์ประจำตัว</h4>
             <p class="text-[11px] text-slate-500 mt-1">แนะนำรูปภาพสี่เหลี่ยมจัตุรัส ขนาดขั้นต่ำ 200x200 พิกเซล (ระบบจะครอบตัดเป็น 1:1)</p>
-            <button type="button" class="mt-2 text-xs font-bold text-emerald-600 hover:text-emerald-700 transition flex items-center gap-1" @click="$refs.fileInput.click()">
+            <button type="button" class="mt-2 text-xs font-bold text-orange-600 hover:text-orange-700 transition flex items-center gap-1" @click="$refs.fileInput.click()">
                 <i class="fa-solid fa-image"></i> เลือกรูปภาพใหม่...
             </button>
         </div>
@@ -71,7 +71,7 @@
             <div class="bg-white rounded-[2rem] max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100 flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-crop text-emerald-500"></i> ครอบตัดรูปภาพ
+                        <i class="fa-solid fa-crop text-orange-500"></i> ครอบตัดรูปภาพ
                     </h3>
                     <button type="button" @click="closeModal()" class="text-slate-400 hover:text-slate-600 transition">
                         <i class="fa-solid fa-xmark text-lg"></i>
@@ -84,16 +84,16 @@
 
                 <!-- Cropper Controls -->
                 <div class="px-6 py-3 border-t border-slate-100 flex justify-center gap-4 text-slate-500 bg-white">
-                    <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" title="หมุนซ้าย" @click="cropper.rotate(-90)">
+                    <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition" title="หมุนซ้าย" @click="cropper.rotate(-90)">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
-                    <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" title="หมุนขวา" @click="cropper.rotate(90)">
+                    <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition" title="หมุนขวา" @click="cropper.rotate(90)">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
-                    <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" title="ซูมเข้า" @click="cropper.zoom(0.1)">
+                    <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition" title="ซูมเข้า" @click="cropper.zoom(0.1)">
                         <i class="fa-solid fa-magnifying-glass-plus"></i>
                     </button>
-                    <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition" title="ซูมออก" @click="cropper.zoom(-0.1)">
+                    <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition" title="ซูมออก" @click="cropper.zoom(-0.1)">
                         <i class="fa-solid fa-magnifying-glass-minus"></i>
                     </button>
                 </div>
@@ -102,7 +102,7 @@
                     <button type="button" @click="closeModal()" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-50 transition">
                         ยกเลิก
                     </button>
-                    <button type="button" @click="cropImage()" class="px-6 py-2.5 bg-emerald-500 text-white rounded-xl font-bold text-sm hover:bg-emerald-600 transition shadow-lg shadow-emerald-100">
+                    <button type="button" @click="cropImage()" class="px-6 py-2.5 bg-orange-500 text-white rounded-xl font-bold text-sm hover:bg-orange-600 transition shadow-lg shadow-orange-100">
                         ตกลง
                     </button>
                 </div>
@@ -114,7 +114,7 @@
         <div>
             <label for="name" class="block text-xs font-extrabold text-slate-700 mb-2 uppercase tracking-wide">ชื่อแสดงผล</label>
             <input id="name" name="name" type="text"
-                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
+                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
                    x-model="form.name"
                    required autofocus autocomplete="name" />
             <p class="mt-1.5 text-rose-500 text-[10px] font-bold" x-show="errors.name" x-text="errors.name" x-cloak></p>
@@ -123,7 +123,7 @@
         <div>
             <label for="email" class="block text-xs font-extrabold text-slate-700 mb-2 uppercase tracking-wide">ที่อยู่อีเมล (Email)</label>
             <input id="email" name="email" type="email"
-                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
+                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
                    x-model="form.email"
                    required autocomplete="username" />
             <p class="mt-1.5 text-rose-500 text-[10px] font-bold" x-show="errors.email" x-text="errors.email" x-cloak></p>
@@ -134,7 +134,7 @@
         <button type="button"
                 @click="save()"
                 :disabled="saving"
-                class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 text-white font-bold text-xs py-3.5 px-7 rounded-2xl shadow-lg shadow-emerald-100 transition duration-250 cursor-pointer">
+                class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 text-white font-bold text-xs py-3.5 px-7 rounded-2xl shadow-lg shadow-orange-100 transition duration-250 cursor-pointer">
             <template x-if="saving">
                 <i class="fa-solid fa-circle-notch fa-spin"></i>
             </template>

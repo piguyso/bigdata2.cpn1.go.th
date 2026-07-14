@@ -1,15 +1,15 @@
 <x-layout>
-    <x-slot:title>เข้าสู่ระบบ | EE CPN1</x-slot>
+    <x-slot:title>เข้าสู่ระบบ | BigData สพป.ชพ.1</x-slot>
 
     <div class="min-h-[80vh] flex items-center justify-center px-6 relative overflow-hidden">
-        <div class="absolute top-20 left-10 w-64 h-64 bg-emerald-200 rounded-full blur-[100px] opacity-30 animate-pulse"></div>
+        <div class="absolute top-20 left-10 w-64 h-64 bg-orange-200 rounded-full blur-[100px] opacity-30 animate-pulse"></div>
         <div class="absolute bottom-10 right-10 w-80 h-80 bg-sky-200 rounded-full blur-[120px] opacity-30"></div>
 
         <div class="w-full max-w-[450px] relative z-10">
-            <div x-data="loginForm()" class="bg-white/70 backdrop-blur-2xl p-10 md:p-14 rounded-[3.5rem] border border-white shadow-2xl shadow-emerald-100/50">
+            <div x-data="loginForm()" class="bg-white/70 backdrop-blur-2xl p-10 md:p-14 rounded-[3.5rem] border border-white shadow-2xl shadow-orange-100/50">
                 
                 <div class="text-center mb-10">
-                    <h2 class="text-4xl font-black text-slate-800 tracking-tighter italic">Welcome <span class="text-emerald-500">Back!</span></h2>
+                    <h2 class="text-4xl font-black text-slate-800 tracking-tighter italic">Welcome <span class="text-orange-500">Back!</span></h2>
                     <p class="text-slate-400 font-medium mt-2 text-sm italic">เข้าสู่ระบบเพื่อจัดการข้อมูลของคุณ</p>
                 </div>
 
@@ -27,7 +27,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Username / Email</label>
                         <input type="text" x-model="form.email" required autofocus 
-                            class="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-400 outline-none transition-all font-medium"
+                            class="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl focus:ring-4 focus:ring-orange-100 focus:border-orange-400 outline-none transition-all font-medium"
                             placeholder="Username or email">
                         <template x-if="errors.email">
                             <p class="mt-2 text-xs text-rose-500 font-bold" x-text="errors.email"></p>
@@ -40,7 +40,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Password</label>
                         <input type="password" x-model="form.password" required 
-                            class="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-400 outline-none transition-all font-medium"
+                            class="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl focus:ring-4 focus:ring-orange-100 focus:border-orange-400 outline-none transition-all font-medium"
                             placeholder="••••••••">
                         <template x-if="errors.password">
                             <p class="mt-2 text-xs text-rose-500 font-bold" x-text="errors.password"></p>
@@ -52,16 +52,16 @@
 
                     <div class="flex items-center justify-between px-1">
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" x-model="form.remember" class="rounded text-emerald-500 focus:ring-emerald-500 border-slate-200">
+                            <input type="checkbox" x-model="form.remember" class="rounded text-orange-500 focus:ring-orange-500 border-slate-200">
                             <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter">จำฉันไว้</span>
                         </label>
                         @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="text-xs font-bold text-emerald-600 hover:text-emerald-700">ลืมรหัสผ่าน?</a>
+                            <a href="{{ route('password.request') }}" class="text-xs font-bold text-orange-600 hover:text-orange-700">ลืมรหัสผ่าน?</a>
                         @endif
                     </div>
 
                     <button type="submit" :disabled="loading" 
-                        class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-lg hover:bg-emerald-600 transition-all shadow-xl shadow-slate-200 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                        class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-lg hover:bg-orange-600 transition-all shadow-xl shadow-slate-200 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
                         <template x-if="loading">
                             <i class="fa-solid fa-circle-notch fa-spin text-white"></i>
                         </template>

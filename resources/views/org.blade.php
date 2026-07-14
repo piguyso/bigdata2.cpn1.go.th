@@ -2,7 +2,7 @@
     $settings = \Illuminate\Support\Facades\Schema::hasTable('settings') 
         ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all() 
         : [];
-    $webName = $settings['web_name'] ?? 'EE.CPN1';
+    $webName = $settings['web_name'] ?? 'BigData สพป.ชพ.1';
 @endphp
 <x-layout>
     <x-slot:title>โครงสร้างหน่วยงาน | {{ $webName }}</x-slot>
@@ -74,8 +74,8 @@
                 $iconClass = 'fa-solid fa-user text-slate-500';
                 
                 if (mb_strpos($roleTitle, 'ประธาน') !== false && mb_strpos($roleTitle, 'รอง') === false) {
-                    $bgClass = 'bg-gradient-to-br from-emerald-500/10 to-teal-500/15 border-emerald-500/10';
-                    $iconClass = 'fa-solid fa-user-tie text-emerald-600';
+                    $bgClass = 'bg-gradient-to-br from-orange-500/10 to-teal-500/15 border-orange-500/10';
+                    $iconClass = 'fa-solid fa-user-tie text-orange-600';
                 } elseif (mb_strpos($roleTitle, 'รอง') !== false || mb_strpos($roleTitle, 'รอง ผอ.') !== false || mb_strpos($roleTitle, 'รองผู้อำนวยการ') !== false) {
                     $bgClass = 'bg-gradient-to-br from-sky-500/10 to-blue-500/15 border-sky-500/10';
                     $iconClass = 'fa-solid fa-user-tie text-sky-600';
@@ -114,7 +114,7 @@
                 
                 $badgeClass = 'bg-slate-100 text-slate-700';
                 if (mb_strpos($roleTitle, 'ประธาน') !== false && mb_strpos($roleTitle, 'รอง') === false) {
-                    $badgeClass = 'bg-emerald-50 text-emerald-700';
+                    $badgeClass = 'bg-orange-50 text-orange-700';
                 } elseif (mb_strpos($roleTitle, 'รอง') !== false) {
                     $badgeClass = 'bg-sky-50 text-sky-700';
                 } elseif (mb_strpos($roleTitle, 'เลขานุการ') !== false || mb_strpos($roleTitle, 'ประสานงาน') !== false) {
@@ -168,14 +168,14 @@
     <main class="py-16 md:py-24 space-y-12" x-data="{ activeTab: 'operations' }">
         <!-- Header Section -->
         <section class="max-w-7xl mx-auto px-6 text-center space-y-4">
-            <div class="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div class="inline-block px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider">
                 โครงสร้างหน่วยงาน
             </div>
             <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
                 โครงสร้างบุคลากรดำเนินงานประจำศูนย์
             </h2>
             <p class="text-slate-500 text-sm max-w-2xl mx-auto leading-relaxed">
-                คณะกรรมการและที่ปรึกษาผู้ร่วมจัดตั้งและขับเคลื่อนทางวิชาการ เพื่อส่งเสริมกระบวนการเรียนรู้อย่างยั่งยืน ประจำ{{ $webName === 'EE.CPN1' ? 'ศูนย์พัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1' : $webName }}
+                คณะกรรมการและที่ปรึกษาผู้ร่วมจัดตั้งและขับเคลื่อนทางวิชาการ เพื่อส่งเสริมกระบวนการเรียนรู้อย่างยั่งยืน ประจำ{{ $webName === 'BigData สพป.ชพ.1' ? 'ฐานข้อมูล BigData สพป.ชพ. 1' : $webName }}
             </p>
         </section>
 
@@ -185,7 +185,7 @@
                 @foreach($tabs as $tab)
                     <button @click="activeTab = '{{ $tab['id'] }}'" 
                             class="px-5 py-3 rounded-xl font-bold text-xs md:text-sm transition duration-200 shrink-0 flex items-center gap-2"
-                            :class="activeTab === '{{ $tab['id'] }}' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
+                            :class="activeTab === '{{ $tab['id'] }}' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
                         <i class="{{ $tab['icon'] }}"></i> {{ $tab['title'] }}
                     </button>
                 @endforeach
@@ -237,11 +237,11 @@
                                         @php
                                             $bridgeOffset = 50 / $count;
                                         @endphp
-                                        <div class="absolute top-0 h-0.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 hidden sm:block line-grow-x" 
+                                        <div class="absolute top-0 h-0.5 bg-gradient-to-r from-orange-500 via-teal-500 to-orange-500 hidden sm:block line-grow-x" 
                                              style="left: {{ $bridgeOffset }}%; right: {{ $bridgeOffset }}%;"></div>
                                              
                                         <!-- Joint dot where parent line meets this level's bridge -->
-                                        <div class="absolute top-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_8px_rgba(16,185,129,0.6)] z-20 hidden sm:block dot-appear"
+                                        <div class="absolute top-0 w-3.5 h-3.5 rounded-full bg-orange-500 border-2 border-white shadow-[0_0_8px_rgba(16,185,129,0.6)] z-20 hidden sm:block dot-appear"
                                              style="left: calc(50% - 7px); top: calc(0% - 7px);"></div>
                                     @endif
 
@@ -255,7 +255,7 @@
                                             <div class="relative flex flex-col items-center">
                                                 <!-- MOBILE CONNECTOR LINE -->
                                                 @if($levelIndex > 0)
-                                                    <div class="absolute left-1/2 w-0.5 h-8 bg-emerald-500 sm:hidden"
+                                                    <div class="absolute left-1/2 w-0.5 h-8 bg-orange-500 sm:hidden"
                                                          style="left: calc(50% - 1px); top: -32px; height: 32px;"></div>
                                                 @endif
 
@@ -281,7 +281,7 @@
                                                 <!-- Card Container -->
                                                 @if($levelIndex === 0 && $count === 1)
                                                     <!-- Leader Card (Centered & Larger) -->
-                                                    <div class="bg-white border-2 {{ $member->role === 'advisor' ? 'border-purple-500/20 hover:border-purple-500' : 'border-emerald-500/20 hover:border-emerald-500' }} rounded-[2rem] p-6 shadow-md hover:shadow-xl transition-all duration-300 w-64 text-center space-y-4 transform hover:-translate-y-1 relative z-10">
+                                                    <div class="bg-white border-2 {{ $member->role === 'advisor' ? 'border-purple-500/20 hover:border-purple-500' : 'border-orange-500/20 hover:border-orange-500' }} rounded-[2rem] p-6 shadow-md hover:shadow-xl transition-all duration-300 w-64 text-center space-y-4 transform hover:-translate-y-1 relative z-10">
                                                         {!! renderMemberPhoto($member, 'w-32 h-40') !!}
                                                         <div class="space-y-1">
                                                             <h4 class="font-extrabold text-slate-800 text-sm">{{ $member->name }}</h4>
@@ -291,7 +291,7 @@
                                                     </div>
                                                 @else
                                                     <!-- Regular Card -->
-                                                    <div class="bg-white border {{ $member->role === 'advisor' ? 'border-purple-500/20 hover:border-purple-500' : 'border-slate-100 hover:border-emerald-500/30' }} rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 text-center space-y-4 flex flex-col justify-between w-full max-w-[280px] h-full relative z-10 transform hover:-translate-y-1">
+                                                    <div class="bg-white border {{ $member->role === 'advisor' ? 'border-purple-500/20 hover:border-purple-500' : 'border-slate-100 hover:border-orange-500/30' }} rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 text-center space-y-4 flex flex-col justify-between w-full max-w-[280px] h-full relative z-10 transform hover:-translate-y-1">
                                                         <div class="space-y-4">
                                                             {!! renderMemberPhoto($member, 'w-28 h-36') !!}
                                                             <div class="space-y-1">
@@ -311,7 +311,7 @@
 
                                 <!-- Connecting vertical line down to next level -->
                                 @if($hasNext)
-                                    <div class="w-0.5 h-12 bg-gradient-to-b from-emerald-500 to-teal-500 relative z-0 line-grow-y"></div>
+                                    <div class="w-0.5 h-12 bg-gradient-to-b from-orange-500 to-teal-500 relative z-0 line-grow-y"></div>
                                 @endif
                             @endforeach
                         </div>

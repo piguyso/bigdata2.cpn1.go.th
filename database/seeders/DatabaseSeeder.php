@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
         // หากต้องการนำเข้าข้อมูลตัวอย่างอื่น ๆ บนเว็บบอร์ด/เว็บใหม่ สามารถเอาคอมเมนต์ออกได้
         // $this->call([
         //     NetworkSchoolSeeder::class,
-        //     CourseSeeder::class,
         //     OrgMemberSeeder::class,
         // ]);
     }

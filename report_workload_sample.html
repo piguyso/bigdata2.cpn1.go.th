@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตัวอย่างข้อมูล report_workload</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --line: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #f97316;
+            --accent-soft: #fff7ed;
+            --green: #059669;
+            --red: #dc2626;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Tahoma, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+        .header {
+            margin-bottom: 24px;
+        }
+        .eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+        h1 {
+            margin: 8px 0 10px;
+            font-size: 32px;
+            line-height: 1.1;
+        }
+        .sub {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .meta-pill {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, .04);
+        }
+        .card .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 700;
+            letter-spacing: .06em;
+        }
+        .card .value {
+            margin-top: 10px;
+            font-size: 30px;
+            font-weight: 800;
+        }
+        .card .note {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .section {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, .04);
+            margin-top: 18px;
+        }
+        .section-head {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--line);
+            background: #fcfcfd;
+        }
+        .section-head h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .section-head p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .table-wrap {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1080px;
+        }
+        th, td {
+            border-bottom: 1px solid var(--line);
+            padding: 12px 14px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 13px;
+        }
+        th {
+            background: #f8fafc;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        tbody tr:hover {
+            background: #fffaf5;
+        }
+        .school {
+            font-weight: 700;
+        }
+        .small {
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid var(--line);
+            background: #fff;
+            white-space: nowrap;
+        }
+        .badge.orange { background: var(--accent-soft); color: var(--accent); border-color: #fed7aa; }
+        .num.pos { color: var(--green); font-weight: 700; }
+        .num.neg { color: var(--red); font-weight: 700; }
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.2fr .8fr;
+            gap: 18px;
+            margin-top: 18px;
+        }
+        .list {
+            padding: 18px 20px 20px;
+            display: grid;
+            gap: 12px;
+        }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+        .list-item strong {
+            font-size: 13px;
+        }
+        .list-item span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .list-item b {
+            font-size: 20px;
+        }
+        @media (max-width: 960px) {
+            .grid, .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div class="eyebrow">ตัวอย่างหน้าแสดงข้อมูล</div>
+            <h1>ปริมาณงานของสถานศึกษา</h1>
+            <p class="sub">ตัวอย่างนี้สรุปข้อมูลที่ API <code>report_workload</code> ส่งกลับมาในระดับเขตและระดับโรงเรียน โดยใช้ข้อมูลตัวอย่างของ สพป.ชุมพร เขต 1 เพื่อดูหน้าตาและชนิดข้อมูลก่อนทำระบบจริง</p>
+            <div class="meta">
+                <div class="meta-pill">เขตพื้นที่: สพป.ชุมพร เขต 1</div>
+                <div class="meta-pill">รหัสเขต: 1086010000</div>
+                <div class="meta-pill">ปีการศึกษา: 2569</div>
+                <div class="meta-pill">ภาคเรียน: 1</div>
+                <div class="meta-pill">จำนวนรายการจาก API: 108 โรงเรียน</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="label">จำนวนโรงเรียน</div>
+                <div class="value">108</div>
+                <div class="note">จำนวนรายการที่ API ส่งกลับ</div>
+            </div>
+            <div class="card">
+                <div class="label">ปีการศึกษาปัจจุบัน</div>
+                <div class="value">2569</div>
+                <div class="note">จาก settings/academicYear</div>
+            </div>
+            <div class="card">
+                <div class="label">ภาคเรียนปัจจุบัน</div>
+                <div class="value">1</div>
+                <div class="note">จาก settings/semester</div>
+            </div>
+            <div class="card">
+                <div class="label">ข้อมูลเขตพื้นที่</div>
+                <div class="value">68</div>
+                <div class="note">sumPerson จาก personAreas/1086010000</div>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <div class="section">
+                <div class="section-head">
+                    <h2>ตัวอย่างข้อมูลรายโรงเรียน</h2>
+                    <p>ข้อมูลชุดนี้มาจาก endpoint <code>/api/opendata/reports/workload/area/1086010000</code></p>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>รหัส</th>
+                                <th>โรงเรียน</th>
+                                <th>พื้นที่</th>
+                                <th>ระดับ</th>
+                                <th>ประเภท</th>
+                                <th>นักเรียน</th>
+                                <th>ห้อง</th>
+                                <th>ครู</th>
+                                <th>ผอ.</th>
+                                <th>รอง</th>
+                                <th>ครูขาด/เกิน</th>
+                                <th>โครงการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1086110001<br><span class="small">SMIS 86010044</span></td>
+                                <td><div class="school">บ้านปากน้ำ(เผดิมจีนนาวาสงเคราะห์)</div><div class="small">พิกัด 10.44079667, 99.25029667</div></td>
+                                <td>ปากน้ำ / เมืองชุมพร / ชุมพร</td>
+                                <td><span class="badge">อ.2 - ป.6</span><br><span class="badge orange">ขนาดกลาง</span></td>
+                                <td>ป.ประถมศึกษา</td>
+                                <td>432</td>
+                                <td>16</td>
+                                <td>23</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td class="num pos">+4</td>
+                                <td>หนึ่งตำบลหนึ่งโรงเรียนคุณภาพ</td>
+                            </tr>
+                            <tr>
+                                <td>1086110002<br><span class="small">SMIS 86010045</span></td>
+                                <td><div class="school">บ้านหัวถนน</div><div class="small">พิกัด 10.4429220299, 99.2408121826</div></td>
+                                <td>ปากน้ำ / เมืองชุมพร / ชุมพร</td>
+                                <td><span class="badge">อ.1 - ม.3</span><br><span class="badge orange">ขนาดกลาง</span></td>
+                                <td>ข.ขยายโอกาส</td>
+                                <td>190</td>
+                                <td>12</td>
+                                <td>15</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td class="num neg">-1</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>1086110020<br><span class="small">SMIS ไม่แสดงในตัวอย่างนี้</span></td>
+                                <td><div class="school">อนุบาลชุมพร</div><div class="small">โรงเรียนขนาดใหญ่พิเศษ</div></td>
+                                <td>ท่าตะเภา / เมืองชุมพร / ชุมพร</td>
+                                <td><span class="badge">ป.1 - ป.6</span><br><span class="badge orange">ขนาดใหญ่พิเศษ</span></td>
+                                <td>ป.ประถมศึกษา</td>
+                                <td>2,312</td>
+                                <td>80</td>
+                                <td>95</td>
+                                <td>1</td>
+                                <td>3</td>
+                                <td class="num neg">-3</td>
+                                <td>หนึ่งตำบลหนึ่งโรงเรียนคุณภาพ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-head">
+                    <h2>ข้อมูลระดับเขตที่ดึงประกอบ</h2>
+                    <p>จาก endpoint <code>/api/personAreas/1086010000</code></p>
+                </div>
+                <div class="list">
+                    <div class="list-item"><div><strong>ผอ.สพท.</strong><br><span>director</span></div><b>1</b></div>
+                    <div class="list-item"><div><strong>รอง ผอ.สพท.</strong><br><span>deputyDirector</span></div><b>3</b></div>
+                    <div class="list-item"><div><strong>ศึกษานิเทศก์</strong><br><span>supervisor</span></div><b>21</b></div>
+                    <div class="list-item"><div><strong>บุคลากร ม.38 ค.</strong><br><span>person38k</span></div><b>43</b></div>
+                    <div class="list-item"><div><strong>บุคลากรรวมเขต</strong><br><span>sumPerson</span></div><b>68</b></div>
+                    <div class="list-item"><div><strong>ครูต่ำกว่า 40 คน</strong><br><span>teacherLte40</span></div><b>4</b></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

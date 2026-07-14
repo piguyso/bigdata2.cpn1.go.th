@@ -1,5 +1,5 @@
 ﻿<x-layout>
-    <x-slot:title>จัดการหลักสูตรอบรม | EE CPN1</x-slot>
+    <x-slot:title>จัดการหลักสูตรอบรม | BigData สพป.ชพ.1</x-slot>
 
     <!-- Load Cropper.js from CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -35,7 +35,7 @@
                 <a href="{{ route('dashboard') }}" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
                     ← กลับแดชบอร์ด
                 </a>
-                <button type="button" @click="openCreateModal()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-md shadow-emerald-100 flex items-center gap-2">
+                <button type="button" @click="openCreateModal()" class="bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-orange-700 transition shadow-md shadow-orange-100 flex items-center gap-2">
                     <i class="fa-solid fa-plus"></i> เพิ่มหลักสูตรใหม่
                 </button>
             </div>
@@ -43,7 +43,7 @@
 
         <!-- Loading State -->
         <div x-show="loading" class="bg-white border border-slate-100 rounded-2xl p-12 text-center shadow-sm" x-transition>
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent mb-4"></div>
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent mb-4"></div>
             <p class="text-slate-400 text-xs font-bold">กำลังดาวน์โหลดข้อมูลหลักสูตร...</p>
         </div>
 
@@ -98,7 +98,7 @@
                                 </td>
                                 <td class="py-4 px-6">
                                     <template x-if="course.status === 'open'">
-                                        <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-bold rounded-md text-[10px]">เปิดรับสมัคร</span>
+                                        <span class="px-2.5 py-1 bg-orange-50 text-orange-700 font-bold rounded-md text-[10px]">เปิดรับสมัคร</span>
                                     </template>
                                     <template x-if="course.status === 'ongoing'">
                                         <span class="px-2.5 py-1 bg-sky-50 text-sky-700 font-bold rounded-md text-[10px]">กำลังดำเนินการ</span>
@@ -116,7 +116,7 @@
                                 </td>
                                 <td class="py-4 px-6 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button type="button" @click="openEditModal(course)" class="text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 px-2 py-2 rounded-lg transition" title="แก้ไข/รายงานสรุป">
+                                        <button type="button" @click="openEditModal(course)" class="text-slate-500 hover:text-orange-600 hover:bg-orange-50 px-2 py-2 rounded-lg transition" title="แก้ไข/รายงานสรุป">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                         <button type="button" @click="confirmDelete(course)" class="text-slate-500 hover:text-rose-600 hover:bg-rose-50 px-2 py-2 rounded-lg transition" title="ลบหลักสูตร">
@@ -138,7 +138,7 @@
                 <!-- Modal Header -->
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-book text-emerald-500"></i>
+                        <i class="fa-solid fa-book text-orange-500"></i>
                         <span x-text="cropping ? 'ครอบตัดภาพปกหลักสูตร (16:9)' : (form.id ? 'แก้ไขข้อมูลและรายงานหลักสูตร' : 'เพิ่มหลักสูตรการอบรมใหม่')"></span>
                     </h3>
                     <button type="button" @click="cropping ? closeCropper() : (modal.open = false)" class="text-slate-400 hover:text-slate-650 transition">
@@ -151,13 +151,13 @@
                         <button type="button" 
                                 @click="activeTab = 'general'" 
                                 class="py-3 text-xs font-bold transition border-b-2 px-1"
-                                :class="activeTab === 'general' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-450 hover:text-slate-650'">
+                                :class="activeTab === 'general' ? 'border-orange-600 text-orange-600' : 'border-transparent text-slate-450 hover:text-slate-650'">
                             1. รายละเอียดหลักสูตร
                         </button>
                         <button type="button" 
                                 @click="activeTab = 'report'" 
                                 class="py-3 text-xs font-bold transition border-b-2 px-1"
-                                :class="activeTab === 'report' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-450 hover:text-slate-650'">
+                                :class="activeTab === 'report' ? 'border-orange-600 text-orange-600' : 'border-transparent text-slate-450 hover:text-slate-650'">
                             2. รายงานการอบรม & รูปภาพกิจกรรม
                         </button>
                     </div>
@@ -173,7 +173,7 @@
                                 <input type="text" 
                                        x-model="form.title" 
                                        required 
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                        placeholder="เช่น การประยุกต์ใช้ AI ในชั้นเรียนประถม">
                             </div>
 
@@ -183,7 +183,7 @@
                                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">จำนวนชั่วโมงการอบรม (Hours)</label>
                                     <input type="text" 
                                            x-model="form.hours" 
-                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                            placeholder="เช่น 15, 20 ชั่วโมง">
                                 </div>
 
@@ -192,7 +192,7 @@
                                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">สถานะหลักสูตร (Status) *</label>
                                     <select x-model="form.status" 
                                             required 
-                                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition">
                                         <option value="upcoming">เตรียมเปิดสมัคร (Upcoming)</option>
                                         <option value="open">เปิดรับสมัคร (Open)</option>
                                         <option value="ongoing">กำลังดำเนินการ (Ongoing)</option>
@@ -206,7 +206,7 @@
                                     <input type="number" 
                                            x-model="form.sort_order" 
                                            required 
-                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                            placeholder="เช่น 0, 1, 2">
                                 </div>
                             </div>
@@ -217,17 +217,20 @@
                                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">ระยะเวลาการอบรม (Duration Text)</label>
                                     <input type="text" 
                                            x-model="form.duration_text" 
-                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                            placeholder="เช่น ธ.ค. 68 - มี.ค. 69">
                                 </div>
 
-                                <!-- Academic Year Input -->
+                                <!-- Academic Year Selector -->
                                 <div class="space-y-1.5">
                                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">ปีการศึกษา (Academic Year)</label>
-                                    <input type="text" 
-                                           x-model="form.academic_year" 
-                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
-                                           placeholder="เช่น 2568, 2569">
+                                    <select x-model="form.academic_year"
+                                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition">
+                                        <option value="">ไม่ระบุปีการศึกษา</option>
+                                        <template x-for="year in academicYears" :key="year.id">
+                                            <option :value="year.year" x-text="year.name"></option>
+                                        </template>
+                                    </select>
                                 </div>
 
                                 <!-- Target Group -->
@@ -235,7 +238,7 @@
                                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">กลุ่มเป้าหมาย (Target Group)</label>
                                     <input type="text" 
                                            x-model="form.target_group" 
-                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                            placeholder="เช่น ครูผู้สอนวิทยาศาสตร์ ป.4-ป.6">
                                 </div>
                             </div>
@@ -246,7 +249,7 @@
                                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">สถานที่จัดงาน (Location)</label>
                                     <input type="text" 
                                            x-model="form.location" 
-                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                            placeholder="เช่น ศูนย์คอมพิวเตอร์ โรงเรียนอนุบาลชุมพร">
                                 </div>
 
@@ -255,7 +258,7 @@
                                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">ลิงก์ลงทะเบียนสมัคร (Registration URL)</label>
                                     <input type="url" 
                                            x-model="form.registration_link" 
-                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                            placeholder="https://forms.gle/your-form-url">
                                 </div>
                             </div>
@@ -265,7 +268,7 @@
                                 <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">คำอธิบาย/วัตถุประสงค์ (Objectives)</label>
                                 <textarea x-model="form.objectives" 
                                           rows="4" 
-                                          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                           placeholder="ระบุวัตถุประสงค์หรือข้อมูลแนะนำหลักสูตร..."></textarea>
                             </div>
 
@@ -307,7 +310,7 @@
                                 <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">รายงานผลสรุปกิจกรรมหลังการอบรม (Training Summary Report)</label>
                                 <textarea x-model="form.report_text" 
                                           rows="5" 
-                                          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition" 
+                                          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                           placeholder="ระบุข้อความสรุปผลลัพธ์การอบรม เช่น จำนวนครูที่จบหลักสูตร, ผลตอบรับ, หรือข้อตกลงร่วม..."></textarea>
                             </div>
 
@@ -317,7 +320,7 @@
                                 
                                 <!-- Uploader Button & Info -->
                                 <div class="flex items-center gap-3">
-                                    <button type="button" @click="$refs.reportFilesInput.click()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-[10px] hover:bg-emerald-700 transition flex items-center gap-1.5">
+                                    <button type="button" @click="$refs.reportFilesInput.click()" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-bold text-[10px] hover:bg-orange-700 transition flex items-center gap-1.5">
                                         <i class="fa-solid fa-images"></i> เพิ่มภาพกิจกรรม...
                                     </button>
                                     <span class="text-[10px] text-slate-400">เลือกไฟล์รูปภาพกิจกรรมพร้อมกันได้ครั้งละหลายไฟล์</span>
@@ -348,7 +351,7 @@
                                                     <i class="fa-solid fa-trash-can"></i>
                                                 </button>
                                             </div>
-                                            <span class="absolute top-1 left-1 bg-emerald-600/90 text-white font-bold text-[8px] px-1.5 py-0.5 rounded-md">ใหม่</span>
+                                            <span class="absolute top-1 left-1 bg-orange-600/90 text-white font-bold text-[8px] px-1.5 py-0.5 rounded-md">ใหม่</span>
                                         </div>
                                     </template>
                                 </div>
@@ -375,7 +378,7 @@
                                             <div class="flex items-center gap-2 overflow-hidden flex-1">
                                                 <i class="fa-solid fa-file-pdf text-rose-500 text-sm" x-show="file.name.toLowerCase().endsWith('.pdf')"></i>
                                                 <i class="fa-solid fa-file-word text-blue-500 text-sm" x-show="file.name.toLowerCase().endsWith('.doc') || file.name.toLowerCase().endsWith('.docx')"></i>
-                                                <i class="fa-solid fa-file-excel text-emerald-600 text-sm" x-show="file.name.toLowerCase().endsWith('.xls') || file.name.toLowerCase().endsWith('.xlsx')"></i>
+                                                <i class="fa-solid fa-file-excel text-orange-600 text-sm" x-show="file.name.toLowerCase().endsWith('.xls') || file.name.toLowerCase().endsWith('.xlsx')"></i>
                                                 <i class="fa-solid fa-file-zipper text-amber-600 text-sm" x-show="file.name.toLowerCase().endsWith('.zip') || file.name.toLowerCase().endsWith('.rar')"></i>
                                                 <i class="fa-solid fa-file text-slate-400 text-sm" x-show="!file.name.toLowerCase().endsWith('.pdf') && !file.name.toLowerCase().endsWith('.doc') && !file.name.toLowerCase().endsWith('.docx') && !file.name.toLowerCase().endsWith('.xls') && !file.name.toLowerCase().endsWith('.xlsx') && !file.name.toLowerCase().endsWith('.zip') && !file.name.toLowerCase().endsWith('.rar')"></i>
                                                 
@@ -394,12 +397,12 @@
                                             <div class="flex items-center gap-2 overflow-hidden flex-1">
                                                 <i class="fa-solid fa-file-pdf text-rose-500 text-sm" x-show="file.name.toLowerCase().endsWith('.pdf')"></i>
                                                 <i class="fa-solid fa-file-word text-blue-500 text-sm" x-show="file.name.toLowerCase().endsWith('.doc') || file.name.toLowerCase().endsWith('.docx')"></i>
-                                                <i class="fa-solid fa-file-excel text-emerald-600 text-sm" x-show="file.name.toLowerCase().endsWith('.xls') || file.name.toLowerCase().endsWith('.xlsx')"></i>
+                                                <i class="fa-solid fa-file-excel text-orange-600 text-sm" x-show="file.name.toLowerCase().endsWith('.xls') || file.name.toLowerCase().endsWith('.xlsx')"></i>
                                                 <i class="fa-solid fa-file-zipper text-amber-600 text-sm" x-show="file.name.toLowerCase().endsWith('.zip') || file.name.toLowerCase().endsWith('.rar')"></i>
                                                 <i class="fa-solid fa-file text-slate-400 text-sm" x-show="!file.name.toLowerCase().endsWith('.pdf') && !file.name.toLowerCase().endsWith('.doc') && !file.name.toLowerCase().endsWith('.docx') && !file.name.toLowerCase().endsWith('.xls') && !file.name.toLowerCase().endsWith('.xlsx') && !file.name.toLowerCase().endsWith('.zip') && !file.name.toLowerCase().endsWith('.rar')"></i>
                                                 
                                                 <span class="text-[11px] font-bold text-slate-705 truncate" x-text="file.name"></span>
-                                                <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 font-bold rounded text-[8px] tracking-wide shrink-0">ใหม่</span>
+                                                <span class="px-1.5 py-0.5 bg-orange-100 text-orange-700 font-bold rounded text-[8px] tracking-wide shrink-0">ใหม่</span>
                                             </div>
                                             <button type="button" @click="removeNewReportFile(idx)" class="text-slate-405 hover:text-rose-500 text-xs px-2 py-1 transition" title="ลบไฟล์">
                                                 <i class="fa-solid fa-trash-can"></i>
@@ -420,16 +423,16 @@
                             <div class="flex justify-between items-center bg-white text-slate-500">
                                 <span class="text-[10px] font-medium text-slate-400">กรอบอัตราส่วนแบบแนวนอน 16:9 เท่านั้น</span>
                                 <div class="flex gap-2">
-                                    <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="หมุนซ้าย" @click="cropper.rotate(-90)">
+                                    <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition" title="หมุนซ้าย" @click="cropper.rotate(-90)">
                                         <i class="fa-solid fa-rotate-left text-xs"></i>
                                     </button>
-                                    <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="หมุนขวา" @click="cropper.rotate(90)">
+                                    <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition" title="หมุนขวา" @click="cropper.rotate(90)">
                                         <i class="fa-solid fa-rotate-right text-xs"></i>
                                     </button>
-                                    <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="ซูมเข้า" @click="cropper.zoom(0.1)">
+                                    <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition" title="ซูมเข้า" @click="cropper.zoom(0.1)">
                                         <i class="fa-solid fa-magnifying-glass-plus text-xs"></i>
                                     </button>
-                                    <button type="button" class="p-2 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="ซูมออก" @click="cropper.zoom(-0.1)">
+                                    <button type="button" class="p-2 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition" title="ซูมออก" @click="cropper.zoom(-0.1)">
                                         <i class="fa-solid fa-magnifying-glass-minus text-xs"></i>
                                     </button>
                                 </div>
@@ -444,7 +447,7 @@
                         </button>
                         <button type="submit" 
                                 :disabled="saving" 
-                                class="px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 disabled:opacity-50 transition shadow-lg shadow-emerald-100 flex items-center gap-2">
+                                class="px-6 py-2.5 bg-orange-600 text-white rounded-xl font-bold text-xs hover:bg-orange-700 disabled:opacity-50 transition shadow-lg shadow-orange-100 flex items-center gap-2">
                             <template x-if="saving">
                                 <i class="fa-solid fa-circle-notch animate-spin"></i>
                             </template>
@@ -457,7 +460,7 @@
                         <button type="button" @click="closeCropper()" class="px-4 py-2 bg-white border border-slate-200 text-slate-650 rounded-lg font-bold text-[10px] hover:bg-slate-50 transition">
                             ยกเลิก
                         </button>
-                        <button type="button" @click="cropImage()" class="px-5 py-2 bg-emerald-600 text-white rounded-lg font-bold text-[10px] hover:bg-emerald-700 transition">
+                        <button type="button" @click="cropImage()" class="px-5 py-2 bg-orange-600 text-white rounded-lg font-bold text-[10px] hover:bg-orange-700 transition">
                             บันทึกการครอบตัด
                         </button>
                     </div>
@@ -495,6 +498,8 @@
                 loading: true,
                 saving: false,
                 courses: [],
+                academicYears: [],
+                activeAcademicYear: null,
                 cropping: false,
                 activeTab: 'general',
                 form: {
@@ -544,6 +549,8 @@
                         .then(response => {
                             if (response.data.status === 'success') {
                                 this.courses = response.data.data;
+                                this.academicYears = response.data.academic_years || [];
+                                this.activeAcademicYear = response.data.active_academic_year || null;
                             }
                         })
                         .catch(error => {
@@ -589,7 +596,7 @@
                     this.form.id = null;
                     this.form.title = '';
                     this.form.hours = '';
-                    this.form.academic_year = '';
+                    this.form.academic_year = this.activeAcademicYear || '';
                     this.form.objectives = '';
                     this.form.registration_link = '';
                     this.form.target_group = '';
@@ -806,4 +813,3 @@
     </script>
     @endpush
 </x-layout>
-

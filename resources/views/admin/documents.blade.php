@@ -1,5 +1,5 @@
 <x-layout>
-    <x-slot:title>จัดการคลังเอกสาร | EE CPN1</x-slot>
+    <x-slot:title>จัดการคลังเอกสาร | BigData สพป.ชพ.1</x-slot>
 
     <div class="py-12 max-w-6xl mx-auto px-6" x-data="documentManager()" x-init="init()">
         <!-- Toast Notification (Floating Glassmorphic) -->
@@ -31,7 +31,7 @@
                 <a href="{{ route('dashboard') }}" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm">
                     ← กลับแดชบอร์ด
                 </a>
-                <button type="button" @click="openCreateModal()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-md shadow-emerald-100 flex items-center gap-2">
+                <button type="button" @click="openCreateModal()" class="bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-orange-700 transition shadow-md shadow-orange-100 flex items-center gap-2">
                     <i class="fa-solid fa-cloud-arrow-up"></i> อัปโหลดเอกสารใหม่
                 </button>
             </div>
@@ -39,7 +39,7 @@
 
         <!-- Loading State -->
         <div x-show="loading" class="bg-white border border-slate-100 rounded-2xl p-12 text-center shadow-sm" x-transition>
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent mb-4"></div>
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent mb-4"></div>
             <p class="text-slate-400 text-xs font-bold">กำลังโหลดเอกสาร...</p>
         </div>
 
@@ -80,12 +80,12 @@
                                     <div class="text-slate-400 text-[10px] mt-0.5" x-text="doc.description || '- ไม่มีรายละเอียด -'"></div>
                                 </td>
                                 <td class="py-4 px-6 font-semibold text-slate-500" x-text="doc.file_size || 'N/A'"></td>
-                                <td class="py-4 px-6 text-center font-extrabold text-emerald-600">
-                                    <span class="bg-emerald-50 px-2.5 py-1 rounded-md text-[10px]" x-text="doc.download_count"></span>
+                                <td class="py-4 px-6 text-center font-extrabold text-orange-600">
+                                    <span class="bg-orange-50 px-2.5 py-1 rounded-md text-[10px]" x-text="doc.download_count"></span>
                                 </td>
                                 <td class="py-4 px-6 text-center font-semibold text-slate-500" x-text="doc.sort_order"></td>
                                 <td class="py-4 px-6 text-right space-x-1.5 whitespace-nowrap">
-                                    <a :href="'/documents/download/' + doc.id" class="bg-slate-50 text-slate-600 hover:text-emerald-600 border border-slate-100 hover:bg-emerald-50 w-8 h-8 rounded-lg inline-flex items-center justify-center transition shadow-sm cursor-pointer" title="ดาวน์โหลดไฟล์">
+                                    <a :href="'/documents/download/' + doc.id" class="bg-slate-50 text-slate-600 hover:text-orange-600 border border-slate-100 hover:bg-orange-50 w-8 h-8 rounded-lg inline-flex items-center justify-center transition shadow-sm cursor-pointer" title="ดาวน์โหลดไฟล์">
                                         <i class="fa-solid fa-download"></i>
                                     </a>
                                     <button type="button" @click="openEditModal(doc)" class="bg-slate-50 text-slate-600 hover:text-indigo-600 border border-slate-100 hover:bg-indigo-50 w-8 h-8 rounded-lg inline-flex items-center justify-center transition shadow-sm cursor-pointer" title="แก้ไขเอกสาร">
@@ -130,13 +130,13 @@
                     <!-- Title -->
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-slate-700">ชื่อเอกสาร / หัวข้อ <span class="text-rose-500">*</span></label>
-                        <input type="text" x-model="form.title" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold text-slate-800" placeholder="ระบุชื่อเรียกของเอกสาร เช่น คู่มือการอบรมแกนนำวิทยาศาสตร์">
+                        <input type="text" x-model="form.title" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-semibold text-slate-800" placeholder="ระบุชื่อเรียกของเอกสาร เช่น คู่มือการอบรมแกนนำวิทยาศาสตร์">
                     </div>
 
                     <!-- Description -->
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-slate-700">รายละเอียดเพิ่มเติม (ระบุหรือไม่ก็ได้)</label>
-                        <textarea x-model="form.description" rows="3" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold text-slate-800" placeholder="อธิบายสั้น ๆ เกี่ยวกับเนื้อหาในเอกสาร"></textarea>
+                        <textarea x-model="form.description" rows="3" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-semibold text-slate-800" placeholder="อธิบายสั้น ๆ เกี่ยวกับเนื้อหาในเอกสาร"></textarea>
                     </div>
 
                     <!-- File input -->
@@ -149,7 +149,7 @@
                         <div class="bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6 text-center hover:bg-slate-100/50 transition relative group">
                             <input type="file" @change="handleFileUpload($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar">
                             <div class="space-y-2">
-                                <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mx-auto text-lg group-hover:scale-110 transition-transform">
+                                <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mx-auto text-lg group-hover:scale-110 transition-transform">
                                     <i class="fa-solid fa-file-pdf"></i>
                                 </div>
                                 <div class="text-[11px] font-bold text-slate-600" x-text="form.fileName || 'ลากไฟล์มาวาง หรือคลิกเพื่อเลือกไฟล์'"></div>
@@ -161,14 +161,14 @@
                     <!-- Sort Order -->
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-slate-700">ลำดับการแสดงผล</label>
-                        <input type="number" x-model.number="form.sort_order" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold text-slate-800">
+                        <input type="number" x-model.number="form.sort_order" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-semibold text-slate-800">
                         <p class="text-[9px] text-slate-400">ลำดับน้อยกว่าจะแสดงผลก่อน</p>
                     </div>
 
                     <!-- Footer buttons inside form to keep them together -->
                     <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
                         <button type="button" @click="modal.open = false" class="bg-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-200 transition cursor-pointer">ยกเลิก</button>
-                        <button type="submit" :disabled="modal.saving" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-md shadow-emerald-100 cursor-pointer disabled:opacity-50 flex items-center gap-2">
+                        <button type="submit" :disabled="modal.saving" class="bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-orange-700 transition shadow-md shadow-orange-100 cursor-pointer disabled:opacity-50 flex items-center gap-2">
                             <span x-show="modal.saving" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                             <span x-text="modal.saving ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'"></span>
                         </button>
@@ -387,7 +387,7 @@
                     const ext = (type || '').toLowerCase();
                     if (['pdf'].includes(ext)) return 'bg-rose-500 shadow-rose-100';
                     if (['doc', 'docx'].includes(ext)) return 'bg-blue-500 shadow-blue-100';
-                    if (['xls', 'xlsx'].includes(ext)) return 'bg-emerald-600 shadow-emerald-100';
+                    if (['xls', 'xlsx'].includes(ext)) return 'bg-orange-600 shadow-orange-100';
                     if (['ppt', 'pptx'].includes(ext)) return 'bg-orange-500 shadow-orange-100';
                     if (['zip', 'rar', '7z'].includes(ext)) return 'bg-purple-500 shadow-purple-100';
                     return 'bg-slate-500 shadow-slate-100';

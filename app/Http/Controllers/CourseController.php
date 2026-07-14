@@ -10,6 +10,21 @@ use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
+    private const ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+    private const ALLOWED_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    private const ALLOWED_REPORT_FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+    private const ALLOWED_REPORT_FILE_MIME_TYPES = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ];
+    private const MAX_IMAGE_BYTES = 5_242_880;
+    private const MAX_REPORT_FILE_BYTES = 15_728_640;
+
     /**
      * Show the courses admin page.
      */
@@ -51,9 +66,16 @@ class CourseController extends Controller
                     return $course;
                 });
 
+            $academicYears = DB::table('academic_years')
+                ->orderByDesc('sort_order')
+                ->orderByDesc('year')
+                ->get();
+
             return response()->json([
                 'status' => 'success',
-                'data' => $courses
+                'data' => $courses,
+                'academic_years' => $academicYears,
+                'active_academic_year' => $academicYears->firstWhere('is_active', true)->year ?? null,
             ]);
         } catch (\Exception $e) {
             Log::error('CourseController@getData: ' . $e->getMessage());
@@ -67,101 +89,29 @@ class CourseController extends Controller
     public function getPublicList(Request $request)
     {
         try {
-            $userId = Auth::id() ?: 0;
-            $isAdmin = $userId && (Auth::user()->role === 'admin');
-            
-            $query = DB::table('lms_courses as c')
-                ->select([
-                    'c.id',
-                    'c.title',
-                    'c.description',
-                    'c.cover_url',
-                    'c.category',
-                    'c.level',
-                    'c.status',
-                    DB::raw("(SELECT COUNT(*) FROM lms_lessons l WHERE l.course_id = c.id) as lesson_count"),
-                    DB::raw("(SELECT COUNT(*) FROM lms_enrollments e WHERE e.course_id = c.id) as learner_count"),
-                    DB::raw($userId ? "(SELECT COUNT(*) FROM lms_lesson_progress p WHERE p.user_id = $userId AND p.course_id = c.id) as completed_lessons" : "0 as completed_lessons"),
-                    DB::raw($userId ? "(SELECT COUNT(*) FROM lms_enrollments e WHERE e.user_id = $userId AND e.course_id = c.id) as enrolled" : "0 as enrolled")
-                ]);
+            $query = DB::table('courses');
 
-            if (!$isAdmin) {
-                $query->where('c.status', 'published');
+            if ($request->filled('academic_year')) {
+                $query->where('academic_year', $request->query('academic_year'));
             }
 
-            $courses = $query->orderBy('c.created_at', 'desc')
+            $courses = $query->orderBy('sort_order', 'asc')
+                ->orderBy('id', 'desc')
                 ->get()
-                ->map(function ($course) use ($userId) {
-                    $courseId = (int)$course->id;
-                    $lessonCount = (int)$course->lesson_count;
-                    $completed = (int)$course->completed_lessons;
-                    $course->progress_pct = $lessonCount > 0 ? (int)round(($completed / $lessonCount) * 100) : 0;
-                    $course->enrolled = (int)$course->enrolled > 0;
-                    
-                    // Fallback cover image
-                    $coverUrl = $course->cover_url;
-                    if ($coverUrl) {
-                        if (str_starts_with($coverUrl, '/1/uploads/')) {
-                            $coverUrl = 'storage/' . substr($coverUrl, 3);
-                        } elseif (str_starts_with($coverUrl, '1/uploads/')) {
-                            $coverUrl = 'storage/' . substr($coverUrl, 2);
-                        }
-                        $course->cover_image_url = asset($coverUrl);
-                    } else {
-                        $course->cover_image_url = null;
-                    }
-
-                    // Get pre-quiz & post-quiz percents
-                    $prePercent = null;
-                    $postPercent = null;
-                    $improvement = null;
-
-                    if ($userId > 0) {
-                        $quizzes = DB::table('lms_quizzes')
-                            ->where('course_id', $courseId)
-                            ->where('is_active', 1)
-                            ->get();
-
-                        $preQuiz = $quizzes->where('quiz_type', 'pre')->first();
-                        $postQuiz = $quizzes->where('quiz_type', 'post')->first();
-
-                        if ($preQuiz) {
-                            $preAttempt = DB::table('lms_quiz_attempts')
-                                ->where('quiz_id', $preQuiz->id)
-                                ->where('user_id', $userId)
-                                ->orderBy('id', 'desc')
-                                ->first();
-                            if ($preAttempt) {
-                                $prePercent = (float)$preAttempt->percent;
-                            }
-                        }
-
-                        if ($postQuiz) {
-                            $postAttempt = DB::table('lms_quiz_attempts')
-                                ->where('quiz_id', $postQuiz->id)
-                                ->where('user_id', $userId)
-                                ->orderBy('id', 'desc')
-                                ->first();
-                            if ($postAttempt) {
-                                $postPercent = (float)$postAttempt->percent;
-                            }
-                        }
-
-                        if ($prePercent !== null && $postPercent !== null) {
-                            $improvement = $postPercent - $prePercent;
-                        }
-                    }
-
-                    $course->pre_percent = $prePercent;
-                    $course->post_percent = $postPercent;
-                    $course->improvement = $improvement;
+                ->map(function ($course) {
+                    $course->cover_image_url = $course->cover_image ? asset('storage/' . $course->cover_image) : null;
 
                     return $course;
                 });
 
             return response()->json([
                 'status' => 'success',
-                'data' => $courses
+                'data' => $courses,
+                'active_academic_year' => DB::table('academic_years')
+                    ->where('is_active', true)
+                    ->orderByDesc('sort_order')
+                    ->orderByDesc('year')
+                    ->value('year'),
             ]);
         } catch (\Exception $e) {
             Log::error('CourseController@getPublicList: ' . $e->getMessage());
@@ -182,7 +132,7 @@ class CourseController extends Controller
                 'id' => ['nullable', 'integer'],
                 'title' => ['required', 'string', 'max:255'],
                 'hours' => ['nullable', 'string', 'max:255'],
-                'academic_year' => ['nullable', 'string', 'max:255'],
+                'academic_year' => ['nullable', 'string', 'max:4'],
                 'objectives' => ['nullable', 'string'],
                 'registration_link' => ['nullable', 'url', 'max:500'],
                 'target_group' => ['nullable', 'string', 'max:255'],
@@ -227,26 +177,17 @@ class CourseController extends Controller
 
             // 2. Process cover image upload (Base64)
             if ($request->filled('cover_image_data')) {
-                $data = $request->input('cover_image_data');
-                
-                if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
-                    $data = substr($data, strpos($data, ',') + 1);
-                    $type = strtolower($type[1]);
+                $parsedImage = $this->parseBase64Image($request->input('cover_image_data'));
 
-                    if (in_array($type, ['jpg', 'jpeg', 'png', 'webp'])) {
-                        $decodedData = base64_decode($data);
-                        
-                        if ($decodedData !== false) {
-                            if ($coverPath) {
-                                Storage::disk('public')->delete($coverPath);
-                            }
-
-                            $fileName = 'course_cover_' . time() . '_' . uniqid() . '.' . $type;
-                            $coverPath = 'courses/covers/' . $fileName;
-                            
-                            Storage::disk('public')->put($coverPath, $decodedData);
-                        }
+                if ($parsedImage !== null) {
+                    if ($coverPath) {
+                        Storage::disk('public')->delete($coverPath);
                     }
+
+                    $fileName = 'course_cover_' . time() . '_' . uniqid() . '.' . $parsedImage['extension'];
+                    $coverPath = 'courses/covers/' . $fileName;
+
+                    Storage::disk('public')->put($coverPath, $parsedImage['data']);
                 }
             }
 
@@ -274,21 +215,14 @@ class CourseController extends Controller
             // Save new base64 report images
             $newImages = $request->input('new_report_images', []);
             foreach ($newImages as $base64Img) {
-                if (preg_match('/^data:image\/(\w+);base64,/', $base64Img, $type)) {
-                    $data = substr($base64Img, strpos($base64Img, ',') + 1);
-                    $type = strtolower($type[1]);
+                $parsedImage = $this->parseBase64Image($base64Img);
 
-                    if (in_array($type, ['jpg', 'jpeg', 'png', 'webp'])) {
-                        $decodedData = base64_decode($data);
-                        
-                        if ($decodedData !== false) {
-                            $fileName = 'report_img_' . time() . '_' . uniqid() . '.' . $type;
-                            $filePath = 'courses/reports/' . $fileName;
-                            
-                            Storage::disk('public')->put($filePath, $decodedData);
-                            $reportImages[] = $filePath;
-                        }
-                    }
+                if ($parsedImage !== null) {
+                    $fileName = 'report_img_' . time() . '_' . uniqid() . '.' . $parsedImage['extension'];
+                    $filePath = 'courses/reports/' . $fileName;
+
+                    Storage::disk('public')->put($filePath, $parsedImage['data']);
+                    $reportImages[] = $filePath;
                 }
             }
 
@@ -324,28 +258,17 @@ class CourseController extends Controller
             $newFiles = $request->input('new_report_files', []);
             foreach ($newFiles as $newFile) {
                 if (isset($newFile['name']) && isset($newFile['data'])) {
-                    $fileName = $newFile['name'];
-                    $base64Data = $newFile['data'];
+                    $parsedFile = $this->parseBase64ReportFile($newFile['name'], $newFile['data']);
 
-                    if (preg_match('/^data:([^;]+);base64,/', $base64Data, $mime)) {
-                        $data = substr($base64Data, strpos($base64Data, ',') + 1);
-                        $decodedData = base64_decode($data);
+                    if ($parsedFile !== null) {
+                        $safeFileName = 'report_file_' . time() . '_' . uniqid() . '.' . $parsedFile['extension'];
+                        $filePath = 'courses/files/' . $safeFileName;
 
-                        if ($decodedData !== false) {
-                            $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-                            if (!$ext) {
-                                $ext = 'bin';
-                            }
-
-                            $safeFileName = 'report_file_' . time() . '_' . uniqid() . '.' . $ext;
-                            $filePath = 'courses/files/' . $safeFileName;
-
-                            Storage::disk('public')->put($filePath, $decodedData);
-                            $reportFiles[] = [
-                                'name' => $fileName,
-                                'path' => $filePath
-                            ];
-                        }
+                        Storage::disk('public')->put($filePath, $parsedFile['data']);
+                        $reportFiles[] = [
+                            'name' => $parsedFile['original_name'],
+                            'path' => $filePath
+                        ];
                     }
                 }
             }
@@ -474,5 +397,76 @@ class CourseController extends Controller
             Log::error('CourseController@publicShow: ' . $e->getMessage());
             return redirect('/');
         }
+    }
+
+    private function parseBase64Image(?string $payload): ?array
+    {
+        if (! is_string($payload) || ! preg_match('/^data:(image\/[a-z0-9.+-]+);base64,/i', $payload, $matches)) {
+            return null;
+        }
+
+        $mimeType = strtolower($matches[1]);
+        if (! in_array($mimeType, self::ALLOWED_IMAGE_MIME_TYPES, true)) {
+            return null;
+        }
+
+        $data = substr($payload, strpos($payload, ',') + 1);
+        $decodedData = base64_decode($data, true);
+
+        if ($decodedData === false || strlen($decodedData) > self::MAX_IMAGE_BYTES) {
+            return null;
+        }
+
+        $imageInfo = @getimagesizefromstring($decodedData);
+        $detectedMime = strtolower((string) ($imageInfo['mime'] ?? ''));
+
+        if (! in_array($detectedMime, self::ALLOWED_IMAGE_MIME_TYPES, true)) {
+            return null;
+        }
+
+        $extension = match ($detectedMime) {
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            default => null,
+        };
+
+        if ($extension === null || ! in_array($extension, self::ALLOWED_IMAGE_EXTENSIONS, true)) {
+            return null;
+        }
+
+        return [
+            'data' => $decodedData,
+            'extension' => $extension,
+            'mime' => $detectedMime,
+        ];
+    }
+
+    private function parseBase64ReportFile(string $originalName, string $payload): ?array
+    {
+        if (! preg_match('/^data:([^;]+);base64,/i', $payload, $matches)) {
+            return null;
+        }
+
+        $mimeType = strtolower($matches[1]);
+        $extension = strtolower((string) pathinfo($originalName, PATHINFO_EXTENSION));
+
+        if ($extension === '' || ! in_array($extension, self::ALLOWED_REPORT_FILE_EXTENSIONS, true) || ! in_array($mimeType, self::ALLOWED_REPORT_FILE_MIME_TYPES, true)) {
+            return null;
+        }
+
+        $data = substr($payload, strpos($payload, ',') + 1);
+        $decodedData = base64_decode($data, true);
+
+        if ($decodedData === false || strlen($decodedData) > self::MAX_REPORT_FILE_BYTES) {
+            return null;
+        }
+
+        return [
+            'data' => $decodedData,
+            'extension' => $extension,
+            'mime' => $mimeType,
+            'original_name' => basename($originalName),
+        ];
     }
 }

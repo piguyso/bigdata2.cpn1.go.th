@@ -2,7 +2,7 @@
     $settings = \Illuminate\Support\Facades\Schema::hasTable('settings')
         ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all()
         : [];
-    $webName = $settings['web_name'] ?? 'EE.CPN1';
+    $webName = $settings['web_name'] ?? 'BigData สพป.ชพ.1';
 @endphp
 
 <x-layout>
@@ -11,7 +11,7 @@
     <main class="py-16 md:py-24 bg-slate-50/50 min-h-screen">
         <!-- Header Section -->
         <section class="max-w-7xl mx-auto px-6 text-center space-y-4 mb-16">
-            <div class="inline-block px-3.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+            <div class="inline-block px-3.5 py-1.5 bg-orange-50 text-orange-700 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
                 ความปลอดภัยของบัญชี
             </div>
             <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
@@ -27,7 +27,7 @@
             <div class="bg-white border border-slate-100 rounded-[2.5rem] shadow-xl shadow-slate-100/30 p-8 md:p-12 transition-all duration-300" x-data="passwordForm()">
                 <header class="border-b border-slate-100 pb-4 mb-6">
                     <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-lock text-emerald-500"></i> กรอกข้อมูลรหัสผ่าน
+                        <i class="fa-solid fa-lock text-orange-500"></i> กรอกข้อมูลรหัสผ่าน
                     </h3>
                     <p class="text-xs text-slate-500 mt-1">
                         กรุณากรอกรหัสผ่านปัจจุบันและกำหนดรหัสผ่านใหม่ที่คาดเดาได้ยาก
@@ -58,7 +58,7 @@
                         <div class="relative">
                             <input id="update_password_current_password"
                                    :type="showCurrent ? 'text' : 'password'"
-                                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
+                                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
                                    x-model="form.current_password"
                                    autocomplete="current-password"
                                    placeholder="ป้อนรหัสผ่านที่ใช้งานปัจจุบัน" />
@@ -76,7 +76,7 @@
                         <div class="relative">
                             <input id="update_password_password"
                                    :type="showNew ? 'text' : 'password'"
-                                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
+                                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
                                    x-model="form.password"
                                    autocomplete="new-password"
                                    placeholder="ป้อนรหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)" />
@@ -99,7 +99,7 @@
                         <div class="relative">
                             <input id="update_password_password_confirmation"
                                    :type="showConfirm ? 'text' : 'password'"
-                                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
+                                   class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
                                    x-model="form.password_confirmation"
                                    autocomplete="new-password"
                                    placeholder="กรอกรหัสผ่านใหม่อีกครั้งเพื่อยืนยัน" />
@@ -111,7 +111,7 @@
                         <!-- Match indicator -->
                         <p class="mt-1.5 text-[10px] font-bold"
                            x-show="form.password_confirmation"
-                           :class="form.password === form.password_confirmation ? 'text-emerald-500' : 'text-rose-500'"
+                           :class="form.password === form.password_confirmation ? 'text-orange-500' : 'text-rose-500'"
                            x-text="form.password === form.password_confirmation ? '✓ รหัสผ่านตรงกัน' : '✗ รหัสผ่านไม่ตรงกัน'"
                            x-cloak>
                         </p>
@@ -122,7 +122,7 @@
                         <button type="button"
                                 @click="save()"
                                 :disabled="saving"
-                                class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 text-white font-bold text-xs py-3.5 px-7 rounded-2xl shadow-lg shadow-emerald-100 transition duration-250 cursor-pointer">
+                                class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 text-white font-bold text-xs py-3.5 px-7 rounded-2xl shadow-lg shadow-orange-100 transition duration-250 cursor-pointer">
                             <template x-if="saving">
                                 <i class="fa-solid fa-circle-notch fa-spin"></i>
                             </template>
@@ -177,7 +177,7 @@
                 const s = this.passwordStrength;
                 if (s < 40)  return '#f43f5e'; // rose
                 if (s < 70)  return '#f59e0b'; // amber
-                return '#10b981';              // emerald
+                return '#f97316';              // orange
             },
 
             showToast(message, type = 'success') {

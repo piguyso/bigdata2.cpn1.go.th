@@ -25,9 +25,9 @@
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                             <div class="flex items-center gap-2">
                                 @if(Auth::user()->logo)
-                                    <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" class="w-6 h-6 rounded-full object-cover border border-emerald-500 shadow-sm">
+                                    <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" class="w-6 h-6 rounded-full object-cover border border-orange-500 shadow-sm">
                                 @else
-                                    <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-[9px]">
+                                    <div class="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-[9px]">
                                         {{ mb_substr(Auth::user()->name, 0, 1) }}
                                     </div>
                                 @endif
@@ -43,11 +43,7 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
-                            <x-dropdown-link :href="route('admin.lms.courses.index')">
-                                การตั้งค่า LMS
-                            </x-dropdown-link>
-                        @endif
+
 
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
@@ -95,9 +91,9 @@
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4 flex items-center gap-3">
                 @if(Auth::user()->logo)
-                    <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-emerald-500 shadow-sm">
+                    <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-orange-500 shadow-sm">
                 @else
-                    <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-sm">
+                    <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm">
                         {{ mb_substr(Auth::user()->name, 0, 1) }}
                     </div>
                 @endif
@@ -108,11 +104,7 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                @if(Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
-                    <x-responsive-nav-link :href="route('admin.lms.courses.index')">
-                        การตั้งค่า LMS
-                    </x-responsive-nav-link>
-                @endif
+
 
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}

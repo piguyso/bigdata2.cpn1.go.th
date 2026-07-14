@@ -2,7 +2,7 @@
     <header class="border-b border-slate-100 pb-4 mb-6 flex items-center justify-between">
         <div>
             <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-lock text-emerald-500"></i> เปลี่ยนรหัสผ่าน
+                <i class="fa-solid fa-lock text-orange-500"></i> เปลี่ยนรหัสผ่าน
             </h3>
             <p class="text-xs text-slate-500 mt-1">
                 เปลี่ยนรหัสผ่านใหม่เพื่อความปลอดภัยในการเข้าใช้งานระบบ
@@ -14,7 +14,7 @@
                 @click="formOpen = !formOpen"
                 :class="formOpen
                     ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                    : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-100'"
+                    : 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-100'"
                 class="inline-flex items-center gap-2 font-bold text-xs py-3 px-6 rounded-2xl transition-all duration-200 active:scale-95 cursor-pointer">
             <template x-if="!formOpen">
                 <i class="fa-solid fa-key"></i>
@@ -61,7 +61,7 @@
                 <div class="relative">
                     <input id="update_password_current_password"
                            :type="showCurrent ? 'text' : 'password'"
-                           class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
+                           class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
                            x-model="form.current_password"
                            autocomplete="current-password" />
                     <button type="button" @click="showCurrent = !showCurrent"
@@ -77,7 +77,7 @@
                 <div class="relative">
                     <input id="update_password_password"
                            :type="showNew ? 'text' : 'password'"
-                           class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
+                           class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
                            x-model="form.password"
                            autocomplete="new-password" />
                     <button type="button" @click="showNew = !showNew"
@@ -98,7 +98,7 @@
                 <div class="relative">
                     <input id="update_password_password_confirmation"
                            :type="showConfirm ? 'text' : 'password'"
-                           class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
+                           class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 pr-10 text-xs font-semibold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition shadow-sm placeholder:text-slate-400 text-slate-800"
                            x-model="form.password_confirmation"
                            autocomplete="new-password" />
                     <button type="button" @click="showConfirm = !showConfirm"
@@ -109,7 +109,7 @@
                 <!-- Match indicator -->
                 <p class="mt-1.5 text-[10px] font-bold"
                    x-show="form.password_confirmation"
-                   :class="form.password === form.password_confirmation ? 'text-emerald-500' : 'text-rose-500'"
+                   :class="form.password === form.password_confirmation ? 'text-orange-500' : 'text-rose-500'"
                    x-text="form.password === form.password_confirmation ? '✓ รหัสผ่านตรงกัน' : '✗ รหัสผ่านไม่ตรงกัน'"
                    x-cloak>
                 </p>
@@ -120,7 +120,7 @@
             <button type="button"
                     @click="save()"
                     :disabled="saving"
-                    class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 text-white font-bold text-xs py-3.5 px-7 rounded-2xl shadow-lg shadow-emerald-100 transition duration-250 cursor-pointer">
+                    class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 text-white font-bold text-xs py-3.5 px-7 rounded-2xl shadow-lg shadow-orange-100 transition duration-250 cursor-pointer">
                 <template x-if="saving">
                     <i class="fa-solid fa-circle-notch fa-spin"></i>
                 </template>
@@ -164,7 +164,7 @@
                 const s = this.passwordStrength;
                 if (s < 40)  return '#f43f5e'; // rose
                 if (s < 70)  return '#f59e0b'; // amber
-                return '#10b981';              // emerald
+                return '#f97316';              // orange
             },
 
             showToast(message, type = 'success') {

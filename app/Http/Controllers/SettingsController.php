@@ -51,12 +51,7 @@ class SettingsController extends Controller
                 'contact_email'    => ['nullable', 'email', 'max:255'],
                 'contact_phone'    => ['nullable', 'string', 'max:50'],
                 'contact_address'  => ['nullable', 'string', 'max:1000'],
-                'stat_teachers'    => ['nullable', 'string', 'max:50'],
-                'stat_schools'     => ['nullable', 'string', 'max:50'],
-                'stat_districts'   => ['nullable', 'string', 'max:50'],
-                'stat_courses'     => ['nullable', 'string', 'max:50'],
                 'web_logo_data'    => ['nullable', 'string'],
-                'slide_interval'   => ['nullable', 'integer', 'min:2', 'max:60'],
             ]);
 
             // 1. Process Logo Upload if sent
@@ -103,11 +98,7 @@ class SettingsController extends Controller
                 'contact_email',
                 'contact_phone',
                 'contact_address',
-                'stat_teachers',
-                'stat_schools',
-                'stat_districts',
-                'stat_courses',
-                'slide_interval',
+
             ];
 
             foreach ($fields as $field) {
