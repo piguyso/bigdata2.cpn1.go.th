@@ -10,7 +10,7 @@ define('ENV_FILE', __DIR__ . '/../.env');
 define('ENV_EXAMPLE_FILE', __DIR__ . '/../.env.example');
 
 // 1. Security Check: Block if already installed
-if (file_exists(INSTALLER_LOCK_FILE)) {
+if (file_exists(ENV_FILE) || file_exists(INSTALLER_LOCK_FILE)) {
     http_response_code(403);
     echo '<!DOCTYPE html>
     <html lang="th">
@@ -30,7 +30,7 @@ if (file_exists(INSTALLER_LOCK_FILE)) {
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
             </div>
             <h2 class="text-slate-800 text-xl font-bold mb-3">ระบบได้รับการติดตั้งเรียบร้อยแล้ว</h2>
-            <p class="text-sm text-slate-400 leading-relaxed mb-6">หากคุณต้องการทำการติดตั้งใหม่อีกครั้ง กรุณาลบไฟล์ล็อกการติดตั้งที่ <code>storage/installed.lock</code> ออกก่อน</p>
+            <p class="text-sm text-slate-400 leading-relaxed mb-6">หากคุณต้องการทำการติดตั้งใหม่อีกครั้ง กรุณาลบไฟล์ <code>.env</code> หรือไฟล์ล็อกการติดตั้งที่ <code>storage/installed.lock</code> ออกก่อน</p>
             <a href="/" class="inline-block bg-slate-900 hover:bg-orange-600 text-white font-bold text-sm px-8 py-4 rounded-2xl transition duration-200 shadow-xl shadow-slate-200 active:scale-95 w-full">เข้าสู่หน้าแรกของระบบ</a>
         </div>
     </body>

@@ -11,7 +11,7 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 }
 
 // Check if the application is installed
-if (!file_exists(__DIR__.'/../.env') || !file_exists(__DIR__.'/../storage/installed.lock')) {
+if (!file_exists(__DIR__.'/../.env')) {
     if (php_sapi_name() !== 'cli') {
         header('Location: /install.php');
         exit;
