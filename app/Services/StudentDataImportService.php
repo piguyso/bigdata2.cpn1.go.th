@@ -25,6 +25,7 @@ class StudentDataImportService
         $validRows = [];
         $invalidRows = [];
         $warnings = [];
+        $hasYearTermMismatch = false;
 
         foreach ($rows as $index => $row) {
             if (! $this->isDataRow($row)) {
@@ -43,12 +44,7 @@ class StudentDataImportService
             }
 
             if ($expectedAcademicYear !== null && $expectedTerm !== null && $parsed['raw_year_term'] !== "{$expectedAcademicYear}-{$expectedTerm}") {
-                $invalidRows[] = [
-                    'row_number' => $index + 1,
-                    'reason' => 'ปี-รอบในไฟล์ไม่ตรงกับค่าที่เลือก',
-                    'columns' => count($row),
-                ];
-                continue;
+                $hasYearTermMismatch = true;
             }
 
             $parsed['school_name'] = $schools[$parsed['school_smis']] ?? null;
@@ -64,6 +60,10 @@ class StudentDataImportService
 
         if (count($unmatchedRows) > 0) {
             $warnings[] = 'พบรหัสโรงเรียนที่ยังไม่ตรงกับ system_school จำนวน ' . count($unmatchedRows) . ' แถว';
+        }
+
+        if ($hasYearTermMismatch) {
+            $warnings[] = 'หมายเหตุ: ปีการศึกษาหรือเทอมในไฟล์บางแถวไม่ตรงกับค่าที่เลือกในระบบ (ระบบจะนำเข้าข้อมูลเข้าสู่ปี/เทอมที่เลือกในหน้าเว็บนี้แทน)';
         }
 
         return [
