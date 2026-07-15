@@ -30,7 +30,7 @@ class SimpleXlsxExporter
     public static function write(string $path, array $headers, array $rows): void
     {
         if (! class_exists('ZipArchive')) {
-            throw new \RuntimeException('เซิร์ฟเวอร์ของคุณไม่รองรับการเขียนไฟล์ .xlsx (กรุณาเปิดใช้งาน PHP Extension: zip ในไฟล์ php.ini หรือแผงควบคุมโฮสติ้ง)');
+            throw new \RuntimeException('เซิร์ฟเวอร์นี้ไม่รองรับการส่งออกไฟล์ .xlsx (ขาด Extension: zip) กรุณาใช้ไฟล์รูปแบบอื่นหรือติดต่อผู้ดูแลระบบเพื่อเปิดใช้ extension zip');
         }
 
         $timestamp = (new DateTimeImmutable())->format('Y-m-d\TH:i:s\Z');

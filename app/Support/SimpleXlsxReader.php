@@ -11,7 +11,7 @@ class SimpleXlsxReader
     public static function rows(string $path): array
     {
         if (! class_exists('ZipArchive')) {
-            throw new RuntimeException('เซิร์ฟเวอร์ของคุณไม่รองรับการเปิดไฟล์ .xlsx (กรุณาเปิดใช้งาน PHP Extension: zip ในไฟล์ php.ini หรือแผงควบคุมโฮสติ้ง)');
+            throw new RuntimeException('เซิร์ฟเวอร์นี้ไม่รองรับการเปิดไฟล์ .xlsx (ขาด Extension: zip) แนะนำให้แปลงไฟล์เป็น .csv (เลือกบันทึกเป็น CSV UTF-8) แล้วอัปโหลดแทน');
         }
 
         $zip = new ZipArchive();
