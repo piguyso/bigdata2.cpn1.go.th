@@ -195,14 +195,20 @@ class StudentDataImportService
             return ['valid' => false, 'reason' => 'จำนวนคอลัมน์ไม่ตรงกับชนิดข้อมูลที่เลือก'];
         }
 
-        $yearTerm = trim((string) $row[0]);
+        $yearTermRaw = trim((string) $row[0]);
+        $normalized = $this->normalizeYearTerm($yearTermRaw);
+        if ($normalized === null) {
+            return ['valid' => false, 'reason' => 'ปี-รอบ ไม่ถูกต้อง'];
+        }
+
+        $yearTerm = $normalized;
         $schoolSmis = $this->digits((string) $row[1]);
         $category = null;
         $metrics = [];
         $offset = 2;
 
-        if (! preg_match('/^\d{4}-\d+$/', $yearTerm) || $schoolSmis === '') {
-            return ['valid' => false, 'reason' => 'ปี-รอบ หรือ SMIS ไม่ถูกต้อง'];
+        if ($schoolSmis === '') {
+            return ['valid' => false, 'reason' => 'SMIS ไม่ถูกต้อง'];
         }
 
         if (in_array($schema, ['category_grade', 'category_total', 'category_group6', 'category_group7'], true)) {
@@ -292,7 +298,19 @@ class StudentDataImportService
     {
         $token = trim((string) ($row[0] ?? ''));
 
-        return preg_match('/^\d{4}-\d+$/', $token) === 1;
+        return $this->normalizeYearTerm($token) !== null;
+    }
+
+    private function normalizeYearTerm(string $value): ?string
+    {
+        $value = trim($value);
+        // Matches YYYY-T, YYYY-TT, YYYY/T, YYYY.T, YYYY-T-D (Excel date parse)
+        if (preg_match('/^(\d{4})[^\d]+(0?\d+)/', $value, $matches)) {
+            $year = $matches[1];
+            $term = (int) $matches[2];
+            return "{$year}-{$term}";
+        }
+        return null;
     }
 
     private function digits(string $value): string
