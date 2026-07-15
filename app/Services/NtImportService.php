@@ -16,6 +16,13 @@ class NtImportService
         $warnings = [];
 
         foreach ($rows as $index => $row) {
+            // Pad or slice row to match NT expected columns (13)
+            if (count($row) < 13) {
+                $row = array_pad($row, 13, '');
+            } elseif (count($row) > 13) {
+                $row = array_slice($row, 0, 13);
+            }
+
             if (! $this->looksLikeDataRow($row)) {
                 continue;
             }
