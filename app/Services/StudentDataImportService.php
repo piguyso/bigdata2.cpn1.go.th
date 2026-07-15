@@ -183,6 +183,14 @@ class StudentDataImportService
     private function parseRow(array $row, string $schema, string $dataType, int $rowNumber): array
     {
         $expected = StudentDataTypes::expectedColumns($schema);
+
+        // Pad or slice row to match expected columns (Excel may omit trailing blank cells or export extra blank columns)
+        if (count($row) < $expected) {
+            $row = array_pad($row, $expected, '');
+        } elseif (count($row) > $expected) {
+            $row = array_slice($row, 0, $expected);
+        }
+
         if (count($row) !== $expected) {
             return ['valid' => false, 'reason' => 'จำนวนคอลัมน์ไม่ตรงกับชนิดข้อมูลที่เลือก'];
         }
