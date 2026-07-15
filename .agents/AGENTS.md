@@ -124,6 +124,226 @@ This project uses **Laravel (web.php) + Axios (client)** — there is no separat
    * รายงานเฉพาะไฟล์ที่อ่าน/แก้, risk, decision, test result
    * ไม่ revert งานคนอื่นใน dirty workspace
 
+---
+
+## Subagent Profile: laravel_audit
+
+ใช้ `laravel_audit` สำหรับตรวจงาน Laravel หลังแก้ code หรือก่อน merge โดยตรวจทั้ง UX/UI และ security
+
+### Required References
+
+1. เปิด `ux.md` ก่อน audit ทุกครั้ง
+2. เปิด `security.md` ก่อน audit ทุกครั้ง
+3. ถ้าไฟล์ใดไม่มี ต้องสร้างหรือแจ้ง agent หลักให้สร้างก่อน audit
+
+### Audit Scope
+
+1. **UX/UI Audit**
+   * เทียบ Blade/UI กับ pattern ใน `ux.md`
+   * ตรวจ layout, navigation, input, form, file upload, buttons, preview, table, modal, toast
+   * หน้า import ต้องเทียบกับ `/admin/schoolmis`
+   * ถ้ามี UX/UI decision ใหม่ ต้องบันทึกลง `ux.md`
+
+2. **Security Audit**
+   * ใช้กฎ `security_audit` ใน `security.md`
+   * ตรวจ middleware `auth`, `role:admin`
+   * ตรวจ request validation ก่อน write
+   * ตรวจ upload allowlist และ safe temp path
+   * ตรวจ DB transaction, scoped replace/delete, no raw SQL from user input
+   * ตรวจ Blade escaping, Alpine `x-text`, no unsafe `x-html`
+   * ตรวจ JSON response shape และ error handling
+
+3. **URL Health Check**
+   * ต้องเปิด URL ที่เกี่ยวข้องทุกครั้งเพื่อตรวจ error
+   * ใช้ `Invoke-WebRequest -UseBasicParsing -Uri "<url>"`
+   * public URL ควรได้ `200`
+   * admin URL ที่ยังไม่ login ได้ `302` ได้ แต่ redirect target ต้องเป็น `/login` หรือ route login เท่านั้น
+   * ตรวจ body ว่าไม่มี `Whoops`, `500 Server Error`, `Undefined variable`, `Route [`, `Vite manifest not found`, `Axios is not defined`, `Alpine is not defined`
+   * ห้าม bypass auth เพื่อดู admin page
+   * ถ้ามี browser automation/Playwright ให้ตรวจ browser console เพิ่ม
+   * ถ้าไม่มี browser automation ให้รายงานว่าใช้ HTTP/body scan แทน
+
+### Output Format
+
+รายงานสั้น:
+
+```text
+PASS: ...
+FAIL: file:line ...
+RISK: ...
+URL: ... status ...
+TEST: ...
+```
+
+### Communication
+
+* คุยกับ agent หลักแบบ caveman: สั้นมาก แต่ technical ครบ
+* ไม่แก้ไฟล์เอง เว้นแต่ได้รับมอบหมายให้ fix
+* ไม่ revert งานคนอื่นใน dirty workspace
+
+---
+
+## Main Agent Delegation Rule
+
+เมื่อ main agent ได้รับงานที่เกี่ยวกับ Laravel, UX/UI, security, import, dashboard, API + client หรือการตรวจ code ให้พิจารณาสั่ง subagent ทำงานเสมอ ถ้างานนั้นแบ่งได้และไม่ทำให้ critical path ช้าลง
+
+### Required Delegation Pattern
+
+1. **ก่อนเริ่มงาน**
+   * main agent อ่านคำสั่งผู้ใช้และแยกงานเป็นส่วน:
+     * งานหลักที่ main agent ต้องทำเองทันที
+     * งานข้างเคียงที่ subagent ทำคู่ขนานได้
+   * ถ้าเป็นงานเขียน Laravel feature/UI ให้ใช้ `laravel-agent`
+   * ถ้าเป็นงานตรวจ code/UX/security/URL ให้ใช้ `laravel_audit`
+
+2. **ตอนสั่ง subagent**
+   * ระบุ scope ชัดเจน:
+     * ไฟล์ที่ให้ตรวจ/แก้
+     * URL ที่ต้องเปิดดู
+     * กฎที่ต้องอ่าน เช่น `ux.md`, `security.md`
+     * สิ่งที่ห้ามทำ เช่น ห้าม revert งานคนอื่น
+   * ถ้าให้แก้ code ต้องระบุ write set ให้ไม่ชน main agent หรือ subagent อื่น
+   * ถ้าให้ audit ต้องบอกให้รายงานกลับเท่านั้น เว้นแต่สั่งให้ fix
+
+3. **รายงานกลับ main agent**
+   * subagent ต้องรายงานผลกลับ main agent เท่านั้น ไม่ถือว่าเป็นคำตอบสุดท้ายให้ผู้ใช้
+   * format รายงานต้องสั้น:
+
+```text
+PASS: ...
+FAIL: file:line ...
+RISK: ...
+URL: ... status ...
+TEST: ...
+CHANGED: ...
+```
+
+4. **main agent หลังรับรายงาน**
+   * main agent ต้องอ่านรายงาน subagent
+   * ตัดสินใจเองว่าจะ integrate/fix/ignore
+   * ถ้ามี finding สำคัญ ต้องแก้หรือบอกผู้ใช้
+   * final answer ต้องเป็นคำตอบของ main agent รวมผลทั้งหมด ไม่ใช่ paste รายงานดิบ
+
+### laravel-agent และ laravel_audit Communication Loop
+
+ระหว่างงาน Laravel ที่ใช้ทั้ง `laravel-agent` และ `laravel_audit` ให้ main agent ทำหน้าที่เป็นตัวกลางส่งข้อมูลระหว่างสอง agent ตลอดงาน
+
+1. **ก่อนเขียน code**
+   * main agent ส่ง scope, route, URL, UX requirement และ security requirement ให้ `laravel-agent`
+   * main agent ส่ง plan เดียวกันให้ `laravel_audit` เพื่อเตรียม checklist จาก `ux.md` และ `security.md`
+
+2. **ระหว่างเขียน code**
+   * `laravel-agent` ต้องรายงาน decision สำคัญกลับ main agent เช่น files changed, route/API shape, validation, UI pattern
+   * main agent ต้องส่ง decision เหล่านี้ต่อให้ `laravel_audit` เพื่อตรวจระหว่างทาง
+   * ถ้า `laravel_audit` พบ risk ต้องรายงาน main agent
+   * main agent ต้องส่ง risk ที่เกี่ยวกับ implementation ต่อให้ `laravel-agent` แก้หรือปรับ
+
+3. **หลังเขียน code**
+   * main agent สั่ง `laravel_audit` ตรวจ final patch, URL health check, UX, security
+   * ถ้า audit fail:
+     * main agent ส่ง finding ให้ `laravel-agent` หรือแก้เองถ้าเป็น critical path
+     * audit ซ้ำเฉพาะจุดที่แก้
+   * final answer ต้องระบุว่า audit ผ่านหรือเหลือ risk อะไร
+
+4. **ข้อจำกัด**
+   * subagent ไม่ต้องคุยกับผู้ใช้โดยตรง
+   * subagent ไม่ถือสิทธิ์ตัดสินใจสุดท้าย
+   * ถ้า platform ไม่มี direct subagent-to-subagent channel ให้ main agent forward ข้อความสำคัญให้แทน
+   * ห้ามให้ทั้งสอง agent แก้ไฟล์เดียวกันพร้อมกัน เว้นแต่ main agent แบ่ง ownership ชัดเจน
+
+### Public Agent Dashboard Logging
+
+เมื่อ main agent ส่งข้อความหา subagent หรือรับรายงานจาก subagent ให้บันทึก log แบบปลอดภัยลง `public/agent-messages.json` เพื่อให้ `public/agent-dashboard.html` แสดงสถานะได้ตลอดเวลา
+
+1. **ต้อง log เหตุการณ์เหล่านี้**
+   * main agent ส่ง task ให้ `laravel-agent`
+   * `laravel-agent` รายงานกลับ main agent
+   * main agent ส่ง audit request ให้ `laravel_audit`
+   * `laravel_audit` รายงานกลับ main agent
+   * main agent forward finding/risk ระหว่างสอง agent
+
+2. **รูปแบบไฟล์**
+
+```json
+{
+  "updated_at": "ISO-8601 datetime",
+  "agents": [
+    { "name": "main-agent", "status": "active", "task": "router / integrator" },
+    { "name": "laravel-agent", "status": "waiting", "task": "Laravel API + client builder" },
+    { "name": "laravel_audit", "status": "waiting", "task": "UX + security auditor" }
+  ],
+  "messages": [
+    {
+      "at": "ISO-8601 datetime",
+      "from": "main-agent",
+      "to": "laravel-agent",
+      "message": "short redacted summary"
+    }
+  ]
+}
+```
+
+3. **Security**
+   * log file อยู่ใน `public/` จึงห้ามใส่ secret, token, password, cookie, raw personal data, raw stack trace, full SQL หรือข้อมูล sensitive
+   * ให้บันทึกเฉพาะ summary สั้นแบบ redacted
+   * ถ้าข้อความ subagent มีข้อมูล sensitive ให้ main agent สรุปใหม่ก่อนเขียน log
+
+4. **Dashboard URL**
+   * เปิดผ่านเว็บที่ `/agent-dashboard.html`
+   * dashboard poll `agent-messages.json` ทุก 1 วินาที
+   * ถ้าไม่เห็นข้อมูลใหม่ ให้ตรวจว่า main agent append log แล้วหรือยัง
+
+### Agent Live Dashboard Rule
+
+เมื่อ main agent ส่งงานให้ `laravel-agent` หรือ `laravel_audit` หรือได้รับรายงานกลับ ต้องอัปเดตไฟล์ public dashboard เพื่อให้ผู้ใช้เปิดดูสถานะได้แบบ polling:
+
+1. ไฟล์แสดงผลคือ `public/agent-dashboard.html`
+2. ไฟล์ข้อมูลคือ `public/agent-messages.json`
+3. ทุก message event ต้องเพิ่มใน `messages`:
+
+```json
+{
+  "at": "ISO-8601 datetime",
+  "from": "main-agent",
+  "to": "laravel-agent",
+  "message": "สรุปข้อความสั้น ไม่ใส่ secret/token/path sensitive"
+}
+```
+
+4. ทุกครั้งต้องอัปเดต:
+   * `status`
+   * `updated_at`
+   * `agents[].status`
+   * `agents[].task`
+5. ห้ามบันทึก secret, token, password, session cookie, personal identifier หรือ raw exception ที่มี path/SQL ละเอียดเกินจำเป็นลง dashboard JSON
+6. dashboard เป็น public static file ดังนั้นข้อมูลต้องเป็น public-safe summary เท่านั้น
+
+### When To Use Which Subagent
+
+- `laravel-agent`
+  - งานเขียน Laravel feature
+  - งาน API + client
+  - งานหน้า import/dashboard
+  - งาน UX/UI ที่ต้องเทียบ pattern เดิม
+  - ต้องอ่าน/อัปเดต `ux.md`
+
+- `laravel_audit`
+  - ตรวจหลังแก้ code
+  - ตรวจ UX/UI ตาม `ux.md`
+  - ตรวจ security ตาม `security.md`
+  - เปิด URL ตรวจ error
+  - ตรวจ route/middleware/validation/upload/transaction/output escaping
+
+### Exceptions
+
+ไม่ต้อง spawn subagent เมื่อ:
+- งานเล็กมาก เช่นตอบคำถามสั้นหรือแก้ typo เดียว
+- งานเป็น immediate blocker ที่ main agent ต้องทำเองทันที
+- user สั่งชัดว่าไม่ต้องใช้ subagent
+- เครื่องมือ subagent ไม่พร้อม
+
+ถ้าไม่ใช้ subagent ในงานที่เกี่ยวกับ Laravel/UX/security ให้ main agent ระบุเหตุผลสั้น ๆ ใน internal progress หรือ final summary
+
 ### 1. API Route Conventions
 
 All API routes MUST follow this naming and URL structure:

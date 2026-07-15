@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use RuntimeException;
 use Illuminate\Support\Str;
 
 class StudentDataImportController extends Controller
@@ -22,6 +24,7 @@ class StudentDataImportController extends Controller
     {
         return view('admin.student-data-imports', [
             'dataTypes' => StudentDataTypes::all(),
+            'defaultDataType' => StudentDataTypes::defaultKey(),
         ]);
     }
 
@@ -35,12 +38,14 @@ class StudentDataImportController extends Controller
         $imports = DB::table('student_data_imports as imports')
             ->leftJoin('users', 'imports.created_by', '=', 'users.id')
             ->select('imports.*', 'users.name as created_by_name')
+            ->whereIn('imports.data_type', array_keys(StudentDataTypes::all()))
             ->orderByDesc('imports.id')
             ->limit(30)
             ->get();
 
         $dataSets = DB::table('student_data_records')
             ->select('academic_year', 'term', 'data_type', DB::raw('COUNT(*) as records_count'), DB::raw('SUM(total) as total_count'), DB::raw('MAX(updated_at) as latest_updated_at'))
+            ->whereIn('data_type', array_keys(StudentDataTypes::all()))
             ->groupBy('academic_year', 'term', 'data_type')
             ->orderByDesc('academic_year')
             ->orderByDesc('term')
@@ -67,19 +72,21 @@ class StudentDataImportController extends Controller
             $validated = $request->validate([
                 'academic_year' => ['required', 'digits:4'],
                 'term' => ['required', 'integer', 'min:1', 'max:3'],
-                'data_type' => ['required', 'string'],
+                'data_type' => ['required', 'string', Rule::in(StudentDataTypes::keys())],
                 'file' => ['required', 'file', 'mimes:csv,txt,xlsx'],
             ]);
-
-            if (! StudentDataTypes::get($validated['data_type'])) {
-                return response()->json(['status' => 'error', 'message' => 'ไม่พบชนิดข้อมูลที่เลือก'], 422);
-            }
 
             $file = $request->file('file');
             $extension = strtolower($file->getClientOriginalExtension() ?: 'csv');
             $token = Str::uuid()->toString() . '.' . $extension;
             $storedPath = $file->storeAs('student-data-imports/tmp', $token);
-            $preview = $this->importService->preview(Storage::path($storedPath), $validated['data_type'], $file->getClientOriginalName());
+            $preview = $this->importService->preview(
+                Storage::path($storedPath),
+                $validated['data_type'],
+                $file->getClientOriginalName(),
+                $validated['academic_year'],
+                (string) $validated['term']
+            );
 
             if (($preview['valid_rows'] ?? 0) === 0) {
                 return response()->json([
@@ -114,7 +121,7 @@ class StudentDataImportController extends Controller
             $validated = $request->validate([
                 'academic_year' => ['required', 'digits:4'],
                 'term' => ['required', 'integer', 'min:1', 'max:3'],
-                'data_type' => ['required', 'string'],
+                'data_type' => ['required', 'string', Rule::in(StudentDataTypes::keys())],
                 'upload_token' => ['required', 'string'],
                 'source_filename' => ['required', 'string', 'max:255'],
             ]);
@@ -142,13 +149,20 @@ class StudentDataImportController extends Controller
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
+        } catch (RuntimeException $e) {
+            Log::error('StudentDataImportController@import: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
         } catch (\Throwable $e) {
             Log::error('StudentDataImportController@import: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage() ?: 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล',
-            ], 422);
+                'message' => 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล',
+            ], 500);
         }
     }
 

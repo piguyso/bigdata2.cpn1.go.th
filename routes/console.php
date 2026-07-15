@@ -17,7 +17,6 @@ Artisan::command('student-data:import-bigdata {path=BIGDATA}', function (Student
     }
 
     $map = [
-        'จำนวนนักเรียนแยกชั้น,เพศ' => 'class_gender',
         'จำนวนนักเรียนขาดแคลน' => 'shortage',
         'จำนวนนักเรียนจำแนกตามอายุ' => 'age',
         'จำนวนนักเรียนด้อยโอกาส' => 'disadvantaged',
@@ -46,6 +45,7 @@ Artisan::command('student-data:import-bigdata {path=BIGDATA}', function (Student
 
     $ok = 0;
     $failed = 0;
+    $skipped = 0;
     $importedRows = 0;
     $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($basePath));
 
@@ -58,6 +58,12 @@ Artisan::command('student-data:import-bigdata {path=BIGDATA}', function (Student
         if (! preg_match('/^(\d{4})-(\d)-(.+)$/u', $baseName, $matches)) {
             $failed++;
             $this->warn('ข้ามไฟล์ชื่อไม่ตรงรูปแบบ: ' . $file->getFilename());
+            continue;
+        }
+
+        if ($matches[3] === 'จำนวนนักเรียนแยกชั้น,เพศ') {
+            $skipped++;
+            $this->line('SKIP ' . $file->getFilename() . ': ใช้ข้อมูล SchoolMIS เดิม');
             continue;
         }
 
@@ -85,7 +91,7 @@ Artisan::command('student-data:import-bigdata {path=BIGDATA}', function (Student
         }
     }
 
-    $this->info('นำเข้าสำเร็จ ' . $ok . ' ไฟล์, ไม่ผ่าน ' . $failed . ' ไฟล์, รวม ' . $importedRows . ' รายการ');
+    $this->info('นำเข้าสำเร็จ ' . $ok . ' ไฟล์, ข้าม ' . $skipped . ' ไฟล์, ไม่ผ่าน ' . $failed . ' ไฟล์, รวม ' . $importedRows . ' รายการ');
 
     return $failed > 0 ? self::FAILURE : self::SUCCESS;
 })->purpose('Import student dashboard data from BIGDATA CSV files');

@@ -110,7 +110,13 @@
             </form>
         </section>
 
-        <div x-show="!dashboard.rows.length" class="bg-white border border-rose-100 rounded-3xl p-10 text-center" x-cloak>
+        <!-- Loading State -->
+        <div x-show="loading" class="py-28 flex flex-col items-center justify-center gap-3" x-cloak>
+            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-orange-500"></i>
+            <span class="text-xs font-extrabold text-slate-400">กำลังโหลดข้อมูลบุคลากร...</span>
+        </div>
+
+        <div x-show="!loading && !dashboard.rows.length" class="bg-white border border-rose-100 rounded-3xl p-10 text-center" x-cloak>
             <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center text-xl mx-auto mb-4">
                 <i class="fa-solid fa-circle-exclamation"></i>
             </div>
@@ -118,7 +124,7 @@
             <p class="text-xs text-slate-400 mt-2">กรุณานำเข้าข้อมูลภาพรวมบุคลากรจาก HRMS ก่อน</p>
         </div>
 
-        <div x-show="dashboard.rows.length" class="space-y-6" x-cloak>
+        <div x-show="!loading && dashboard.rows.length" class="space-y-6" x-cloak>
             <section class="grid grid-cols-2 xl:grid-cols-4 gap-4">
                 <template x-for="item in dashboard.overview" :key="item.label">
                     <div class="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm flex items-center gap-4">

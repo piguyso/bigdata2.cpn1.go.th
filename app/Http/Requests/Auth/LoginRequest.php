@@ -56,11 +56,22 @@ class LoginRequest extends FormRequest
         }
 
         // 2. Try external API authentication
+        $disableApiAuth = '0';
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                $disableApiAuth = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'disable_api_auth')->value('value') ?? '0';
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to check disable_api_auth setting: ' . $e->getMessage());
+        }
+
         $apiUrl = (string) config('services.external_login.url', '');
         $apiKey = (string) config('services.external_login.key', '');
         $apiTimeout = max(3, (int) config('services.external_login.timeout', 10));
 
-        if ($apiUrl === '' || $apiKey === '' || ! filter_var($apiUrl, FILTER_VALIDATE_URL) || parse_url($apiUrl, PHP_URL_SCHEME) !== 'https') {
+        if ($disableApiAuth === '1') {
+            Log::info('External API authentication is disabled via database setting.');
+        } elseif ($apiUrl === '' || $apiKey === '' || ! filter_var($apiUrl, FILTER_VALIDATE_URL) || parse_url($apiUrl, PHP_URL_SCHEME) !== 'https') {
             Log::warning('External API authentication skipped because configuration is missing or insecure.');
         } else {
             try {

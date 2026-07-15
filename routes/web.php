@@ -23,6 +23,7 @@ Route::get('/rt', [BasicExamDashboardController::class, 'rtIndex'])->name('rt.da
 Route::get('/assets', [AssetDashboardController::class, 'index'])->name('asset.dashboard');
 Route::get('/personnel', [PersonnelDashboardController::class, 'index'])->name('personnel.dashboard');
 Route::get('/students', [StudentDataDashboardController::class, 'index'])->name('student-data.dashboard');
+Route::get('/students/export/xlsx', [StudentDataDashboardController::class, 'exportXlsx'])->name('student-data.export');
 Route::get('/personnel/area', [PersonnelDashboardController::class, 'area'])->name('personnel.area');
 Route::get('/personnel/schools', [PersonnelDashboardController::class, 'schools'])->name('personnel.schools');
 Route::get('/personnel/position', [PersonnelDashboardController::class, 'position'])->name('personnel.position');

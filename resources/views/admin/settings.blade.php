@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" defer></script>
 
+
+
     <div class="py-12 max-w-4xl mx-auto px-6" x-data="settingsForm()" x-init="init()">
         <!-- Toast Notification (Floating Glassmorphic) -->
         <div x-show="toast.show" 
@@ -60,7 +62,7 @@
                     <i class="fa-solid fa-id-card"></i> อัตลักษณ์เว็บไซต์
                 </button>
                 <button type="button" 
-                        @click="activeTab = 'contact'" 
+                        @click="activeTab = 'contact'; initMap();" 
                         :class="activeTab === 'contact' ? 'bg-white text-orange-600 border border-slate-200/60 shadow-sm' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/50'"
                         class="flex-1 py-3 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-address-book"></i> ข้อมูลติดต่อ
@@ -147,6 +149,52 @@
                                placeholder="เช่น {{ config('services.obec_safety.area_code', '1086010000') }}">
                         <p class="text-[11px] text-slate-400">ใช้สำหรับอ้างอิงข้อมูลเขตพื้นที่จากระบบภายนอก เช่น HRMS/OBEC</p>
                     </div>
+
+                    <!-- Website Theme Color Field -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">สีหลักของเว็บไซต์ (Theme Color)</label>
+                        <div class="flex gap-3 items-center">
+                            <div class="relative w-12 h-12 rounded-xl overflow-hidden border border-slate-200 shadow-sm shrink-0">
+                                <input type="color" 
+                                       x-model="settings.theme_color"
+                                       @input="updateRealtimeThemeColor($event.target.value)"
+                                       class="absolute inset-0 w-full h-full p-0 border-0 cursor-pointer scale-125">
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" 
+                                       x-model="settings.theme_color" 
+                                       @input="updateRealtimeThemeColor($event.target.value)"
+                                       required
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
+                                       placeholder="#f97316">
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400">เลือกสีหลักของระบบโดยใช้เครื่องมือเลือกสีหรือกรอกรหัสสี Hex Code</p>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-4 pt-4">
+                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-orange-600"></i> ความปลอดภัยและการยืนยันตัวตน
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">ตั้งค่ารูปแบบการเข้าใช้งานและความปลอดภัยของระบบ</p>
+                    </div>
+
+                    <!-- Toggle Switch for API Authen -->
+                    <div class="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100/80">
+                        <div class="space-y-0.5">
+                            <label class="text-xs font-bold text-slate-700">ปิดใช้งาน API Authentication</label>
+                            <p class="text-[11px] text-slate-400 max-w-lg">เมื่อเปิดใช้งาน ผู้ใช้จะไม่สามารถใช้บัญชีภายนอกผ่าน API ในการเข้าสู่ระบบได้ (จะเข้าใช้งานได้เฉพาะบัญชีในระบบปกติเท่านั้น)</p>
+                        </div>
+                        <button type="button" 
+                                @click="settings.disable_api_auth = settings.disable_api_auth === '1' ? '0' : '1'"
+                                :class="settings.disable_api_auth === '1' ? 'bg-orange-600' : 'bg-slate-200'"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                                role="switch" 
+                                :aria-checked="settings.disable_api_auth === '1' ? 'true' : 'false'">
+                            <span :class="settings.disable_api_auth === '1' ? 'translate-x-5' : 'translate-x-0'"
+                                  class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tab 2: Contact Info -->
@@ -182,6 +230,33 @@
                                   rows="4" 
                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                   placeholder="กรอกรายละเอียดที่ตั้งของหน่วยงาน..."></textarea>
+                    </div>
+
+                    <!-- Coordinates and Map Pinning -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">พิกัดแผนที่หน่วยงาน (Latitude / Longitude)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold text-slate-400">ละติจูด (Latitude)</span>
+                                <input type="number" 
+                                       step="any"
+                                       x-model="settings.latitude" 
+                                       @input="updateMapFromInputs()"
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
+                                       placeholder="เช่น 9.983000">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold text-slate-400">ลองจิจูด (Longitude)</span>
+                                <input type="number" 
+                                       step="any"
+                                       x-model="settings.longitude" 
+                                       @input="updateMapFromInputs()"
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
+                                       placeholder="เช่น 99.167000">
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400 font-bold text-orange-600 mt-2">ลากเครื่องหมายสีน้ำเงินบนแผนที่เพื่อเลือกพิกัด หรือพิมพ์พิกัดโดยตรง</p>
+                        <div id="settingsMap" class="w-full h-96 rounded-2xl border border-slate-200 bg-slate-100 mt-2 relative z-10" style="min-height: 400px;"></div>
                     </div>
                 </div>
 
@@ -270,13 +345,18 @@
                     contact_email: '',
                     contact_phone: '',
                     contact_address: '',
-
+                    disable_api_auth: '0',
+                    theme_color: '#f97316',
+                    latitude: '',
+                    longitude: '',
                 },
                 previewUrl: null,
                 webLogoData: '',
                 showModal: false,
                 cropper: null,
                 aspectRatio: null,
+                map: null,
+                marker: null,
                 toast: {
                     show: false,
                     message: '',
@@ -302,6 +382,10 @@
                                 this.settings.contact_email = data.contact_email || 'info@anubanchumphon.ac.th';
                                 this.settings.contact_phone = data.contact_phone || '077-511124';
                                 this.settings.contact_address = data.contact_address || 'โรงเรียนอนุบาลชุมพร ถนนปรมินทรมรรคา ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000';
+                                this.settings.disable_api_auth = data.disable_api_auth || '0';
+                                this.settings.theme_color = data.theme_color || '#f97316';
+                                this.settings.latitude = data.latitude || '';
+                                this.settings.longitude = data.longitude || '';
 
                                 
                                 if (data.web_logo) {
@@ -383,6 +467,56 @@
                     setTimeout(() => {
                         this.toast.show = false;
                     }, 4000);
+                },
+
+                updateRealtimeThemeColor(color) {
+                    if (/^#[0-9A-F]{6}$/i.test(color)) {
+                        document.documentElement.style.setProperty('--theme-color', color);
+                    }
+                },
+
+                initMap() {
+                    this.$nextTick(() => {
+                        const lat = parseFloat(this.settings.latitude) || 9.983;
+                        const lng = parseFloat(this.settings.longitude) || 99.167;
+
+                        if (!this.map) {
+                            this.map = L.map('settingsMap').setView([lat, lng], 13);
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '© OpenStreetMap contributors'
+                            }).addTo(this.map);
+
+                            this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+
+                            this.marker.on('dragend', () => {
+                                const position = this.marker.getLatLng();
+                                this.settings.latitude = position.lat.toFixed(6);
+                                this.settings.longitude = position.lng.toFixed(6);
+                            });
+
+                            this.map.on('click', (e) => {
+                                this.marker.setLatLng(e.latlng);
+                                this.settings.latitude = e.latlng.lat.toFixed(6);
+                                this.settings.longitude = e.latlng.lng.toFixed(6);
+                            });
+                        } else {
+                            this.map.setView([lat, lng], 13);
+                            this.marker.setLatLng([lat, lng]);
+                        }
+                        
+                        setTimeout(() => {
+                            this.map.invalidateSize();
+                        }, 250);
+                    });
+                },
+
+                updateMapFromInputs() {
+                    const lat = parseFloat(this.settings.latitude);
+                    const lng = parseFloat(this.settings.longitude);
+                    if (!isNaN(lat) && !isNaN(lng) && this.map && this.marker) {
+                        this.marker.setLatLng([lat, lng]);
+                        this.map.setView([lat, lng], this.map.getZoom());
+                    }
                 },
 
                 fileSelected(event) {

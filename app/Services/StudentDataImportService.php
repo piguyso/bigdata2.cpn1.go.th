@@ -9,7 +9,7 @@ use RuntimeException;
 
 class StudentDataImportService
 {
-    public function preview(string $path, string $dataType, ?string $filename = null): array
+    public function preview(string $path, string $dataType, ?string $filename = null, ?string $expectedAcademicYear = null, ?string $expectedTerm = null): array
     {
         $definition = StudentDataTypes::get($dataType);
         if (! $definition) {
@@ -42,6 +42,15 @@ class StudentDataImportService
                 continue;
             }
 
+            if ($expectedAcademicYear !== null && $expectedTerm !== null && $parsed['raw_year_term'] !== "{$expectedAcademicYear}-{$expectedTerm}") {
+                $invalidRows[] = [
+                    'row_number' => $index + 1,
+                    'reason' => 'ปี-รอบในไฟล์ไม่ตรงกับค่าที่เลือก',
+                    'columns' => count($row),
+                ];
+                continue;
+            }
+
             $parsed['school_name'] = $schools[$parsed['school_smis']] ?? null;
             $parsed['matched_school'] = isset($schools[$parsed['school_smis']]);
             $validRows[] = $parsed;
@@ -65,6 +74,7 @@ class StudentDataImportService
             'warnings' => $warnings,
             'invalid_samples' => array_slice($invalidRows, 0, 10),
             'sample_rows' => array_map(fn ($row) => [
+                'raw_year_term' => $row['raw_year_term'],
                 'school_smis' => $row['school_smis'],
                 'school_name' => $row['school_name'],
                 'category' => $row['category'],
@@ -79,7 +89,7 @@ class StudentDataImportService
     {
         $dataType = $options['data_type'];
         $definition = StudentDataTypes::get($dataType);
-        $parsed = $this->preview($path, $dataType, $filename);
+        $parsed = $this->preview($path, $dataType, $filename, $options['academic_year'], (string) $options['term']);
 
         if ($parsed['valid_rows'] === 0) {
             throw new RuntimeException('โครงสร้างไฟล์ไม่ถูกต้อง หรือไม่พบข้อมูลที่นำเข้าได้');
@@ -245,7 +255,7 @@ class StudentDataImportService
         }
 
         if ($category === null || $category === '') {
-            $category = $dataType === 'class_gender' ? 'นักเรียนทั้งหมด' : StudentDataTypes::get($dataType)['label'];
+            $category = StudentDataTypes::get($dataType)['label'];
         }
 
         $totalKey = array_key_exists('all_total', $metrics) ? 'all_total' : array_key_last($metrics);

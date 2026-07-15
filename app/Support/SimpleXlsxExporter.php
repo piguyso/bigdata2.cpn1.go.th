@@ -4,7 +4,6 @@ namespace App\Support;
 
 use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use ZipArchive;
 
 class SimpleXlsxExporter
 {
@@ -30,23 +29,19 @@ class SimpleXlsxExporter
 
     public static function write(string $path, array $headers, array $rows): void
     {
-        $zip = new ZipArchive();
-
-        if ($zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            abort(500, 'ไม่สามารถสร้างไฟล์ Excel ได้');
-        }
-
         $timestamp = (new DateTimeImmutable())->format('Y-m-d\TH:i:s\Z');
+        $files = [
+            '[Content_Types].xml' => self::contentTypesXml(),
+            '_rels/.rels' => self::rootRelsXml(),
+            'docProps/app.xml' => self::appPropsXml(),
+            'docProps/core.xml' => self::corePropsXml($timestamp),
+            'xl/workbook.xml' => self::workbookXml(),
+            'xl/_rels/workbook.xml.rels' => self::workbookRelsXml(),
+            'xl/styles.xml' => self::stylesXml(),
+            'xl/worksheets/sheet1.xml' => self::sheetXml($headers, $rows),
+        ];
 
-        $zip->addFromString('[Content_Types].xml', self::contentTypesXml());
-        $zip->addFromString('_rels/.rels', self::rootRelsXml());
-        $zip->addFromString('docProps/app.xml', self::appPropsXml());
-        $zip->addFromString('docProps/core.xml', self::corePropsXml($timestamp));
-        $zip->addFromString('xl/workbook.xml', self::workbookXml());
-        $zip->addFromString('xl/_rels/workbook.xml.rels', self::workbookRelsXml());
-        $zip->addFromString('xl/styles.xml', self::stylesXml());
-        $zip->addFromString('xl/worksheets/sheet1.xml', self::sheetXml($headers, $rows));
-        $zip->close();
+        self::writeZip($path, $files);
     }
 
     private static function contentTypesXml(): string
@@ -210,5 +205,100 @@ XML;
         $clean = preg_replace('/[^\P{C}\t\n\r]/u', '', $value) ?? '';
 
         return htmlspecialchars($clean, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+    }
+
+    private static function writeZip(string $path, array $files): void
+    {
+        $handle = fopen($path, 'wb');
+
+        if ($handle === false) {
+            abort(500, 'ไม่สามารถสร้างไฟล์ Excel ได้');
+        }
+
+        $centralDirectory = '';
+        $offset = 0;
+        [$dosTime, $dosDate] = self::dosDateTime();
+
+        foreach ($files as $name => $content) {
+            $name = str_replace('\\', '/', $name);
+            $data = (string) $content;
+            $crc = self::unsignedCrc32($data);
+            $size = strlen($data);
+            $nameLength = strlen($name);
+
+            $localHeader = pack(
+                'VvvvvvVVVvv',
+                0x04034b50,
+                20,
+                0,
+                0,
+                $dosTime,
+                $dosDate,
+                $crc,
+                $size,
+                $size,
+                $nameLength,
+                0
+            ).$name;
+
+            fwrite($handle, $localHeader.$data);
+
+            $centralDirectory .= pack(
+                'VvvvvvvVVVvvvvvVV',
+                0x02014b50,
+                20,
+                20,
+                0,
+                0,
+                $dosTime,
+                $dosDate,
+                $crc,
+                $size,
+                $size,
+                $nameLength,
+                0,
+                0,
+                0,
+                0,
+                0,
+                $offset
+            ).$name;
+
+            $offset += strlen($localHeader) + $size;
+        }
+
+        $centralOffset = $offset;
+        $centralSize = strlen($centralDirectory);
+        fwrite($handle, $centralDirectory);
+        fwrite($handle, pack(
+            'VvvvvVVv',
+            0x06054b50,
+            0,
+            0,
+            count($files),
+            count($files),
+            $centralSize,
+            $centralOffset,
+            0
+        ));
+        fclose($handle);
+    }
+
+    private static function unsignedCrc32(string $data): int
+    {
+        return (int) sprintf('%u', crc32($data));
+    }
+
+    private static function dosDateTime(): array
+    {
+        $time = getdate();
+        $dosTime = (($time['hours'] ?? 0) << 11)
+            | (($time['minutes'] ?? 0) << 5)
+            | (int) floor(($time['seconds'] ?? 0) / 2);
+        $dosDate = ((($time['year'] ?? 1980) - 1980) << 9)
+            | (($time['mon'] ?? 1) << 5)
+            | ($time['mday'] ?? 1);
+
+        return [$dosTime, $dosDate];
     }
 }

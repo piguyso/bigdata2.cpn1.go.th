@@ -53,6 +53,10 @@ class SettingsController extends Controller
                 'contact_phone'    => ['nullable', 'string', 'max:50'],
                 'contact_address'  => ['nullable', 'string', 'max:1000'],
                 'web_logo_data'    => ['nullable', 'string'],
+                'disable_api_auth' => ['nullable', 'in:0,1'],
+                'theme_color'      => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'latitude'         => ['nullable', 'numeric', 'between:-90,90'],
+                'longitude'        => ['nullable', 'numeric', 'between:-180,180'],
             ]);
 
             // 1. Process Logo Upload if sent
@@ -100,7 +104,10 @@ class SettingsController extends Controller
                 'contact_email',
                 'contact_phone',
                 'contact_address',
-
+                'disable_api_auth',
+                'theme_color',
+                'latitude',
+                'longitude',
             ];
 
             foreach ($fields as $field) {

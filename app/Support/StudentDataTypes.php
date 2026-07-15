@@ -31,7 +31,6 @@ class StudentDataTypes
     ];
 
     public const TYPES = [
-        'class_gender' => ['label' => 'จำนวนนักเรียนแยกชั้น,เพศ', 'schema' => 'grade_rooms'],
         'shortage' => ['label' => 'จำนวนนักเรียนขาดแคลน', 'schema' => 'category_grade'],
         'age' => ['label' => 'จำนวนนักเรียนจำแนกตามอายุ', 'schema' => 'category_grade'],
         'disadvantaged' => ['label' => 'จำนวนนักเรียนด้อยโอกาส', 'schema' => 'category_grade'],
@@ -60,6 +59,16 @@ class StudentDataTypes
     public static function all(): array
     {
         return self::TYPES;
+    }
+
+    public static function keys(): array
+    {
+        return array_keys(self::TYPES);
+    }
+
+    public static function defaultKey(): string
+    {
+        return 'age';
     }
 
     public static function get(string $type): ?array
@@ -97,11 +106,7 @@ class StudentDataTypes
             $headers[] = 'หมวด';
         }
 
-        if ($schema === 'grade_rooms') {
-            foreach (self::LEVELS_23 as $label) {
-                array_push($headers, "{$label} ชาย", "{$label} หญิง", "{$label} รวม", "{$label} ห้อง");
-            }
-        } elseif (in_array($schema, ['category_grade', 'grade_only'], true)) {
+        if (in_array($schema, ['category_grade', 'grade_only'], true)) {
             foreach (self::LEVELS_23 as $label) {
                 array_push($headers, "{$label} ชาย", "{$label} หญิง", "{$label} รวม");
             }

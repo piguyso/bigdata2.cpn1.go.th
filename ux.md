@@ -120,3 +120,16 @@
 - ไม่รวม `จำนวนนักเรียนแยกชั้น,เพศ` เพราะมีใน SchoolMIS แล้ว
 - ต้องมี `Download Template` ตามชนิดข้อมูลที่เลือก
 - ต้อง preview/validate ก่อน import เสมอ
+
+## Student Dashboard Pagination Decision
+
+- หน้า `/students` ต้องโหลดข้อมูลรายโรงเรียนแบบแบ่งหน้า ไม่โหลดทุกโรงเรียนมา filter ใน browser
+- API dashboard รองรับ `page`, `per_page`, `search` และจำกัด `per_page` ไม่เกิน 48
+- API dashboard รองรับ `category` เพื่อ filter รายโรงเรียนจากการคลิกการ์ดหมวด
+- tab ชนิดข้อมูลต้องใช้ grid/wrap ได้หลายบรรทัด ห้ามใช้ horizontal scrollbar
+- รายการโรงเรียนใน `/students` ใช้ compact table row แบบ card โรงเรียนสูงสุด 12 อันดับในหน้า `/`
+- รายการโรงเรียนใน `/students` ต้องเรียงตามเลขโรงเรียน/SMIS จากน้อยไปมาก
+- หน้า `/students` ต้องแสดงเฉพาะรายการที่มีข้อมูลจริง โดย record ที่ `total` เป็น 0 หรือน้อยกว่าไม่ต้องแสดงใน summary/category/list
+- หน้า `/students` ต้องมี export xlsx ตาม filter ปัจจุบัน และไฟล์ต้องมี header row ภาษาไทยครบ
+- summary และหมวดข้อมูลต้องคำนวณจากข้อมูลทั้งหมดตาม filter/search ไม่ใช่เฉพาะหน้าปัจจุบัน
+- การ์ดหมวดใน `/students` ต้องเป็นปุ่มกดได้ มี active state และมีปุ่มล้าง filter

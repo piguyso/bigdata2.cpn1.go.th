@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agent Live Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --line: #e2e8f0;
+            --muted: #64748b;
+            --text: #0f172a;
+            --orange: #f97316;
+            --emerald: #10b981;
+            --rose: #f43f5e;
+            --amber: #f59e0b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Anuphan", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: var(--orange);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.1;
+            letter-spacing: 0;
+        }
+
+        .desc {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 40px;
+            padding: 0 16px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--panel);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, .04);
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--emerald);
+            box-shadow: 0 0 0 6px rgba(16, 185, 129, .14);
+        }
+
+        .dot.warn {
+            background: var(--amber);
+            box-shadow: 0 0 0 6px rgba(245, 158, 11, .16);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card, .panel {
+            background: var(--panel);
+            border: 1px solid #eef2f7;
+            border-radius: 24px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, .045);
+        }
+
+        .card {
+            padding: 20px;
+        }
+
+        .label {
+            margin: 0 0 8px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .value {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 20px;
+        }
+
+        .panel {
+            overflow: hidden;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 22px;
+            border-bottom: 1px solid #eef2f7;
+            background: rgba(248, 250, 252, .72);
+        }
+
+        .panel-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .panel-sub {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .timeline {
+            padding: 8px 0;
+        }
+
+        .event {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 18px;
+            padding: 16px 22px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .event:last-child {
+            border-bottom: 0;
+        }
+
+        .time {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .bubble {
+            min-width: 0;
+        }
+
+        .route {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .agent {
+            display: inline-flex;
+            align-items: center;
+            min-height: 26px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: #fff7ed;
+            color: #c2410c;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .agent.audit {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .agent.main {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .arrow {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .message {
+            margin: 0;
+            color: #334155;
+            font-size: 13px;
+            line-height: 1.7;
+            word-break: break-word;
+        }
+
+        .side-list {
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .agent-box {
+            border: 1px solid #eef2f7;
+            border-radius: 18px;
+            padding: 14px;
+            background: #fff;
+        }
+
+        .agent-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .agent-name {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 22px;
+            padding: 0 8px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .badge.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge.wait {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .agent-task {
+            margin: 0;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .empty {
+            padding: 36px 22px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 920px) {
+            .top, .layout {
+                grid-template-columns: 1fr;
+                display: grid;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .wrap { padding: 28px 16px; }
+            .event {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <section class="top">
+            <div>
+                <p class="eyebrow">Agent Monitor</p>
+                <h1>Live Agent Dashboard</h1>
+                <p class="desc">ดูสถานะการส่งข้อความระหว่าง main agent, laravel-agent และ laravel_audit ผ่าน JSON polling จากไฟล์ public.</p>
+            </div>
+            <div class="status-pill" id="connectionPill">
+                <span class="dot warn" id="connectionDot"></span>
+                <span id="connectionText">กำลังโหลด...</span>
+            </div>
+        </section>
+
+        <section class="grid">
+            <article class="card">
+                <p class="label">สถานะงาน</p>
+                <p class="value" id="workStatus">-</p>
+            </article>
+            <article class="card">
+                <p class="label">ข้อความทั้งหมด</p>
+                <p class="value" id="messageCount">0</p>
+            </article>
+            <article class="card">
+                <p class="label">อัปเดตล่าสุด</p>
+                <p class="value" id="lastUpdated">-</p>
+            </article>
+        </section>
+
+        <section class="layout">
+            <article class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2 class="panel-title">Message Timeline</h2>
+                        <p class="panel-sub">poll ทุก 1 วินาทีจาก <code>agent-messages.json</code></p>
+                    </div>
+                </div>
+                <div class="timeline" id="timeline">
+                    <div class="empty">ยังไม่มีข้อความ</div>
+                </div>
+            </article>
+
+            <aside class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2 class="panel-title">Agent Status</h2>
+                        <p class="panel-sub">สถานะแต่ละตัว</p>
+                    </div>
+                </div>
+                <div class="side-list" id="agentList"></div>
+            </aside>
+        </section>
+    </main>
+
+    <script>
+        const stateUrl = './agent-messages.json';
+        const pollMs = 1000;
+
+        function text(value, fallback = '-') {
+            return value === undefined || value === null || value === '' ? fallback : String(value);
+        }
+
+        function formatDate(value) {
+            if (!value) return '-';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            return date.toLocaleString('th-TH', { hour12: false });
+        }
+
+        function agentClass(name) {
+            if (name === 'main-agent') return 'main';
+            if (name === 'laravel_audit') return 'audit';
+            return '';
+        }
+
+        function statusClass(status) {
+            if (status === 'active') return 'active';
+            if (status === 'waiting' || status === 'reviewing') return 'wait';
+            return '';
+        }
+
+        function normalizeState(raw) {
+            const agents = (raw.agents || []).map(agent => ({
+                name: agent.name || agent.id || '-',
+                status: agent.status || 'idle',
+                task: agent.task || agent.role || '-',
+            }));
+
+            const messages = (raw.messages || []).map(item => ({
+                at: item.at || item.time || raw.updated_at,
+                from: item.from || '-',
+                to: item.to || '-',
+                message: item.message || item.text || '-',
+            }));
+
+            return {
+                status: raw.status || 'active',
+                updated_at: raw.updated_at || raw.updatedAt || '',
+                agents,
+                messages,
+            };
+        }
+
+        function clearNode(node) {
+            while (node.firstChild) node.removeChild(node.firstChild);
+        }
+
+        function addEmpty(node, message) {
+            const empty = document.createElement('div');
+            empty.className = 'empty';
+            empty.textContent = message;
+            node.appendChild(empty);
+        }
+
+        function renderAgents(agentList, agents) {
+            clearNode(agentList);
+
+            if (!agents.length) {
+                addEmpty(agentList, 'ยังไม่มี agent');
+                return;
+            }
+
+            agents.forEach(agent => {
+                const box = document.createElement('article');
+                box.className = 'agent-box';
+
+                const row = document.createElement('div');
+                row.className = 'agent-row';
+
+                const name = document.createElement('div');
+                name.className = 'agent-name';
+                name.textContent = text(agent.name);
+
+                const badge = document.createElement('span');
+                badge.className = `badge ${statusClass(agent.status)}`;
+                badge.textContent = text(agent.status, 'idle');
+
+                const task = document.createElement('p');
+                task.className = 'agent-task';
+                task.textContent = text(agent.task);
+
+                row.append(name, badge);
+                box.append(row, task);
+                agentList.appendChild(box);
+            });
+        }
+
+        function renderMessages(timeline, messages) {
+            clearNode(timeline);
+
+            if (!messages.length) {
+                addEmpty(timeline, 'ยังไม่มีข้อความ');
+                return;
+            }
+
+            messages.slice().reverse().forEach(item => {
+                const event = document.createElement('article');
+                event.className = 'event';
+
+                const time = document.createElement('time');
+                time.className = 'time';
+                time.textContent = formatDate(item.at);
+
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+
+                const route = document.createElement('div');
+                route.className = 'route';
+
+                const from = document.createElement('span');
+                from.className = `agent ${agentClass(item.from)}`;
+                from.textContent = text(item.from);
+
+                const arrow = document.createElement('span');
+                arrow.className = 'arrow';
+                arrow.textContent = 'ส่งถึง';
+
+                const to = document.createElement('span');
+                to.className = `agent ${agentClass(item.to)}`;
+                to.textContent = text(item.to);
+
+                const message = document.createElement('p');
+                message.className = 'message';
+                message.textContent = text(item.message);
+
+                route.append(from, arrow, to);
+                bubble.append(route, message);
+                event.append(time, bubble);
+                timeline.appendChild(event);
+            });
+        }
+
+        function render(data) {
+            const normalized = normalizeState(data);
+            document.getElementById('workStatus').textContent = text(normalized.status, 'idle');
+            document.getElementById('messageCount').textContent = String(normalized.messages.length);
+            document.getElementById('lastUpdated').textContent = formatDate(normalized.updated_at);
+
+            const agentList = document.getElementById('agentList');
+            renderAgents(agentList, normalized.agents);
+
+            const timeline = document.getElementById('timeline');
+            renderMessages(timeline, normalized.messages);
+        }
+
+        async function loadState() {
+            try {
+                const response = await fetch(`${stateUrl}?t=${Date.now()}`, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                render(data);
+                document.getElementById('connectionText').textContent = 'เชื่อมต่ออยู่';
+                document.getElementById('connectionDot').classList.remove('warn');
+            } catch (error) {
+                document.getElementById('connectionText').textContent = 'อ่าน JSON ไม่ได้';
+                document.getElementById('connectionDot').classList.add('warn');
+            }
+        }
+
+        loadState();
+        setInterval(loadState, pollMs);
+    </script>
+</body>
+</html>

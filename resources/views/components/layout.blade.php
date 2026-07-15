@@ -7,6 +7,7 @@
     $contactEmail = $settings['contact_email'] ?? 'info@cpn1.go.th';
     $contactPhone = $settings['contact_phone'] ?? '077-511124';
     $contactAddress = $settings['contact_address'] ?? 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาชุมพร เขต 1';
+    $themeColor = $settings['theme_color'] ?? '#f97316';
 @endphp
 <!DOCTYPE html>
 <html lang="th" class="scroll-smooth">
@@ -17,12 +18,97 @@
     <title>{{ $title ?? $webName }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet.js for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
     <style> 
+        :root {
+            --theme-color: {{ $themeColor }};
+            --theme-color-hover: color-mix(in srgb, var(--theme-color) 85%, #000);
+            --theme-color-light: color-mix(in srgb, var(--theme-color) 8%, #fff);
+            --theme-color-border-light: color-mix(in srgb, var(--theme-color) 20%, #fff);
+            --theme-color-ring: color-mix(in srgb, var(--theme-color) 20%, transparent);
+        }
+
         body { font-family: 'Anuphan', 'Inter', sans-serif; background-color: #f8fafc; color: #334155; }
         .nav-link { position: relative; font-size: 0.875rem; font-weight: 600; }
-        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background: #f97316; transition: 0.3s ease; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background: var(--theme-color); transition: 0.3s ease; }
         .nav-link:hover::after { width: 100%; }
         [x-cloak] { display: none !important; }
+
+        /* Text color overrides */
+        .text-orange-450, .text-orange-500, .text-orange-600 {
+            color: var(--theme-color) !important;
+        }
+        .text-orange-400 {
+            color: color-mix(in srgb, var(--theme-color) 85%, #fff) !important;
+        }
+        .text-orange-700 {
+            color: var(--theme-color-hover) !important;
+        }
+
+        /* Background color overrides */
+        .bg-orange-500, .bg-orange-600 {
+            background-color: var(--theme-color) !important;
+        }
+        .bg-orange-700 {
+            background-color: var(--theme-color-hover) !important;
+        }
+        .bg-orange-50 {
+            background-color: var(--theme-color-light) !important;
+        }
+
+        /* Border overrides */
+        .border-orange-500, .border-orange-600, .border-orange-300 {
+            border-color: var(--theme-color) !important;
+        }
+        .border-orange-100 {
+            border-color: var(--theme-color-border-light) !important;
+        }
+
+        /* Selection override */
+        ::selection {
+            background-color: var(--theme-color) !important;
+            color: #fff !important;
+        }
+        ::-moz-selection {
+            background-color: var(--theme-color) !important;
+            color: #fff !important;
+        }
+        .selection\:bg-orange-500::selection, .selection\:bg-orange-500 *::selection {
+            background-color: var(--theme-color) !important;
+            color: #fff !important;
+        }
+
+        /* Hover overrides */
+        .hover\:text-orange-600:hover {
+            color: var(--theme-color) !important;
+        }
+        .hover\:bg-orange-50:hover {
+            background-color: var(--theme-color-light) !important;
+        }
+        .hover\:bg-orange-600:hover {
+            background-color: var(--theme-color) !important;
+        }
+        .hover\:border-orange-100:hover {
+            border-color: var(--theme-color-border-light) !important;
+        }
+
+        /* Focus and ring overrides */
+        .focus\:ring-orange-500\/20:focus {
+            --tw-ring-color: var(--theme-color-ring) !important;
+        }
+        .focus\:border-orange-500:focus {
+            border-color: var(--theme-color) !important;
+        }
+
+        /* Shadow override */
+        .shadow-orange-100 {
+            --tw-shadow-color: var(--theme-color-ring) !important;
+            --tw-shadow: var(--tw-shadow-colored) !important;
+        }
     </style>
     <link class="icon-tag" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -49,9 +135,30 @@
             </a>
             
             <div class="hidden md:flex gap-8 items-center font-semibold text-slate-500">
-                <a href="/" class="nav-link hover:text-orange-600 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-house text-orange-500"></i> หน้าหลัก
-                </a>
+                <div class="relative" x-data="{ homeOpen: false }" @mouseenter="homeOpen = true" @mouseleave="homeOpen = false">
+                    <button type="button" class="nav-link hover:text-orange-600 transition flex items-center gap-1.5 focus:outline-none">
+                        <i class="fa-solid fa-house text-orange-500"></i> หน้าหลัก
+                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                    </button>
+                    <div x-show="homeOpen"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-1"
+                         class="absolute left-0 top-full mt-3 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl p-2 z-50"
+                         x-cloak>
+                        <a href="/" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                            <i class="fa-solid fa-house text-slate-400 w-4 text-center"></i>
+                            หน้าหลัก
+                        </a>
+                        <a href="{{ route('student-data.dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                            <i class="fa-solid fa-children text-slate-400 w-4 text-center"></i>
+                            ข้อมูลนักเรียน
+                        </a>
+                    </div>
+                </div>
                 <div class="relative" x-data="{ examOpen: false }" @mouseenter="examOpen = true" @mouseleave="examOpen = false">
                     <button type="button" class="nav-link hover:text-orange-600 transition flex items-center gap-1.5">
                         <i class="fa-solid fa-chart-column text-orange-500"></i> ผลการทดสอบระดับชาติ
@@ -163,6 +270,10 @@
                                 <a href="{{ route('admin.schoolmis.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
                                     <i class="fa-solid fa-file-csv text-slate-450 w-4 text-center text-slate-400"></i>
                                     นำเข้าข้อมูล SchoolMIS
+                                </a>
+                                <a href="{{ route('admin.student-data-imports.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                                    <i class="fa-solid fa-children text-slate-400 w-4 text-center"></i>
+                                    ข้อมูลนักเรียนเพิ่มเติม
                                 </a>
                                 <a href="{{ route('admin.onet.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
                                     <i class="fa-solid fa-chart-line text-slate-400 w-4 text-center"></i>
@@ -332,9 +443,17 @@
              class="md:hidden bg-white border-t border-slate-100 px-6 py-4 space-y-4 shadow-xl relative z-40"
              x-cloak>
             
-            <a href="/" class="block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
-                <i class="fa-solid fa-house text-orange-500 w-4 text-center"></i> หน้าหลัก
-            </a>
+            <div class="space-y-1">
+                <div class="block text-sm font-bold text-slate-600 py-2 flex items-center gap-2">
+                    <i class="fa-solid fa-house text-orange-500 w-4 text-center"></i> หน้าหลัก
+                </div>
+                <a href="/" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-house text-slate-400 w-4 text-center"></i> หน้าหลัก
+                </a>
+                <a href="{{ route('student-data.dashboard') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-children text-slate-400 w-4 text-center"></i> ข้อมูลนักเรียน
+                </a>
+            </div>
             <div class="space-y-1">
                 <div class="block text-sm font-bold text-slate-600 py-2 flex items-center gap-2">
                     <i class="fa-solid fa-chart-column text-orange-500 w-4 text-center"></i> ผลการทดสอบระดับชาติ
@@ -391,6 +510,9 @@
                         </div>
                         <a href="{{ route('admin.schoolmis.index') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
                             <i class="fa-solid fa-file-csv text-slate-400 w-4 text-center"></i> นำเข้าข้อมูล SchoolMIS
+                        </a>
+                        <a href="{{ route('admin.student-data-imports.index') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                            <i class="fa-solid fa-children text-slate-400 w-4 text-center"></i> ข้อมูลนักเรียนเพิ่มเติม
                         </a>
                         <a href="{{ route('admin.onet.index') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
                             <i class="fa-solid fa-chart-line text-slate-400 w-4 text-center"></i> นำเข้าข้อมูล ONET
@@ -539,11 +661,19 @@
             </div>
             <div>
                 <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">ติดต่อเรา</h4>
-                <ul class="space-y-2 text-xs leading-relaxed">
+                <ul class="space-y-2 text-xs leading-relaxed mb-4">
                     <li class="flex items-start gap-2">
                         <i class="fa-solid fa-location-dot mt-0.5 text-orange-500"></i>
                         <span>{{ $contactAddress }}</span>
                     </li>
+                    @if(!empty($settings['latitude']) && !empty($settings['longitude']))
+                    <li class="flex items-start gap-2">
+                        <i class="fa-solid fa-map-location-dot mt-0.5 text-orange-500"></i>
+                        <a href="https://www.google.com/maps?q={{ $settings['latitude'] }},{{ $settings['longitude'] }}" target="_blank" class="hover:underline hover:text-orange-400 font-bold transition">
+                            ปักหมุดที่ตั้งหน่วยงาน ({{ $settings['latitude'] }}, {{ $settings['longitude'] }})
+                        </a>
+                    </li>
+                    @endif
                     <li class="flex items-center gap-2">
                         <i class="fa-solid fa-phone text-orange-500"></i>
                         <span>{{ $contactPhone }}</span>
@@ -553,6 +683,11 @@
                         <span>{{ $contactEmail }}</span>
                     </li>
                 </ul>
+                @if(!empty($settings['latitude']) && !empty($settings['longitude']))
+                <div class="mt-4 overflow-hidden rounded-2xl border border-slate-800 shadow-lg shadow-black/25">
+                    <div id="footerMap" class="w-full h-32 bg-slate-950 cursor-pointer" title="คลิกเพื่อนำทางด้วย Google Maps" style="min-height: 128px; z-index: 10;"></div>
+                </div>
+                @endif
             </div>
         </div>
         <div class="max-w-7xl mx-auto px-6 border-t border-slate-800 mt-12 pt-6 text-center text-xs">
@@ -615,6 +750,38 @@
             </div>
         </div>
     </div>
+
+    @if(!empty($settings['latitude']) && !empty($settings['longitude']))
+    <script>
+        window.addEventListener('load', function () {
+            try {
+                var footerMap = L.map('footerMap', {
+                    zoomControl: false,
+                    dragging: false,
+                    scrollWheelZoom: false,
+                    doubleClickZoom: false,
+                    boxZoom: false,
+                    touchZoom: false
+                }).setView([{{ $settings['latitude'] }}, {{ $settings['longitude'] }}], 14);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(footerMap);
+
+                var marker = L.marker([{{ $settings['latitude'] }}, {{ $settings['longitude'] }}]).addTo(footerMap);
+
+                // Redirect to Google Maps on click
+                footerMap.on('click', function() {
+                    window.open("https://www.google.com/maps?q={{ $settings['latitude'] }},{{ $settings['longitude'] }}", "_blank");
+                });
+
+                marker.on('click', function() {
+                    window.open("https://www.google.com/maps?q={{ $settings['latitude'] }},{{ $settings['longitude'] }}", "_blank");
+                });
+            } catch (e) {
+                console.error('Failed to initialize footer map:', e);
+            }
+        });
+    </script>
+    @endif
 
     @stack('scripts')
 </body>
