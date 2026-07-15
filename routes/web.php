@@ -143,6 +143,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/student-data-imports/template/{dataType}', [StudentDataImportController::class, 'downloadTemplate'])->name('admin.student-data-imports.template');
     Route::post('/admin/student-data-imports/preview', [StudentDataImportController::class, 'preview'])->name('admin.student-data-imports.preview');
     Route::post('/admin/student-data-imports/import', [StudentDataImportController::class, 'import'])->name('admin.student-data-imports.import');
+    Route::delete('/admin/student-data-imports/{id}', [StudentDataImportController::class, 'delete'])->name('admin.student-data-imports.delete');
 
     Route::get('/admin/nt', [NtImportController::class, 'index'])->name('admin.nt.index');
     Route::get('/admin/nt/data', [NtImportController::class, 'getData'])->name('admin.nt.data');

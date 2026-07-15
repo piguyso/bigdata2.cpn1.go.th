@@ -182,4 +182,28 @@ class StudentDataImportController extends Controller
             [StudentDataTypes::templateRow($dataType)]
         );
     }
+
+    public function delete(int $id): JsonResponse
+    {
+        try {
+            DB::transaction(function () use ($id) {
+                // Delete records
+                DB::table('student_data_records')->where('import_id', $id)->delete();
+                // Delete import log
+                DB::table('student_data_imports')->where('id', $id)->delete();
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'ลบชุดข้อมูลนำเข้าเรียบร้อยแล้ว',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('StudentDataImportController@delete: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'เกิดข้อผิดพลาดในการลบข้อมูล',
+            ], 500);
+        }
+    }
 }
