@@ -17,7 +17,7 @@
             </div>
             <div class="flex flex-col sm:flex-row gap-3">
                 <a href="{{ route('admin.schools.template') }}" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-file-arrow-down"></i> ดาวน์โหลด Template
+                    <i class="fa-solid fa-file-arrow-down text-orange-600"></i> ดาวน์โหลด Template (.csv)
                 </a>
                 <input type="file" x-ref="importFile" class="hidden" accept=".csv,.txt,text/csv,text/plain" @change="importSchools($event)">
                 <button type="button" @click="$refs.importFile.click()" :disabled="importing" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2 disabled:opacity-50">
