@@ -78,6 +78,10 @@ function checkServerRequirements() {
             'name' => 'FileInfo PHP Extension',
             'passed' => extension_loaded('fileinfo'),
         ],
+        'zip' => [
+            'name' => 'Zip PHP Extension (for XLSX files)',
+            'passed' => extension_loaded('zip'),
+        ],
         'autoload' => [
             'name' => 'Laravel Vendor Autoloader',
             'passed' => file_exists(__DIR__ . '/../vendor/autoload.php'),

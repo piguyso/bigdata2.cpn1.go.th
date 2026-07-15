@@ -29,6 +29,10 @@ class SimpleXlsxExporter
 
     public static function write(string $path, array $headers, array $rows): void
     {
+        if (! class_exists('ZipArchive')) {
+            throw new \RuntimeException('เซิร์ฟเวอร์ของคุณไม่รองรับการเขียนไฟล์ .xlsx (กรุณาเปิดใช้งาน PHP Extension: zip ในไฟล์ php.ini หรือแผงควบคุมโฮสติ้ง)');
+        }
+
         $timestamp = (new DateTimeImmutable())->format('Y-m-d\TH:i:s\Z');
         $files = [
             '[Content_Types].xml' => self::contentTypesXml(),
