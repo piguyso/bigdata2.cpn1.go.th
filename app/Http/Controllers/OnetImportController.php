@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\OnetImportService;
+use App\Support\AreaSettings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,11 +29,13 @@ class OnetImportController extends Controller
                 'active_year' => DB::table('academic_years')->where('is_active', true)->value('year'),
                 'imports' => DB::table('onet_imports as imports')
                     ->leftJoin('users', 'imports.created_by', '=', 'users.id')
+                    ->where('imports.area_code', AreaSettings::code())
                     ->select('imports.*', 'users.name as created_by_name')
                     ->orderByDesc('imports.id')
                     ->limit(20)
                     ->get(),
                 'data_sets' => DB::table('onet_records')
+                    ->where('area_code', AreaSettings::code())
                     ->select(
                         'academic_year',
                         DB::raw('COUNT(*) as records_count'),
@@ -43,8 +46,8 @@ class OnetImportController extends Controller
                     ->groupBy('academic_year')
                     ->orderByDesc('academic_year')
                     ->get(),
-                'record_count' => DB::table('onet_records')->count(),
-                'latest_imported_year' => DB::table('onet_records')->orderByDesc('academic_year')->value('academic_year'),
+                'record_count' => DB::table('onet_records')->where('area_code', AreaSettings::code())->count(),
+                'latest_imported_year' => DB::table('onet_records')->where('area_code', AreaSettings::code())->orderByDesc('academic_year')->value('academic_year'),
             ]);
         } catch (\Exception $e) {
             Log::error('OnetImportController@getData: '.$e->getMessage());
@@ -92,8 +95,12 @@ class OnetImportController extends Controller
         $validated = $request->validate(['academic_year' => ['required', 'digits:4']]);
 
         try {
-            $recordsQuery = DB::table('onet_records')->where('academic_year', $validated['academic_year']);
-            $importsQuery = DB::table('onet_imports')->where('academic_year', $validated['academic_year']);
+            $recordsQuery = DB::table('onet_records')
+                ->where('academic_year', $validated['academic_year'])
+                ->where('area_code', AreaSettings::code());
+            $importsQuery = DB::table('onet_imports')
+                ->where('academic_year', $validated['academic_year'])
+                ->where('area_code', AreaSettings::code());
             $recordsCount = (clone $recordsQuery)->count();
             $importsCount = (clone $importsQuery)->count();
 

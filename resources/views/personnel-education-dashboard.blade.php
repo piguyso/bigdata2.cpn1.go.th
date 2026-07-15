@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>ข้อมูลแยกตามการศึกษา | BigData สพป.ชพ.1</x-slot>
 
-    <div class="py-12 max-w-7xl mx-auto px-6" x-data='personnelEducationDashboard(@json($dashboardPayload))'>
+    <div class="py-12 max-w-7xl mx-auto px-6" x-data='personnelEducationDashboard(@json($dashboardPayload), @json(route('api.personnel.education')))' x-init="fetchDashboard()">
         <header class="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
@@ -31,10 +31,10 @@
         </header>
 
         <section class="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 mb-6">
-            <form x-ref="filterForm" method="GET" action="{{ route('personnel.education') }}" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <form x-ref="filterForm" method="GET" action="{{ route('personnel.education') }}" @submit.prevent="fetchDashboard()" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-2">ปีการศึกษา</label>
-                    <select class="form-input w-full" name="year" onchange="this.form.submit()">
+                    <select class="form-input w-full" name="year" onchange="this.form.requestSubmit()">
                         @foreach(($dashboardPayload['availableYears'] ?? []) as $year)
                             <option value="{{ $year }}" @selected((string) $year === (string) ($dashboardPayload['selectedYear'] ?? ''))>{{ $year }}</option>
                         @endforeach
@@ -43,7 +43,7 @@
 
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-2">รอบ</label>
-                    <select class="form-input w-full" name="term" onchange="this.form.submit()">
+                    <select class="form-input w-full" name="term" onchange="this.form.requestSubmit()">
                         @foreach(($dashboardPayload['availableTerms'] ?? []) as $term)
                             <option value="{{ $term }}" @selected((string) $term === (string) ($dashboardPayload['selectedTerm'] ?? ''))>รอบ {{ $term }}</option>
                         @endforeach
@@ -88,9 +88,17 @@
                                     <button type="button"
                                             @click="selectSchool(school)"
                                             class="w-full px-4 py-3 text-left hover:bg-orange-50 transition flex items-start justify-between gap-3">
-                                        <div class="min-w-0">
-                                            <div class="text-xs font-extrabold text-slate-700 truncate" x-text="school.schoolName"></div>
-                                            <div class="mt-1 text-[11px] font-bold text-slate-400" x-text="school.schoolSmis || 'ทุกโรงเรียนในเขตพื้นที่'"></div>
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <template x-if="school.logoUrl">
+                                                <img :src="school.logoUrl" :alt="school.schoolName" class="w-9 h-9 rounded-xl object-contain bg-white border border-slate-100 p-1 shrink-0">
+                                            </template>
+                                            <div x-show="!school.logoUrl" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                                                <i class="fa-solid fa-school text-xs"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="text-xs font-extrabold text-slate-700 truncate" x-text="school.schoolName"></div>
+                                                <div class="mt-1 text-[11px] font-bold text-slate-400" x-text="school.schoolSmis || 'ทุกโรงเรียนในเขตพื้นที่'"></div>
+                                            </div>
                                         </div>
                                         <i x-show="String(selectedSchoolSmis || '') === String(school.schoolSmis || '')"
                                            class="fa-solid fa-check text-orange-500 text-xs mt-1 shrink-0"
@@ -187,11 +195,21 @@
                                 <tr class="hover:bg-orange-50/40 transition">
                                     <td class="px-4 py-3 text-center font-bold text-slate-400" x-text="row.index"></td>
                                     <td class="px-4 py-3">
-                                        <div class="font-extrabold text-slate-800" x-text="row.schoolName"></div>
-                                        <div class="text-[10px] text-slate-400">
-                                            <span x-text="row.schoolSmis || '-'"></span>
-                                            <span x-show="row.schoolSize"> / </span>
-                                            <span x-text="row.schoolSize"></span>
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <template x-if="row.logoUrl">
+                                                <img :src="row.logoUrl" :alt="row.schoolName" class="w-9 h-9 rounded-xl object-contain bg-white border border-slate-100 p-1 shrink-0">
+                                            </template>
+                                            <div x-show="!row.logoUrl" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                                                <i class="fa-solid fa-school text-xs"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="font-extrabold text-slate-800 truncate" x-text="row.schoolName"></div>
+                                                <div class="text-[10px] text-slate-400">
+                                                    <span x-text="row.schoolSmis || '-'"></span>
+                                                    <span x-show="row.schoolSize"> / </span>
+                                                    <span x-text="row.schoolSize"></span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-slate-600">
@@ -245,8 +263,10 @@
     </style>
 
     <script>
-        function personnelEducationDashboard(payload) {
+        function personnelEducationDashboard(payload, apiUrl) {
             return {
+                apiUrl,
+                loading: false,
                 dashboard: payload || { rows: [], total: {}, overview: [], roleGroups: [] },
                 selectedSchoolSmis: payload?.selectedSchoolSmis || '',
                 schoolDropdownOpen: false,
@@ -309,6 +329,22 @@
 
                         this.$refs.filterForm?.submit();
                     });
+                },
+                fetchDashboard() {
+                    if (!this.apiUrl || !this.$refs.filterForm) {
+                        return;
+                    }
+
+                    const params = Object.fromEntries(new FormData(this.$refs.filterForm).entries());
+                    this.loading = true;
+                    axios.get(this.apiUrl, { params })
+                        .then(response => {
+                            this.dashboard = response.data || this.dashboard;
+                            this.selectedSchoolSmis = this.dashboard.selectedSchoolSmis || '';
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
                 },
                 formatDateTime(value) {
                     if (!value) {

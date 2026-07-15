@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\AreaSettings;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -9,29 +10,25 @@ use RuntimeException;
 
 class PersonnelOverviewImportService
 {
-    private const AREA_CODE = '1086010000';
-
-    private const AREA_NAME = 'สพป.ชุมพร เขต 1';
-
     private const SCHOOL_REPORTS = ['report03', 'report04', 'report05', 'report09'];
 
     public function __construct(private readonly HttpFactory $http)
     {
     }
 
-    public function getRemoteContext(): array
+    public function getRemoteContext(?int $academicYear = null, ?string $term = null): array
     {
         return [
-            'academic_year' => $this->fetchSettingValue('academicYear'),
-            'term' => $this->fetchSettingValue('semester'),
-            'area_code' => self::AREA_CODE,
-            'area_name' => self::AREA_NAME,
+            'academic_year' => (string) ($academicYear ?: $this->fetchSettingValue('academicYear')),
+            'term' => (string) ($term ?: $this->fetchSettingValue('semester')),
+            'area_code' => AreaSettings::code(),
+            'area_name' => AreaSettings::name(),
         ];
     }
 
-    public function preview(): array
+    public function preview(?int $academicYear = null, ?string $term = null): array
     {
-        $context = $this->getRemoteContext();
+        $context = $this->getRemoteContext($academicYear, $term);
         $sources = $this->fetchAllSources($context);
         $normalized = $this->normalizeSources($context, $sources);
 
@@ -44,9 +41,9 @@ class PersonnelOverviewImportService
         ];
     }
 
-    public function import(string $mode = 'replace', ?int $createdBy = null): array
+    public function import(string $mode = 'replace', ?int $createdBy = null, ?int $academicYear = null, ?string $term = null): array
     {
-        $context = $this->getRemoteContext();
+        $context = $this->getRemoteContext($academicYear, $term);
         $sources = $this->fetchAllSources($context);
         $normalized = $this->normalizeSources($context, $sources);
         $summary = $this->buildSummary($this->getReportPayload($sources, 'report02') ?: $this->findAreaRow($this->getReportPayload($sources, 'report01')));
@@ -57,8 +54,8 @@ class PersonnelOverviewImportService
             }
 
             $batchId = DB::table('personnel_import_batches')->insertGetId([
-                'area_code' => self::AREA_CODE,
-                'area_name' => self::AREA_NAME,
+                'area_code' => AreaSettings::code(),
+                'area_name' => AreaSettings::name(),
                 'academic_year' => (int) $context['academic_year'],
                 'term' => (string) $context['term'],
                 'mode' => $mode,
@@ -95,19 +92,19 @@ class PersonnelOverviewImportService
         DB::table('personnel_overview_records')
             ->where('academic_year', $academicYear)
             ->where('term', $term)
-            ->where('area_code', self::AREA_CODE)
+            ->where('area_code', AreaSettings::code())
             ->delete();
 
         DB::table('personnel_overview_imports')
             ->where('academic_year', $academicYear)
             ->where('term', $term)
-            ->where('area_code', self::AREA_CODE)
+            ->where('area_code', AreaSettings::code())
             ->delete();
 
         DB::table('personnel_import_batches')
             ->where('academic_year', $academicYear)
             ->where('term', $term)
-            ->where('area_code', self::AREA_CODE)
+            ->where('area_code', AreaSettings::code())
             ->delete();
     }
 
@@ -125,19 +122,19 @@ class PersonnelOverviewImportService
             $key = sprintf('report%02d', $number);
             $endpoint = $number === 1
                 ? $opendataBaseUrl.'/reports/report01/'
-                : $opendataBaseUrl.'/reports/'.$key.'/'.self::AREA_CODE.'?academicYear='.$apiAcademicYear;
+                : $opendataBaseUrl.'/reports/'.$key.'/'.AreaSettings::code().'?academicYear='.$apiAcademicYear;
 
             $payload = $this->fetchJson($endpoint);
             $sources[$key] = $this->makeSource($key, $endpoint, $payload);
         }
 
-        $workloadEndpoint = $opendataBaseUrl.'/reports/workload/area/'.self::AREA_CODE
+        $workloadEndpoint = $opendataBaseUrl.'/reports/workload/area/'.AreaSettings::code()
             .'?academicYear='.$apiAcademicYear
             .'&semester='.rawurlencode($term)
             .'&studentYear=&studentSemester=';
         $sources['workload'] = $this->makeSource('workload', $workloadEndpoint, $this->fetchJson($workloadEndpoint));
 
-        $areaProfileEndpoint = $apiBaseUrl.'/personAreas/'.self::AREA_CODE;
+        $areaProfileEndpoint = $apiBaseUrl.'/personAreas/'.AreaSettings::code();
         $sources['person_areas'] = $this->makeSource('person_areas', $areaProfileEndpoint, $this->fetchJson($areaProfileEndpoint));
 
         $semesterEndpoint = $apiBaseUrl.'/semester/';
@@ -258,7 +255,7 @@ class PersonnelOverviewImportService
 
             DB::table('personnel_import_sources')->insert([
                 'batch_id' => $batchId,
-                'area_code' => self::AREA_CODE,
+                'area_code' => AreaSettings::code(),
                 'academic_year' => (int) $context['academic_year'],
                 'term' => (string) $context['term'],
                 'source_key' => $source['source_key'],
@@ -277,8 +274,8 @@ class PersonnelOverviewImportService
         foreach (array_chunk($reports, 200) as $chunk) {
             DB::table('personnel_report_records')->insert(array_map(fn ($row) => [
                 'batch_id' => $batchId,
-                'area_code' => self::AREA_CODE,
-                'area_name' => self::AREA_NAME,
+                'area_code' => AreaSettings::code(),
+                'area_name' => AreaSettings::name(),
                 'academic_year' => (int) $context['academic_year'],
                 'term' => (string) $context['term'],
                 'report_key' => $row['report_key'],
@@ -300,8 +297,8 @@ class PersonnelOverviewImportService
         foreach (array_chunk($workloads, 100) as $chunk) {
             DB::table('personnel_workload_schools')->insert(array_map(fn ($row) => [
                 'batch_id' => $batchId,
-                'area_code' => self::AREA_CODE,
-                'area_name' => self::AREA_NAME,
+                'area_code' => AreaSettings::code(),
+                'area_name' => AreaSettings::name(),
                 'academic_year' => (int) $context['academic_year'],
                 'term' => (string) $context['term'],
                 'school_id' => $row['school_id'],
@@ -339,8 +336,8 @@ class PersonnelOverviewImportService
 
         DB::table('personnel_area_profiles')->insert([
             'batch_id' => $batchId,
-            'area_code' => self::AREA_CODE,
-            'area_name' => self::AREA_NAME,
+            'area_code' => AreaSettings::code(),
+            'area_name' => AreaSettings::name(),
             'academic_year' => (int) $context['academic_year'],
             'term' => (string) $context['term'],
             'metrics' => json_encode($areaProfile['metrics'], JSON_UNESCAPED_UNICODE),
@@ -353,8 +350,8 @@ class PersonnelOverviewImportService
     private function storeLegacyOverview(int $batchId, array $context, array $summary, array $payload, string $mode, ?int $createdBy): void
     {
         $legacyImportId = DB::table('personnel_overview_imports')->insertGetId([
-            'area_code' => self::AREA_CODE,
-            'area_name' => self::AREA_NAME,
+            'area_code' => AreaSettings::code(),
+            'area_name' => AreaSettings::name(),
             'academic_year' => (int) $context['academic_year'],
             'term' => (string) $context['term'],
             'mode' => $mode,
@@ -367,8 +364,8 @@ class PersonnelOverviewImportService
 
         DB::table('personnel_overview_records')->insert([
             'import_id' => $legacyImportId,
-            'area_code' => self::AREA_CODE,
-            'area_name' => self::AREA_NAME,
+            'area_code' => AreaSettings::code(),
+            'area_name' => AreaSettings::name(),
             'academic_year' => (int) $context['academic_year'],
             'term' => (string) $context['term'],
             'total_personnel' => $summary['total_personnel'],
@@ -497,7 +494,7 @@ class PersonnelOverviewImportService
         }
 
         foreach ($payload as $item) {
-            if (is_array($item) && (string) ($item['areaCode'] ?? '') === self::AREA_CODE) {
+            if (is_array($item) && (string) ($item['areaCode'] ?? '') === AreaSettings::code()) {
                 return $item;
             }
         }

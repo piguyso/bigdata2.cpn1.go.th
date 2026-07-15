@@ -134,6 +134,19 @@
                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition" 
                                placeholder="เช่น ฐานข้อมูล BigData สพป.ชพ. 1">
                     </div>
+
+                    <!-- Area Code Field -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">เลขเขตพื้นที่ (Area Code)</label>
+                        <input type="text"
+                               x-model="settings.area_code"
+                               inputmode="numeric"
+                               pattern="[0-9]*"
+                               maxlength="20"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition"
+                               placeholder="เช่น {{ config('services.obec_safety.area_code', '1086010000') }}">
+                        <p class="text-[11px] text-slate-400">ใช้สำหรับอ้างอิงข้อมูลเขตพื้นที่จากระบบภายนอก เช่น HRMS/OBEC</p>
+                    </div>
                 </div>
 
                 <!-- Tab 2: Contact Info -->
@@ -253,6 +266,7 @@
                 settings: {
                     web_name: '',
                     web_subtitle: '',
+                    area_code: '',
                     contact_email: '',
                     contact_phone: '',
                     contact_address: '',
@@ -284,6 +298,7 @@
                                 const data = response.data.data;
                                 this.settings.web_name = data.web_name || 'BigData สพป.ชพ.1';
                                 this.settings.web_subtitle = data.web_subtitle || 'ฐานข้อมูล BigData สพป.ชพ. 1';
+                                this.settings.area_code = data.area_code || @js(config('services.obec_safety.area_code', '1086010000'));
                                 this.settings.contact_email = data.contact_email || 'info@anubanchumphon.ac.th';
                                 this.settings.contact_phone = data.contact_phone || '077-511124';
                                 this.settings.contact_address = data.contact_address || 'โรงเรียนอนุบาลชุมพร ถนนปรมินทรมรรคา ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000';
@@ -439,4 +454,3 @@
     </script>
     @endpush
 </x-layout>
-

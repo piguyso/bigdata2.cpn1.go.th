@@ -70,6 +70,14 @@
                             <i class="fa-solid fa-chart-line text-slate-400 w-4 text-center"></i>
                             ONET
                         </a>
+                        <a href="{{ route('nt.dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                            <i class="fa-solid fa-chart-column text-slate-400 w-4 text-center"></i>
+                            NT
+                        </a>
+                        <a href="{{ route('rt.dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                            <i class="fa-solid fa-book-open-reader text-slate-400 w-4 text-center"></i>
+                            RT
+                        </a>
                     </div>
                 </div>
                 <div class="relative" x-data="{ personnelOpen: false }" @mouseenter="personnelOpen = true" @mouseleave="personnelOpen = false">
@@ -116,6 +124,26 @@
                         </a>
                     </div>
                 </div>
+                <div class="relative" x-data="{ budgetOpen: false }" @mouseenter="budgetOpen = true" @mouseleave="budgetOpen = false">
+                    <button type="button" class="nav-link hover:text-orange-600 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-coins text-orange-500"></i> ข้อมูลด้านงบประมาณ
+                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                    </button>
+                    <div x-show="budgetOpen"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-1"
+                         class="absolute left-0 top-full mt-3 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl p-2 z-50"
+                         x-cloak>
+                        <a href="{{ route('asset.dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                            <i class="fa-solid fa-building-columns text-slate-400 w-4 text-center"></i>
+                            ข้อมูล asset
+                        </a>
+                    </div>
+                </div>
                 @auth
                     @if(Auth::user()->role === 'admin')
                         <div class="relative" x-data="{ importOpen: false }" @mouseenter="importOpen = true" @mouseleave="importOpen = false">
@@ -140,9 +168,21 @@
                                     <i class="fa-solid fa-chart-line text-slate-400 w-4 text-center"></i>
                                     นำเข้าข้อมูล ONET
                                 </a>
+                                <a href="{{ route('admin.nt.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                                    <i class="fa-solid fa-chart-column text-slate-400 w-4 text-center"></i>
+                                    นำเข้าข้อมูล NT
+                                </a>
+                                <a href="{{ route('admin.rt.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                                    <i class="fa-solid fa-book-open-reader text-slate-400 w-4 text-center"></i>
+                                    นำเข้าข้อมูล RT
+                                </a>
                                 <a href="{{ route('admin.personnel-overview.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
                                     <i class="fa-solid fa-users-gear text-slate-400 w-4 text-center"></i>
                                     นำเข้าข้อมูลภาพรวมบุคลากร
+                                </a>
+                                <a href="{{ route('admin.obec-asset.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                                    <i class="fa-solid fa-building-circle-arrow-right text-slate-400 w-4 text-center"></i>
+                                    นำเข้าข้อมูลจาก OBEC Asset
                                 </a>
                             </div>
                         </div>
@@ -302,6 +342,12 @@
                 <a href="{{ route('onet.dashboard') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-chart-line text-slate-400 w-4 text-center"></i> ONET
                 </a>
+                <a href="{{ route('nt.dashboard') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-chart-column text-slate-400 w-4 text-center"></i> NT
+                </a>
+                <a href="{{ route('rt.dashboard') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-book-open-reader text-slate-400 w-4 text-center"></i> RT
+                </a>
             </div>
             <div class="space-y-1">
                 <div class="block text-sm font-bold text-slate-600 py-2 flex items-center gap-2">
@@ -329,6 +375,14 @@
                     <i class="fa-solid fa-award text-slate-400 w-4 text-center"></i> ข้อมูลแยกตามวิทยฐานะ
                 </a>
             </div>
+            <div class="space-y-1">
+                <div class="block text-sm font-bold text-slate-600 py-2 flex items-center gap-2">
+                    <i class="fa-solid fa-coins text-orange-500 w-4 text-center"></i> ข้อมูลด้านงบประมาณ
+                </div>
+                <a href="{{ route('asset.dashboard') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-building-columns text-slate-400 w-4 text-center"></i> ข้อมูล asset
+                </a>
+            </div>
             @auth
                 @if(Auth::user()->role === 'admin')
                     <div class="space-y-1">
@@ -341,8 +395,17 @@
                         <a href="{{ route('admin.onet.index') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
                             <i class="fa-solid fa-chart-line text-slate-400 w-4 text-center"></i> นำเข้าข้อมูล ONET
                         </a>
+                        <a href="{{ route('admin.nt.index') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                            <i class="fa-solid fa-chart-column text-slate-400 w-4 text-center"></i> นำเข้าข้อมูล NT
+                        </a>
+                        <a href="{{ route('admin.rt.index') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                            <i class="fa-solid fa-book-open-reader text-slate-400 w-4 text-center"></i> นำเข้าข้อมูล RT
+                        </a>
                         <a href="{{ route('admin.personnel-overview.index') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
                             <i class="fa-solid fa-users-gear text-slate-400 w-4 text-center"></i> นำเข้าข้อมูลภาพรวมบุคลากร
+                        </a>
+                        <a href="{{ route('admin.obec-asset.index') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                            <i class="fa-solid fa-building-circle-arrow-right text-slate-400 w-4 text-center"></i> นำเข้าข้อมูลจาก OBEC Asset
                         </a>
                     </div>
                 @endif
@@ -449,6 +512,8 @@
                 <ul class="space-y-2 text-xs">
                     <li><a href="/" class="hover:text-orange-400 transition">หน้าหลัก</a></li>
                     <li><a href="{{ route('onet.dashboard') }}" class="hover:text-orange-400 transition">ผลการทดสอบระดับชาติ ONET</a></li>
+                    <li><a href="{{ route('nt.dashboard') }}" class="hover:text-orange-400 transition">ผลการทดสอบระดับชาติ NT</a></li>
+                    <li><a href="{{ route('rt.dashboard') }}" class="hover:text-orange-400 transition">ผลการทดสอบระดับชาติ RT</a></li>
                     <li><a href="{{ route('personnel.dashboard') }}" class="hover:text-orange-400 transition">ภาพรวมบุคลากร</a></li>
                     <li><a href="{{ route('personnel.area') }}" class="hover:text-orange-400 transition">ข้อมูลบุคลากรในเขตพื้นที่</a></li>
                     <li><a href="{{ route('personnel.schools') }}" class="hover:text-orange-400 transition">ภาพรวมบุคลากรในโรงเรียน</a></li>
@@ -456,6 +521,7 @@
                     <li><a href="{{ route('personnel.gender') }}" class="hover:text-orange-400 transition">ข้อมูลแยกตามเพศ</a></li>
                     <li><a href="{{ route('personnel.education') }}" class="hover:text-orange-400 transition">ข้อมูลแยกตามการศึกษา</a></li>
                     <li><a href="{{ route('personnel.academic-standing') }}" class="hover:text-orange-400 transition">ข้อมูลแยกตามวิทยฐานะ</a></li>
+                    <li><a href="{{ route('asset.dashboard') }}" class="hover:text-orange-400 transition">ข้อมูล asset</a></li>
                     <li><a href="/#about" class="hover:text-orange-400 transition">เกี่ยวกับเรา</a></li>
                     <li><a href="{{ route('org.public') }}" class="hover:text-orange-400 transition">โครงสร้างศูนย์</a></li>
                     <li><a href="/#courses" class="hover:text-orange-400 transition">หลักสูตรอบรม</a></li>

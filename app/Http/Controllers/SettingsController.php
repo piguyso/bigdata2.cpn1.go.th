@@ -48,6 +48,7 @@ class SettingsController extends Controller
             $request->validate([
                 'web_name'         => ['required', 'string', 'max:255'],
                 'web_subtitle'     => ['nullable', 'string', 'max:255'],
+                'area_code'        => ['nullable', 'string', 'regex:/^\d{1,20}$/'],
                 'contact_email'    => ['nullable', 'email', 'max:255'],
                 'contact_phone'    => ['nullable', 'string', 'max:50'],
                 'contact_address'  => ['nullable', 'string', 'max:1000'],
@@ -95,6 +96,7 @@ class SettingsController extends Controller
             $fields = [
                 'web_name',
                 'web_subtitle',
+                'area_code',
                 'contact_email',
                 'contact_phone',
                 'contact_address',

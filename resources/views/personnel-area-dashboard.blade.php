@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>ข้อมูลบุคลากรในเขตพื้นที่ | BigData สพป.ชพ.1</x-slot>
 
-    <div class="py-12 max-w-7xl mx-auto px-6" x-data='personnelAreaDashboard(@json($dashboardPayload))'>
+    <div class="py-12 max-w-7xl mx-auto px-6" x-data='personnelAreaDashboard(@json($dashboardPayload), @json(route('api.personnel.area')))' x-init="fetchDashboard()">
         <header class="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
@@ -23,10 +23,10 @@
         </header>
 
         <section class="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 mb-6">
-            <form method="GET" action="{{ route('personnel.area') }}" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <form x-ref="filterForm" method="GET" action="{{ route('personnel.area') }}" @submit.prevent="fetchDashboard()" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-2">ปีการศึกษา</label>
-                    <select class="form-input w-full" name="year" onchange="this.form.submit()">
+                    <select class="form-input w-full" name="year" onchange="this.form.requestSubmit()">
                         @foreach(($dashboardPayload['availableYears'] ?? []) as $year)
                             <option value="{{ $year }}" @selected((string) $year === (string) ($dashboardPayload['selectedYear'] ?? ''))>{{ $year }}</option>
                         @endforeach
@@ -35,7 +35,7 @@
 
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-2">รอบ</label>
-                    <select class="form-input w-full" name="term" onchange="this.form.submit()">
+                    <select class="form-input w-full" name="term" onchange="this.form.requestSubmit()">
                         @foreach(($dashboardPayload['availableTerms'] ?? []) as $term)
                             <option value="{{ $term }}" @selected((string) $term === (string) ($dashboardPayload['selectedTerm'] ?? ''))>รอบ {{ $term }}</option>
                         @endforeach
@@ -283,8 +283,10 @@
         [x-cloak] { display: none !important; }
     </style>
     <script>
-        function personnelAreaDashboard(payload) {
+        function personnelAreaDashboard(payload, apiUrl) {
             return {
+                apiUrl,
+                loading: false,
                 dashboard: payload || {
                     rows: [],
                     total: {},
@@ -304,6 +306,21 @@
                 },
                 barWidth(value) {
                     return `width: ${Math.max(Number(value || 0), 3)}%`;
+                },
+                fetchDashboard() {
+                    if (!this.apiUrl || !this.$refs.filterForm) {
+                        return;
+                    }
+
+                    const params = Object.fromEntries(new FormData(this.$refs.filterForm).entries());
+                    this.loading = true;
+                    axios.get(this.apiUrl, { params })
+                        .then(response => {
+                            this.dashboard = response.data || this.dashboard;
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
                 },
                 formatDateTime(value) {
                     if (!value) {

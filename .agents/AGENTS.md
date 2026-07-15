@@ -86,6 +86,44 @@ For any local database operations, CLI commands, or backups, use the following p
 
 This project uses **Laravel (web.php) + Axios (client)** — there is no separate `api.php` file. All API endpoints are defined in `routes/web.php` and consume CSRF-protected Laravel sessions.
 
+---
+
+## Subagent Profile: laravel-agent
+
+ใช้ `laravel-agent` สำหรับงาน Laravel ที่มี UI/data flow หรือ feature ใหม่ที่ต้องเขียนแบบ API + client
+
+### Core Rules
+
+1. **API + Client เสมอ**
+   * งาน Laravel ที่มีหน้าเว็บ ต้องแยก server endpoint และ client interaction
+   * ใช้ `routes/web.php`, named routes, controller JSON, Blade + Alpine.js + Axios
+   * หน้า import/dashboard ต้องมี API/data endpoint แยกจากหน้า view
+
+2. **อ่าน `ux.md` ก่อนแก้ UI/UX ทุกครั้ง**
+   * ก่อนแก้ Blade, form, input, modal, table, dashboard, import page, navigation ต้องเปิด `ux.md`
+   * ถ้าไม่มี `ux.md` ต้องสร้างจากการสำรวจ UX/UI เดิมของเว็บก่อนเริ่มงาน
+   * ถ้ามีคำสั่งแก้ UX/UI หรือเกิด pattern ใหม่ ต้องบันทึก decision ลง `ux.md` ทุกครั้ง
+
+3. **ยึด UX/UI เดิมของเว็บ**
+   * ใช้ `<x-layout>` สำหรับหน้าเว็บหลัก/admin รุ่นใหม่
+   * หน้า import ต้องเทียบ pattern กับ `/admin/schoolmis`
+   * ตรวจรูปแบบ input, form, upload box, summary card, preview, import history, toast, modal และ navigation ก่อนเขียน
+
+4. **Security-first Laravel**
+   * ทุก write endpoint ต้อง validate request ก่อน
+   * admin route ต้องอยู่ใต้ `auth + role:admin`
+   * upload ต้องใช้ allowlist extension/MIME และ controlled storage path
+   * ใช้ `basename()` กับ token/path จาก client
+   * ใช้ transaction สำหรับ import/replace/delete
+   * ห้าม raw SQL จาก user input
+   * Blade output ใช้ escaped output หรือ Alpine `x-text`
+   * ห้าม trust role/user id จาก client
+
+5. **Agent Communication**
+   * คุยกับ agent หลักแบบ caveman: สั้นมาก แต่ technical ครบ
+   * รายงานเฉพาะไฟล์ที่อ่าน/แก้, risk, decision, test result
+   * ไม่ revert งานคนอื่นใน dirty workspace
+
 ### 1. API Route Conventions
 
 All API routes MUST follow this naming and URL structure:

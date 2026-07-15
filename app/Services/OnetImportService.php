@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\AreaSettings;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -9,10 +10,6 @@ use RuntimeException;
 
 class OnetImportService
 {
-    private const AREA_CODE = '1086010000';
-
-    private const AREA_NAME = 'สพป.ชุมพร เขต 1';
-
     private const GRADE_OPTIONS = [
         'P6' => 'ป.6',
         'M3' => 'ม.3',
@@ -49,8 +46,8 @@ class OnetImportService
 
         return [
             'academic_year' => $academicYear,
-            'area_code' => self::AREA_CODE,
-            'area_name' => self::AREA_NAME,
+            'area_code' => AreaSettings::code(),
+            'area_name' => AreaSettings::name(),
             'schools_count' => $schools->count(),
             'matched_schools_count' => $schools->count() - $unmatched->count(),
             'unmatched_schools_count' => $unmatched->count(),
@@ -104,8 +101,8 @@ class OnetImportService
 
                     $rows[] = [
                         'school_id' => $localSchoolMap[$smis]['id'],
-                        'area_code' => self::AREA_CODE,
-                        'area_name' => self::AREA_NAME,
+                        'area_code' => AreaSettings::code(),
+                        'area_name' => AreaSettings::name(),
                         'academic_year' => (int) ($record['YEAR_COURSE'] ?? $academicYear),
                         'grade_code' => (string) ($record['GRADE_CODE'] ?? $gradeCode),
                         'grade_abbr' => (string) ($record['GRADE_ABBR'] ?? (self::GRADE_OPTIONS[$gradeCode] ?? $gradeCode)),
@@ -133,13 +130,19 @@ class OnetImportService
 
         $importId = DB::transaction(function () use ($academicYear, $mode, $createdBy, $warnings, $rows, $schools, $matchedSchools) {
             if ($mode === 'replace') {
-                DB::table('onet_records')->where('academic_year', $academicYear)->delete();
-                DB::table('onet_imports')->where('academic_year', $academicYear)->delete();
+                DB::table('onet_records')
+                    ->where('academic_year', $academicYear)
+                    ->where('area_code', AreaSettings::code())
+                    ->delete();
+                DB::table('onet_imports')
+                    ->where('academic_year', $academicYear)
+                    ->where('area_code', AreaSettings::code())
+                    ->delete();
             }
 
             $importId = DB::table('onet_imports')->insertGetId([
-                'area_code' => self::AREA_CODE,
-                'area_name' => self::AREA_NAME,
+                'area_code' => AreaSettings::code(),
+                'area_name' => AreaSettings::name(),
                 'academic_year' => $academicYear,
                 'mode' => $mode,
                 'schools_count' => count($matchedSchools),
@@ -188,7 +191,7 @@ class OnetImportService
         $response = $this->http
             ->acceptJson()
             ->timeout($timeout)
-            ->get($baseUrl.'/standardcode/schoolArea/'.self::AREA_CODE)
+            ->get($baseUrl.'/standardcode/schoolArea/'.AreaSettings::code())
             ->throw();
 
         $payload = $response->json();

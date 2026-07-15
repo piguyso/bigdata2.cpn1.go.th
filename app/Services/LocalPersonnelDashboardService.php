@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\SchoolLogo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -156,6 +157,7 @@ class LocalPersonnelDashboardService
                     ->on('records.term', '=', 'workload.term')
                     ->on('records.school_smis', '=', 'workload.school_smis');
             })
+            ->leftJoin('system_school as schools', 'workload.school_id', '=', 'schools.id')
             ->where('records.report_key', 'report03')
             ->where('records.level', 'school')
             ->where('records.academic_year', $selectedYear)
@@ -168,6 +170,7 @@ class LocalPersonnelDashboardService
                 'workload.school_size',
                 'workload.students_total',
                 'workload.rooms_total',
+                'schools.logo_path',
             ])
             ->orderBy('records.school_smis')
             ->get();
@@ -283,6 +286,7 @@ class LocalPersonnelDashboardService
                     ->on('records.term', '=', 'workload.term')
                     ->on('records.school_smis', '=', 'workload.school_smis');
             })
+            ->leftJoin('system_school as schools', 'workload.school_id', '=', 'schools.id')
             ->where('records.report_key', 'report04')
             ->where('records.level', 'school')
             ->where('records.academic_year', $selectedYear)
@@ -295,6 +299,7 @@ class LocalPersonnelDashboardService
                 'workload.school_size',
                 'workload.students_total',
                 'workload.rooms_total',
+                'schools.logo_path',
             ])
             ->orderBy('records.school_smis')
             ->get();
@@ -387,6 +392,7 @@ class LocalPersonnelDashboardService
                     ->on('records.term', '=', 'workload.term')
                     ->on('records.school_smis', '=', 'workload.school_smis');
             })
+            ->leftJoin('system_school as schools', 'workload.school_id', '=', 'schools.id')
             ->where('records.report_key', 'report05')
             ->where('records.level', 'school')
             ->where('records.academic_year', $selectedYear)
@@ -399,6 +405,7 @@ class LocalPersonnelDashboardService
                 'workload.school_size',
                 'workload.students_total',
                 'workload.rooms_total',
+                'schools.logo_path',
             ])
             ->orderBy('records.school_smis')
             ->get();
@@ -503,6 +510,7 @@ class LocalPersonnelDashboardService
                     ->on('records.term', '=', 'workload.term')
                     ->on('records.school_code', '=', 'workload.school_code');
             })
+            ->leftJoin('system_school as schools', 'workload.school_id', '=', 'schools.id')
             ->where('records.report_key', 'report09')
             ->where('records.level', 'school')
             ->where('records.academic_year', $selectedYear)
@@ -519,6 +527,7 @@ class LocalPersonnelDashboardService
                 'workload.district',
                 'workload.subdistrict',
                 'workload.school_size',
+                'schools.logo_path',
             ])
             ->orderByRaw('COALESCE(workload.school_smis, records.school_code)')
             ->get();
@@ -658,12 +667,14 @@ class LocalPersonnelDashboardService
             );
 
             if ($selectedSchoolSmis !== '') {
-                $selectedSchool = DB::table('personnel_workload_schools')
-                    ->where('academic_year', $selectedYear)
-                    ->where('term', $selectedTerm)
-                    ->where('school_smis', $selectedSchoolSmis)
-                    ->whereNotNull('school_id')
-                    ->orderBy('school_smis')
+                $selectedSchool = DB::table('personnel_workload_schools as workload')
+                    ->leftJoin('system_school as schools', 'workload.school_id', '=', 'schools.id')
+                    ->where('workload.academic_year', $selectedYear)
+                    ->where('workload.term', $selectedTerm)
+                    ->where('workload.school_smis', $selectedSchoolSmis)
+                    ->whereNotNull('workload.school_id')
+                    ->select('workload.*', 'schools.logo_path')
+                    ->orderBy('workload.school_smis')
                     ->first();
 
                 if (! $selectedSchool) {
@@ -671,12 +682,14 @@ class LocalPersonnelDashboardService
                 }
             }
 
-            $workloadRows = DB::table('personnel_workload_schools')
-                ->where('academic_year', $selectedYear)
-                ->where('term', $selectedTerm)
-                ->whereNotNull('school_id')
-                ->when($selectedSchoolSmis !== '', fn ($query) => $query->where('school_smis', $selectedSchoolSmis))
-                ->orderBy('school_smis')
+            $workloadRows = DB::table('personnel_workload_schools as workload')
+                ->leftJoin('system_school as schools', 'workload.school_id', '=', 'schools.id')
+                ->where('workload.academic_year', $selectedYear)
+                ->where('workload.term', $selectedTerm)
+                ->whereNotNull('workload.school_id')
+                ->when($selectedSchoolSmis !== '', fn ($query) => $query->where('workload.school_smis', $selectedSchoolSmis))
+                ->select('workload.*', 'schools.logo_path')
+                ->orderBy('workload.school_smis')
                 ->get();
         }
 
@@ -723,6 +736,7 @@ class LocalPersonnelDashboardService
                 'teacherShortageTotal' => (int) ($currentSummary->teacher_shortage_total ?? 0),
                 'schoolName' => $selectedSchool->school_name ?? null,
                 'schoolSmis' => $selectedSchool->school_smis ?? null,
+                'logoUrl' => SchoolLogo::url($selectedSchool->logo_path ?? null),
                 'district' => $selectedSchool->district ?? null,
                 'subdistrict' => $selectedSchool->subdistrict ?? null,
                 'schoolSize' => $selectedSchool->school_size ?? null,
@@ -1109,6 +1123,7 @@ class LocalPersonnelDashboardService
                     'schoolSmis' => (string) ($record->school_smis ?? ''),
                     'schoolCode' => (string) ($record->school_code ?? ''),
                     'schoolName' => (string) ($record->school_name ?? ''),
+                    'logoUrl' => SchoolLogo::url($record->logo_path ?? null),
                     'district' => (string) ($record->district ?? ''),
                     'subdistrict' => (string) ($record->subdistrict ?? ''),
                     'schoolSize' => (string) ($record->school_size ?? ''),
@@ -1162,6 +1177,7 @@ class LocalPersonnelDashboardService
                     'schoolSmis' => (string) ($record->school_smis ?? ''),
                     'schoolCode' => (string) ($record->school_code ?? ''),
                     'schoolName' => (string) ($record->school_name ?? ''),
+                    'logoUrl' => SchoolLogo::url($record->logo_path ?? null),
                     'district' => (string) ($record->district ?? ''),
                     'subdistrict' => (string) ($record->subdistrict ?? ''),
                     'schoolSize' => (string) ($record->school_size ?? ''),
@@ -1187,6 +1203,7 @@ class LocalPersonnelDashboardService
                     'schoolSmis' => (string) ($record->school_smis ?? ''),
                     'schoolCode' => (string) ($record->school_code ?? ''),
                     'schoolName' => (string) ($record->school_name ?? ''),
+                    'logoUrl' => SchoolLogo::url($record->logo_path ?? null),
                     'district' => (string) ($record->district ?? ''),
                     'subdistrict' => (string) ($record->subdistrict ?? ''),
                     'schoolSize' => (string) ($record->school_size ?? ''),
@@ -1245,6 +1262,7 @@ class LocalPersonnelDashboardService
                     'schoolSmis' => (string) ($record->workload_school_smis ?? $record->school_smis ?? ''),
                     'schoolCode' => (string) ($record->school_code ?? ''),
                     'schoolName' => (string) ($record->school_name ?? ''),
+                    'logoUrl' => SchoolLogo::url($record->logo_path ?? null),
                     'district' => (string) ($record->district ?? ''),
                     'subdistrict' => (string) ($record->subdistrict ?? ''),
                     'schoolSize' => (string) ($record->school_size ?? ''),
@@ -1575,18 +1593,20 @@ class LocalPersonnelDashboardService
 
     private function buildPositionAvailableSchools(int $academicYear, string $term): array
     {
-        $schools = DB::table('personnel_report_records')
-            ->where('report_key', 'report03')
-            ->where('level', 'school')
-            ->where('academic_year', $academicYear)
-            ->where('term', $term)
-            ->whereNotNull('school_smis')
-            ->select('school_smis', 'school_name')
-            ->orderBy('school_smis')
+        $schools = DB::table('personnel_report_records as records')
+            ->leftJoin('system_school as schools', 'records.school_smis', '=', 'schools.smis')
+            ->where('records.report_key', 'report03')
+            ->where('records.level', 'school')
+            ->where('records.academic_year', $academicYear)
+            ->where('records.term', $term)
+            ->whereNotNull('records.school_smis')
+            ->select('records.school_smis', 'records.school_name', 'schools.logo_path')
+            ->orderBy('records.school_smis')
             ->get()
             ->map(fn ($school) => [
                 'schoolSmis' => (string) $school->school_smis,
                 'schoolName' => (string) $school->school_name,
+                'logoUrl' => SchoolLogo::url($school->logo_path ?? null),
                 'label' => trim(((string) $school->school_smis).' '.((string) $school->school_name)),
             ])
             ->values()
@@ -1603,18 +1623,20 @@ class LocalPersonnelDashboardService
 
     private function buildGenderAvailableSchools(int $academicYear, string $term): array
     {
-        $schools = DB::table('personnel_report_records')
-            ->where('report_key', 'report04')
-            ->where('level', 'school')
-            ->where('academic_year', $academicYear)
-            ->where('term', $term)
-            ->whereNotNull('school_smis')
-            ->select('school_smis', 'school_name')
-            ->orderBy('school_smis')
+        $schools = DB::table('personnel_report_records as records')
+            ->leftJoin('system_school as schools', 'records.school_smis', '=', 'schools.smis')
+            ->where('records.report_key', 'report04')
+            ->where('records.level', 'school')
+            ->where('records.academic_year', $academicYear)
+            ->where('records.term', $term)
+            ->whereNotNull('records.school_smis')
+            ->select('records.school_smis', 'records.school_name', 'schools.logo_path')
+            ->orderBy('records.school_smis')
             ->get()
             ->map(fn ($school) => [
                 'schoolSmis' => (string) $school->school_smis,
                 'schoolName' => (string) $school->school_name,
+                'logoUrl' => SchoolLogo::url($school->logo_path ?? null),
                 'label' => trim(((string) $school->school_smis).' '.((string) $school->school_name)),
             ])
             ->values()
@@ -1631,18 +1653,20 @@ class LocalPersonnelDashboardService
 
     private function buildEducationAvailableSchools(int $academicYear, string $term): array
     {
-        $schools = DB::table('personnel_report_records')
-            ->where('report_key', 'report05')
-            ->where('level', 'school')
-            ->where('academic_year', $academicYear)
-            ->where('term', $term)
-            ->whereNotNull('school_smis')
-            ->select('school_smis', 'school_name')
-            ->orderBy('school_smis')
+        $schools = DB::table('personnel_report_records as records')
+            ->leftJoin('system_school as schools', 'records.school_smis', '=', 'schools.smis')
+            ->where('records.report_key', 'report05')
+            ->where('records.level', 'school')
+            ->where('records.academic_year', $academicYear)
+            ->where('records.term', $term)
+            ->whereNotNull('records.school_smis')
+            ->select('records.school_smis', 'records.school_name', 'schools.logo_path')
+            ->orderBy('records.school_smis')
             ->get()
             ->map(fn ($school) => [
                 'schoolSmis' => (string) $school->school_smis,
                 'schoolName' => (string) $school->school_name,
+                'logoUrl' => SchoolLogo::url($school->logo_path ?? null),
                 'label' => trim(((string) $school->school_smis).' '.((string) $school->school_name)),
             ])
             ->values()
@@ -1665,6 +1689,7 @@ class LocalPersonnelDashboardService
                     ->on('records.term', '=', 'workload.term')
                     ->on('records.school_code', '=', 'workload.school_code');
             })
+            ->leftJoin('system_school as schools', 'workload.school_id', '=', 'schools.id')
             ->where('records.report_key', 'report09')
             ->where('records.level', 'school')
             ->where('records.academic_year', $academicYear)
@@ -1673,6 +1698,7 @@ class LocalPersonnelDashboardService
                 'records.school_code',
                 'records.school_name',
                 'workload.school_smis',
+                'schools.logo_path',
             ])
             ->orderByRaw('COALESCE(workload.school_smis, records.school_code)')
             ->get()
@@ -1682,6 +1708,7 @@ class LocalPersonnelDashboardService
                 return [
                     'schoolSmis' => $schoolSmis,
                     'schoolName' => (string) $school->school_name,
+                    'logoUrl' => SchoolLogo::url($school->logo_path ?? null),
                     'label' => trim($schoolSmis.' '.((string) $school->school_name)),
                 ];
             })
@@ -2062,17 +2089,19 @@ class LocalPersonnelDashboardService
 
     private function buildAvailableSchools(int $academicYear, string $term, string $overviewLabel = 'ภาพรวมทั้งเขต'): array
     {
-        $schools = DB::table('personnel_workload_schools')
-            ->where('academic_year', $academicYear)
-            ->where('term', $term)
-            ->whereNotNull('school_id')
-            ->whereNotNull('school_smis')
-            ->select('school_smis', 'school_name')
-            ->orderBy('school_smis')
+        $schools = DB::table('personnel_workload_schools as workload')
+            ->leftJoin('system_school as schools', 'workload.school_id', '=', 'schools.id')
+            ->where('workload.academic_year', $academicYear)
+            ->where('workload.term', $term)
+            ->whereNotNull('workload.school_id')
+            ->whereNotNull('workload.school_smis')
+            ->select('workload.school_smis', 'workload.school_name', 'schools.logo_path')
+            ->orderBy('workload.school_smis')
             ->get()
             ->map(fn ($school) => [
                 'schoolSmis' => (string) $school->school_smis,
                 'schoolName' => (string) $school->school_name,
+                'logoUrl' => SchoolLogo::url($school->logo_path ?? null),
                 'label' => trim(((string) $school->school_smis).' '.((string) $school->school_name)),
             ])
             ->values()
@@ -2118,6 +2147,7 @@ class LocalPersonnelDashboardService
                     'schoolSmis' => (string) ($row->school_smis ?? ''),
                     'schoolCode' => (string) ($row->school_code ?? ''),
                     'schoolName' => (string) ($row->school_name ?? ''),
+                    'logoUrl' => SchoolLogo::url($row->logo_path ?? null),
                     'district' => (string) ($row->district ?? ''),
                     'subdistrict' => (string) ($row->subdistrict ?? ''),
                     'schoolType' => (string) ($row->school_type ?? ''),

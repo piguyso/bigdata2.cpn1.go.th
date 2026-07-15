@@ -16,6 +16,14 @@
                 <p class="text-slate-500 text-sm mt-1">เพิ่ม แก้ไข และลบข้อมูลจากตาราง system_school</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('admin.schools.template') }}" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-arrow-down"></i> ดาวน์โหลด Template
+                </a>
+                <input type="file" x-ref="importFile" class="hidden" accept=".csv,.txt,.xlsx,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @change="importSchools($event)">
+                <button type="button" @click="$refs.importFile.click()" :disabled="importing" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2 disabled:opacity-50">
+                    <i :class="importing ? 'fa-solid fa-circle-notch animate-spin' : 'fa-solid fa-file-import'"></i>
+                    <span x-text="importing ? 'กำลังนำเข้า...' : 'Import CSV/XLSX'"></span>
+                </button>
                 <a href="{{ route('admin.school-group.index') }}" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2">
                     <i class="fa-solid fa-layer-group"></i> จัดการเครือข่าย
                 </a>
@@ -71,8 +79,18 @@
                             <tr class="hover:bg-slate-50/60 transition">
                                 <td class="py-4 px-5 font-bold text-slate-700" x-text="school.smis"></td>
                                 <td class="py-4 px-5">
-                                    <div class="font-extrabold text-slate-850" x-text="school.schoolname"></div>
-                                    <div class="text-[10px] text-slate-400 mt-1" x-text="school.schoolname_eng || '-'"></div>
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <template x-if="school.logo_url">
+                                            <img :src="school.logo_url" :alt="school.schoolname" class="w-10 h-10 rounded-xl object-contain bg-white border border-slate-100 p-1 shrink-0">
+                                        </template>
+                                        <div x-show="!school.logo_url" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-school text-xs"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="font-extrabold text-slate-850 truncate" x-text="school.schoolname"></div>
+                                            <div class="text-[10px] text-slate-400 mt-1 truncate" x-text="school.schoolname_eng || '-'"></div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="py-4 px-5">
                                     <span class="px-2.5 py-1 bg-orange-50 text-orange-700 rounded-md font-bold text-[10px]" x-text="school.schoolgroup_name || school.schoolgroup || '-'"></span>
@@ -309,6 +327,7 @@
                 return {
                     loading: true,
                     saving: false,
+                    importing: false,
                     search: '',
                     groupFilter: '',
                     schools: [],
@@ -388,6 +407,49 @@
                                 this.showToast(msg, 'error');
                             })
                             .finally(() => this.saving = false);
+                    },
+
+                    importSchools(event) {
+                        const file = event.target.files?.[0];
+                        event.target.value = '';
+
+                        if (!file) {
+                            return;
+                        }
+
+                        if (!/\.(csv|txt|xlsx)$/i.test(file.name)) {
+                            this.showToast('รองรับไฟล์ .csv, .txt หรือ .xlsx', 'error');
+                            return;
+                        }
+
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        this.importing = true;
+
+                        axios.post('{{ route('admin.schools.import') }}', formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                        })
+                            .then(response => {
+                                if (response.data.status === 'success') {
+                                    const summary = response.data.summary || {};
+                                    const message = [
+                                        response.data.message,
+                                        `เพิ่มโรงเรียน ${summary.schools_created || 0}`,
+                                        `แก้ไขโรงเรียน ${summary.schools_updated || 0}`,
+                                        `ข้าม ${summary.skipped_rows || 0}`
+                                    ].join(' | ');
+                                    this.showToast(message, 'success');
+                                    this.fetchSchools();
+                                } else {
+                                    this.showToast(response.data.message || 'นำเข้าไม่สำเร็จ', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                const data = error.response?.data || {};
+                                const warnings = Array.isArray(data.summary?.warnings) ? data.summary.warnings.slice(0, 3).join(' | ') : '';
+                                this.showToast(warnings || data.message || 'เกิดข้อผิดพลาดในการนำเข้าไฟล์', 'error');
+                            })
+                            .finally(() => this.importing = false);
                     },
 
                     confirmDelete(school) {

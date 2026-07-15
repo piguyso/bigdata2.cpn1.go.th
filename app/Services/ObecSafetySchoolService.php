@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\AreaSettings;
 use GuzzleHttp\Cookie\CookieJar;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\Collection;
@@ -18,7 +19,7 @@ class ObecSafetySchoolService
         $config = config('services.obec_safety');
         $registerUrl = (string) ($config['register_url'] ?? '');
         $searchUrl = (string) ($config['school_search_url'] ?? '');
-        $areaCode = trim((string) ($config['area_code'] ?? ''));
+        $areaCode = AreaSettings::code();
         $timeout = max(5, (int) ($config['timeout'] ?? 20));
 
         if ($registerUrl === '' || $searchUrl === '' || $areaCode === '') {

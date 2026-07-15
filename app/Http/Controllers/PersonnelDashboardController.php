@@ -110,4 +110,88 @@ class PersonnelDashboardController extends Controller
             ], 502);
         }
     }
+
+    public function schoolsData(Request $request): JsonResponse
+    {
+        try {
+            return response()->json($this->personnelDashboardService->getSchoolDashboardPayload(
+                $request->integer('year') ?: null,
+                $request->string('term')->toString() ?: null,
+                $request->string('school_smis')->toString() ?: null
+            ));
+        } catch (Throwable $exception) {
+            return $this->personnelApiError();
+        }
+    }
+
+    public function areaData(Request $request): JsonResponse
+    {
+        try {
+            return response()->json($this->personnelDashboardService->getAreaPersonnelPayload(
+                $request->integer('year') ?: null,
+                $request->string('term')->toString() ?: null
+            ));
+        } catch (Throwable $exception) {
+            return $this->personnelApiError();
+        }
+    }
+
+    public function positionData(Request $request): JsonResponse
+    {
+        try {
+            return response()->json($this->personnelDashboardService->getPositionReportPayload(
+                $request->integer('year') ?: null,
+                $request->string('term')->toString() ?: null,
+                $request->string('school_smis')->toString() ?: null
+            ));
+        } catch (Throwable $exception) {
+            return $this->personnelApiError();
+        }
+    }
+
+    public function genderData(Request $request): JsonResponse
+    {
+        try {
+            return response()->json($this->personnelDashboardService->getGenderReportPayload(
+                $request->integer('year') ?: null,
+                $request->string('term')->toString() ?: null,
+                $request->string('school_smis')->toString() ?: null
+            ));
+        } catch (Throwable $exception) {
+            return $this->personnelApiError();
+        }
+    }
+
+    public function educationData(Request $request): JsonResponse
+    {
+        try {
+            return response()->json($this->personnelDashboardService->getEducationReportPayload(
+                $request->integer('year') ?: null,
+                $request->string('term')->toString() ?: null,
+                $request->string('school_smis')->toString() ?: null
+            ));
+        } catch (Throwable $exception) {
+            return $this->personnelApiError();
+        }
+    }
+
+    public function academicStandingData(Request $request): JsonResponse
+    {
+        try {
+            return response()->json($this->personnelDashboardService->getAcademicStandingReportPayload(
+                $request->integer('year') ?: null,
+                $request->string('term')->toString() ?: null,
+                $request->string('school_smis')->toString() ?: null
+            ));
+        } catch (Throwable $exception) {
+            return $this->personnelApiError();
+        }
+    }
+
+    private function personnelApiError(): JsonResponse
+    {
+        return response()->json([
+            'message' => 'ไม่สามารถดึงข้อมูลบุคลากรจากฐานข้อมูล local ได้ในขณะนี้',
+        ], 502);
+    }
 }

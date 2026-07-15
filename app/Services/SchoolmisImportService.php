@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\TabularFileReader;
 use Illuminate\Support\Facades\DB;
 
 class SchoolmisImportService
@@ -135,12 +136,7 @@ class SchoolmisImportService
 
     private function readCsvRows(string $path): array
     {
-        $content = file_get_contents($path);
-        $content = preg_replace('/^\xEF\xBB\xBF/', '', (string) $content);
-        $content = str_replace(["\r\n", "\r"], "\n", (string) $content);
-        $lines = array_filter(explode("\n", $content), fn ($line) => trim($line) !== '');
-
-        return array_map(static fn ($line) => str_getcsv($line), $lines);
+        return TabularFileReader::rows($path);
     }
 
     private function isDataRow(array $row): bool

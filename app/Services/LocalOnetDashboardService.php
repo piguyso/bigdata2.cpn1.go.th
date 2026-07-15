@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Support\SchoolLogo;
+use App\Support\AreaSettings;
 use Illuminate\Support\Facades\DB;
 
 class LocalOnetDashboardService
@@ -19,6 +21,7 @@ class LocalOnetDashboardService
         $gradeCode = array_key_exists($gradeCode ?? '', self::GRADE_OPTIONS) ? $gradeCode : 'P6';
         $availableYears = DB::table('onet_records')
             ->where('grade_code', $gradeCode)
+            ->where('area_code', AreaSettings::code())
             ->distinct()
             ->orderByDesc('academic_year')
             ->pluck('academic_year')
@@ -30,16 +33,19 @@ class LocalOnetDashboardService
             ? $academicYear
             : ($availableYears[0] ?? null);
 
-        $schoolsQuery = DB::table('onet_records')->where('grade_code', $gradeCode);
+        $schoolsQuery = DB::table('onet_records as records')
+            ->leftJoin('system_school as schools', 'records.school_smis', '=', 'schools.smis')
+            ->where('records.area_code', AreaSettings::code())
+            ->where('records.grade_code', $gradeCode);
         if ($selectedYear !== null) {
-            $schoolsQuery->where('academic_year', $selectedYear);
+            $schoolsQuery->where('records.academic_year', $selectedYear);
         }
 
         $schools = $schoolsQuery
-            ->select('school_code', 'school_smis', 'school_name')
+            ->select('records.school_code', 'records.school_smis', 'records.school_name', 'schools.logo_path')
             ->distinct()
-            ->orderBy('school_smis')
-            ->orderBy('school_name')
+            ->orderBy('records.school_smis')
+            ->orderBy('records.school_name')
             ->get();
 
         $areaOption = (object) [
@@ -60,11 +66,13 @@ class LocalOnetDashboardService
             $isAreaOverview = $selectedSchool->school_code === self::AREA_OPTION_CODE;
 
             $subjectQuery = DB::table('onet_records')
+                ->where('area_code', AreaSettings::code())
                 ->where('grade_code', $gradeCode)
                 ->where('academic_year', $selectedYear)
                 ->orderBy('subject_code');
 
             $trendQuery = DB::table('onet_records')
+                ->where('area_code', AreaSettings::code())
                 ->where('grade_code', $gradeCode)
                 ->orderBy('academic_year')
                 ->orderBy('subject_code');
@@ -111,7 +119,7 @@ class LocalOnetDashboardService
         }
 
         return [
-            'area' => ['code' => '1086010000', 'name' => 'สพป.ชุมพร เขต 1'],
+            'area' => ['code' => AreaSettings::code(), 'name' => AreaSettings::name()],
             'gradeOptions' => collect(self::GRADE_OPTIONS)->map(fn ($label, $code) => ['code' => $code, 'label' => $label])->values()->all(),
             'selectedGrade' => $gradeCode,
             'availableYears' => $availableYears,
@@ -120,11 +128,13 @@ class LocalOnetDashboardService
                 'schoolCode' => self::AREA_OPTION_CODE,
                 'schoolName' => 'ภาพรวมทั้งเขตฯ',
                 'schoolSmis' => '',
+                'logoUrl' => null,
                 'label' => 'ภาพรวมทั้งเขตฯ',
             ]], $schools->map(fn ($school) => [
                 'schoolCode' => (string) $school->school_code,
                 'schoolName' => (string) $school->school_name,
                 'schoolSmis' => (string) ($school->school_smis ?? ''),
+                'logoUrl' => SchoolLogo::url($school->logo_path ?? null),
                 'label' => trim(((string) ($school->school_smis ?? '')).' '.$school->school_name),
             ])->values()->all()),
             'selectedSchool' => $selectedSchool ? [
@@ -134,6 +144,7 @@ class LocalOnetDashboardService
                 'district' => (string) ($selectedSchool->school_code === self::AREA_OPTION_CODE ? 'ชุมพร เขต 1' : ($selectedSchoolInfo->amper ?? '-')),
                 'subdistrict' => (string) ($selectedSchool->school_code === self::AREA_OPTION_CODE ? '-' : ($selectedSchoolInfo->tambon ?? '-')),
                 'schoolType' => (string) ($selectedSchool->school_code === self::AREA_OPTION_CODE ? 'ภาพรวมทั้งเขตฯ' : ($selectedSchoolInfo->statusDetail ?? '-')),
+                'logoUrl' => SchoolLogo::url($selectedSchoolInfo->logo_path ?? ($selectedSchool->logo_path ?? null)),
                 'maxClassLevel' => self::GRADE_OPTIONS[$gradeCode] ?? $gradeCode,
             ] : null,
             'overview' => [

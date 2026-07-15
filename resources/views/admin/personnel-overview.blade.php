@@ -16,8 +16,8 @@
         </header>
 
         <section class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
-            <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ปีจาก HRMS</p><p class="text-2xl font-extrabold text-slate-900 mt-1" x-text="currentRemote.academic_year || '-'"></p></div>
-            <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">รอบจาก HRMS</p><p class="text-2xl font-extrabold text-slate-900 mt-1" x-text="currentRemote.term || '-'"></p></div>
+            <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ปีที่เลือก</p><p class="text-2xl font-extrabold text-slate-900 mt-1" x-text="form.academic_year || '-'"></p></div>
+            <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">รอบที่เลือก</p><p class="text-2xl font-extrabold text-slate-900 mt-1" x-text="form.term || '-'"></p></div>
             <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">แหล่งข้อมูลที่เก็บแล้ว</p><p class="text-2xl font-extrabold text-slate-900 mt-1" x-text="recordCount"></p></div>
             <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ชุดล่าสุด</p><p class="text-sm font-extrabold text-slate-900 mt-2" x-text="latestImportedLabel()"></p></div>
         </section>
@@ -30,17 +30,25 @@
 
                 <div class="p-6 space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <label class="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">ปีการศึกษา</span>
+                            <select x-model="form.academic_year" class="mt-2 w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-orange-500">
+                                <template x-for="year in years" :key="year.year">
+                                    <option :value="year.year" x-text="year.year"></option>
+                                </template>
+                            </select>
+                        </label>
+                        <label class="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">รอบ</span>
+                            <select x-model="form.term" class="mt-2 w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-orange-500">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </label>
                         <div class="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
                             <div class="text-[10px] font-bold text-slate-400 uppercase">ส่วนราชการ</div>
                             <div class="mt-1 text-sm font-extrabold text-slate-800" x-text="currentRemote.area_name || '-'"></div>
-                        </div>
-                        <div class="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase">ปีการศึกษา</div>
-                            <div class="mt-1 text-sm font-extrabold text-slate-800" x-text="currentRemote.academic_year || '-'"></div>
-                        </div>
-                        <div class="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase">รอบ</div>
-                            <div class="mt-1 text-sm font-extrabold text-slate-800" x-text="currentRemote.term || '-'"></div>
                         </div>
                     </div>
 
@@ -136,8 +144,10 @@
                     currentRemote: {},
                     imports: [],
                     dataSets: [],
+                    years: [],
                     recordCount: 0,
                     latestImported: null,
+                    form: { academic_year: '', term: '1' },
                     previewLoading: false,
                     importLoading: false,
                     deleteLoading: false,
@@ -149,6 +159,9 @@
                         axios.get('{{ route('admin.personnel-overview.data') }}').then(response => {
                             if (response.data.status === 'success') {
                                 this.currentRemote = response.data.current_remote || {};
+                                this.years = response.data.years || [];
+                                this.form.academic_year = this.form.academic_year || response.data.active_year || this.currentRemote.academic_year || '';
+                                this.form.term = this.form.term || this.currentRemote.term || '1';
                                 this.imports = response.data.imports || [];
                                 this.dataSets = response.data.data_sets || [];
                                 this.recordCount = response.data.record_count || 0;
@@ -158,7 +171,7 @@
                     },
                     previewImport() {
                         this.previewLoading = true;
-                        axios.post('{{ route('admin.personnel-overview.preview') }}')
+                        axios.post('{{ route('admin.personnel-overview.preview') }}', this.form)
                             .then(response => { this.preview.summary = response.data.preview; this.showToast(response.data.message || 'ตรวจสอบเรียบร้อยแล้ว', 'success'); })
                             .catch(error => this.showToast(error.response?.data?.message || 'ไม่สามารถตรวจสอบข้อมูลภาพรวมบุคลากรได้', 'error'))
                             .finally(() => this.previewLoading = false);
@@ -166,7 +179,7 @@
                     runImport() {
                         if (!this.preview.summary) return this.showToast('กรุณาตรวจสอบข้อมูลก่อนนำเข้า', 'error');
                         this.importLoading = true;
-                        axios.post('{{ route('admin.personnel-overview.import') }}', { mode: 'replace' })
+                        axios.post('{{ route('admin.personnel-overview.import') }}', { ...this.form, mode: 'replace' })
                             .then(response => { this.showToast(response.data.message || 'นำเข้าข้อมูลเรียบร้อยแล้ว', 'success'); this.preview.summary = null; this.fetchData(); })
                             .catch(error => this.showToast(error.response?.data?.message || 'เกิดข้อผิดพลาดในการนำเข้าข้อมูลภาพรวมบุคลากร', 'error'))
                             .finally(() => this.importLoading = false);
@@ -184,7 +197,7 @@
                             .finally(() => this.deleteLoading = false);
                     },
                     selectedDataSetSummary() {
-                        return this.dataSets.find(item => String(item.academic_year) === String(this.currentRemote.academic_year) && String(item.term) === String(this.currentRemote.term)) || null;
+                        return this.dataSets.find(item => String(item.academic_year) === String(this.form.academic_year) && String(item.term) === String(this.form.term)) || null;
                     },
                     latestImportedLabel() {
                         return this.latestImported ? ('ปี ' + this.latestImported.academic_year + ' รอบ ' + this.latestImported.term) : 'ยังไม่มีข้อมูล';

@@ -96,8 +96,18 @@
                         <template x-for="school in schools" :key="school.school_smis">
                             <tr>
                                 <td class="px-4 py-3">
-                                    <div class="font-extrabold text-slate-800" x-text="school.schoolname || 'ไม่พบชื่อโรงเรียนในระบบ'"></div>
-                                    <div class="text-[10px] text-slate-400 mt-1" x-text="'SMIS ' + school.school_smis"></div>
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <template x-if="school.logo_url">
+                                            <img :src="school.logo_url" :alt="school.schoolname" class="w-9 h-9 rounded-xl object-contain bg-white border border-slate-100 p-1 shrink-0">
+                                        </template>
+                                        <div x-show="!school.logo_url" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-school text-xs"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="font-extrabold text-slate-800 truncate" x-text="school.schoolname || 'ไม่พบชื่อโรงเรียนในระบบ'"></div>
+                                            <div class="text-[10px] text-slate-400 mt-1" x-text="'SMIS ' + school.school_smis"></div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3 text-slate-500" x-text="school.schoolgroup_name || '-'"></td>
                                 <td class="px-4 py-3 text-slate-500" x-text="school.amper || '-'"></td>
@@ -141,7 +151,14 @@
             <div @click.outside="closeTrend()"
                  class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-100 flex items-start justify-between gap-4">
-                    <div class="min-w-0">
+                    <div class="min-w-0 flex items-center gap-3">
+                        <template x-if="trendModal.school?.logo_url">
+                            <img :src="trendModal.school.logo_url" :alt="trendModal.school.schoolname" class="w-11 h-11 rounded-2xl object-contain bg-white border border-slate-100 p-1.5 shrink-0">
+                        </template>
+                        <div x-show="!trendModal.school?.logo_url" class="w-11 h-11 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-school"></i>
+                        </div>
+                        <div class="min-w-0">
                         <div class="text-[10px] font-extrabold text-slate-400 uppercase">แนวโน้มนักเรียนรายปี</div>
                         <h3 class="text-lg font-extrabold text-slate-800 truncate mt-1" x-text="trendModal.school?.schoolname || 'โรงเรียน'"></h3>
                         <p class="text-xs text-slate-400 mt-1">
@@ -149,6 +166,7 @@
                             <span class="mx-1">/</span>
                             <span x-text="trendModal.school?.schoolgroup_name || '-'"></span>
                         </p>
+                        </div>
                     </div>
                     <button type="button"
                             @click="closeTrend()"

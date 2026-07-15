@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\SchoolDistanceService;
+use App\Support\SchoolLogo;
 use App\Support\SimpleXlsxExporter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -389,6 +390,7 @@ class SurveyDashboardController extends Controller
                 'schools.amper',
                 'schools.tambon',
                 'schools.schoolgroup',
+                'schools.logo_path',
                 'groups.name as schoolgroup_name'
             )
             ->orderBy('records.school_smis')
@@ -551,6 +553,7 @@ class SurveyDashboardController extends Controller
                 return [
                     'school_smis' => $row->school_smis,
                     'school_name' => $row->schoolname ?: 'ไม่พบชื่อโรงเรียนในระบบ',
+                    'logo_url' => SchoolLogo::url($row->logo_path ?? null),
                     'network' => $row->schoolgroup_name ?: ($row->schoolgroup ?: '-'),
                     'district' => $row->amper ?: '-',
                     'students' => (int) $row->student_total,
@@ -682,7 +685,7 @@ class SurveyDashboardController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $this->getSchoolListingRows($selectedYear, $selectedTerm, $type, $value)->values(),
+            'data' => $this->attachSchoolLogoUrls($this->getSchoolListingRows($selectedYear, $selectedTerm, $type, $value))->values(),
         ]);
     }
 
@@ -840,9 +843,14 @@ class SurveyDashboardController extends Controller
                 'schools.smis',
                 'schools.schoolname',
                 'schools.amper',
+                'schools.logo_path',
                 'groups.name as schoolgroup_name'
             )
             ->first();
+
+        if ($school) {
+            $school->logo_url = SchoolLogo::url($school->logo_path ?? null);
+        }
 
         $records = DB::table('schoolmis_records')
             ->where('school_smis', $schoolSmis)
@@ -925,6 +933,7 @@ class SurveyDashboardController extends Controller
                 'records.room_total',
                 'schools.schoolname',
                 'schools.amper',
+                'schools.logo_path',
                 'groups.name as schoolgroup_name'
             )
             ->first();
@@ -966,6 +975,7 @@ class SurveyDashboardController extends Controller
                 'school' => [
                     'school_smis' => $record->school_smis,
                     'schoolname' => $record->schoolname ?: 'ไม่พบชื่อโรงเรียนในระบบ',
+                    'logo_url' => SchoolLogo::url($record->logo_path ?? null),
                     'academic_year' => $record->academic_year,
                     'term' => (int) $record->term,
                     'district' => $record->amper ?: '-',
@@ -1000,6 +1010,7 @@ class SurveyDashboardController extends Controller
                 'schools.schoolname_eng',
                 'schools.schoolgroup',
                 'groups.name as schoolgroup_name',
+                'schools.logo_path',
                 'schools.muti',
                 'schools.road',
                 'schools.muban',
@@ -1048,6 +1059,7 @@ class SurveyDashboardController extends Controller
                 'ministry' => $school->ministry,
                 'schoolname' => $school->schoolname,
                 'schoolname_eng' => $school->schoolname_eng,
+                'logo_url' => SchoolLogo::url($school->logo_path ?? null),
                 'schoolgroup' => $school->schoolgroup,
                 'schoolgroup_name' => $school->schoolgroup_name,
                 'muti' => $school->muti,
@@ -1159,6 +1171,7 @@ class SurveyDashboardController extends Controller
                 'records.room_total',
                 'records.metrics',
                 'schools.schoolname',
+                'schools.logo_path',
                 'schools.amper',
                 'groups.name as schoolgroup_name',
             ];
@@ -1177,6 +1190,7 @@ class SurveyDashboardController extends Controller
             'schools.ministry',
             'schools.schoolname',
             'schools.schoolname_eng',
+            'schools.logo_path',
             'schools.schoolgroup',
             'groups.name as schoolgroup_name',
             'schools.muti',
@@ -1196,6 +1210,15 @@ class SurveyDashboardController extends Controller
             'schools.statusID',
             'schools.statusDetail',
         ];
+    }
+
+    private function attachSchoolLogoUrls($rows)
+    {
+        return collect($rows)->map(function ($row) {
+            $row->logo_url = SchoolLogo::url($row->logo_path ?? null);
+
+            return $row;
+        });
     }
 
     private function schoolSizeKey(int $total): string

@@ -88,9 +88,17 @@
                                     <button type="button"
                                             @click="selectSchool(school)"
                                             class="w-full px-4 py-3 text-left hover:bg-orange-50 transition flex items-start justify-between gap-3">
-                                        <div class="min-w-0">
-                                            <div class="text-xs font-extrabold text-slate-700 truncate" x-text="school.schoolName"></div>
-                                            <div class="mt-1 text-[11px] font-bold text-slate-400" x-text="school.schoolSmis"></div>
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <template x-if="school.logoUrl">
+                                                <img :src="school.logoUrl" :alt="school.schoolName" class="w-9 h-9 rounded-xl object-contain bg-white border border-slate-100 p-1 shrink-0">
+                                            </template>
+                                            <div x-show="!school.logoUrl" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                                                <i class="fa-solid fa-school text-xs"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="text-xs font-extrabold text-slate-700 truncate" x-text="school.schoolName"></div>
+                                                <div class="mt-1 text-[11px] font-bold text-slate-400" x-text="school.schoolSmis || 'ภาพรวมทั้งเขตฯ'"></div>
+                                            </div>
                                         </div>
                                         <i x-show="filters.schoolCode === school.schoolCode"
                                            class="fa-solid fa-check text-orange-500 text-xs mt-1 shrink-0"
@@ -202,7 +210,15 @@
                         <div class="space-y-3 text-sm" x-show="dashboard.selectedSchool" x-cloak>
                             <div class="rounded-2xl border border-slate-100 px-4 py-3">
                                 <div class="text-[10px] font-extrabold text-slate-400 uppercase">ชื่อโรงเรียน</div>
-                                <div class="mt-1 font-extrabold text-slate-800" x-text="dashboard.selectedSchool ? dashboard.selectedSchool.schoolName : '-'"></div>
+                                <div class="mt-2 flex items-center gap-3">
+                                    <template x-if="dashboard.selectedSchool?.logoUrl">
+                                        <img :src="dashboard.selectedSchool.logoUrl" :alt="dashboard.selectedSchool.schoolName" class="w-12 h-12 rounded-2xl object-contain bg-white border border-slate-100 p-1.5 shrink-0">
+                                    </template>
+                                    <div x-show="!dashboard.selectedSchool?.logoUrl" class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-school"></i>
+                                    </div>
+                                    <div class="font-extrabold text-slate-800 min-w-0 truncate" x-text="dashboard.selectedSchool ? dashboard.selectedSchool.schoolName : '-'"></div>
+                                </div>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="rounded-2xl border border-slate-100 px-4 py-3">

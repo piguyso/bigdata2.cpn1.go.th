@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Support\SimpleXlsxExporter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -155,6 +157,88 @@ class AdminSchoolTest extends TestCase
             ]);
 
         $this->assertDatabaseMissing('system_school', ['id' => $id]);
+    }
+
+    public function test_admin_can_download_school_import_template(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)->get('/admin/schools/template')
+            ->assertOk()
+            ->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }
+
+    public function test_admin_can_import_school_xlsx_with_group(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $path = tempnam(sys_get_temp_dir(), 'school_import_').'.xlsx';
+
+        SimpleXlsxExporter::write($path, [
+            'group_code',
+            'group_name',
+            'smis',
+            'percode',
+            'ministry',
+            'schoolname',
+            'schoolname_eng',
+            'muti',
+            'road',
+            'muban',
+            'tambon',
+            'amper',
+            'province',
+            'postcode',
+            'lat',
+            'lng',
+            'length_km',
+            'maplink',
+            'tel',
+            'email',
+            'website',
+            'statusID',
+            'statusDetail',
+        ], [[
+            '09',
+            'เครือข่ายใหม่',
+            '86019999',
+            '',
+            '1086119999',
+            'โรงเรียนจากไฟล์',
+            'Imported School',
+            '',
+            '',
+            '',
+            'ท่าตะเภา',
+            'เมืองชุมพร',
+            'ชุมพร',
+            '86000',
+            '10.1',
+            '99.1',
+            '1.5',
+            '',
+            '077000000',
+            'import@example.test',
+            'https://example.test',
+            '1',
+            'เปิด',
+        ]]);
+
+        $file = new UploadedFile($path, 'schools.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', null, true);
+
+        $this->actingAs($admin)->postJson('/admin/schools/import', ['file' => $file])
+            ->assertOk()
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'นำเข้าข้อมูลโรงเรียนเรียบร้อยแล้ว',
+            ]);
+
+        $this->assertDatabaseHas('system_group', ['code' => '09', 'name' => 'เครือข่ายใหม่']);
+        $this->assertDatabaseHas('system_school', [
+            'smis' => '86019999',
+            'ministry' => '1086119999',
+            'schoolname' => 'โรงเรียนจากไฟล์',
+            'schoolgroup' => '09',
+        ]);
     }
 
     private function createGroup(array $overrides = []): void

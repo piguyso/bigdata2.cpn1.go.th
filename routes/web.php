@@ -1,17 +1,28 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AssetDashboardController;
+use App\Http\Controllers\BasicExamDashboardController;
+use App\Http\Controllers\NtImportController;
 use App\Http\Controllers\OnetDashboardController;
 use App\Http\Controllers\OnetImportController;
+use App\Http\Controllers\ObecAssetImportController;
 use App\Http\Controllers\PersonnelDashboardController;
+use App\Http\Controllers\RtImportController;
 use App\Http\Controllers\PersonnelOverviewImportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SurveyDashboardController;
+use App\Http\Controllers\StudentDataDashboardController;
+use App\Http\Controllers\StudentDataImportController;
 
 Route::get('/', [SurveyDashboardController::class, 'index'])->name('dashboard');
 Route::redirect('/dashboard', '/');
 Route::get('/onet', [OnetDashboardController::class, 'index'])->name('onet.dashboard');
+Route::get('/nt', [BasicExamDashboardController::class, 'ntIndex'])->name('nt.dashboard');
+Route::get('/rt', [BasicExamDashboardController::class, 'rtIndex'])->name('rt.dashboard');
+Route::get('/assets', [AssetDashboardController::class, 'index'])->name('asset.dashboard');
 Route::get('/personnel', [PersonnelDashboardController::class, 'index'])->name('personnel.dashboard');
+Route::get('/students', [StudentDataDashboardController::class, 'index'])->name('student-data.dashboard');
 Route::get('/personnel/area', [PersonnelDashboardController::class, 'area'])->name('personnel.area');
 Route::get('/personnel/schools', [PersonnelDashboardController::class, 'schools'])->name('personnel.schools');
 Route::get('/personnel/position', [PersonnelDashboardController::class, 'position'])->name('personnel.position');
@@ -73,7 +84,17 @@ Route::get('/api/dashboard/school-trend', [SurveyDashboardController::class, 'ge
 Route::get('/api/dashboard/school-student-detail', [SurveyDashboardController::class, 'getSchoolStudentDetail'])->name('api.dashboard.school-student-detail');
 Route::get('/api/dashboard/school-info', [SurveyDashboardController::class, 'getSchoolInfo'])->name('api.dashboard.school-info');
 Route::get('/api/onet/dashboard', [OnetDashboardController::class, 'data'])->name('api.onet.dashboard');
+Route::get('/api/nt/dashboard', [BasicExamDashboardController::class, 'ntData'])->name('api.nt.dashboard');
+Route::get('/api/rt/dashboard', [BasicExamDashboardController::class, 'rtData'])->name('api.rt.dashboard');
+Route::get('/api/assets/dashboard', [AssetDashboardController::class, 'data'])->name('api.assets.dashboard');
 Route::get('/api/personnel/dashboard', [PersonnelDashboardController::class, 'data'])->name('api.personnel.dashboard');
+Route::get('/api/personnel/schools', [PersonnelDashboardController::class, 'schoolsData'])->name('api.personnel.schools');
+Route::get('/api/personnel/area', [PersonnelDashboardController::class, 'areaData'])->name('api.personnel.area');
+Route::get('/api/personnel/position', [PersonnelDashboardController::class, 'positionData'])->name('api.personnel.position');
+Route::get('/api/personnel/gender', [PersonnelDashboardController::class, 'genderData'])->name('api.personnel.gender');
+Route::get('/api/personnel/education', [PersonnelDashboardController::class, 'educationData'])->name('api.personnel.education');
+Route::get('/api/personnel/academic-standing', [PersonnelDashboardController::class, 'academicStandingData'])->name('api.personnel.academic-standing');
+Route::get('/api/student-data/dashboard', [StudentDataDashboardController::class, 'data'])->name('api.student-data.dashboard');
 
 
 Route::get('/org', [OrgMemberController::class, 'publicIndex'])->name('org.public');
@@ -94,6 +115,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     Route::get('/admin/schools', [AdminSchoolController::class, 'index'])->name('admin.schools.index');
     Route::get('/admin/schools/data', [AdminSchoolController::class, 'getData'])->name('admin.schools.data');
+    Route::get('/admin/schools/template', [AdminSchoolController::class, 'downloadTemplate'])->name('admin.schools.template');
+    Route::post('/admin/schools/import', [AdminSchoolController::class, 'import'])->name('admin.schools.import');
     Route::post('/admin/schools/save', [AdminSchoolController::class, 'store'])->name('admin.schools.save');
     Route::delete('/admin/schools/{id}', [AdminSchoolController::class, 'destroy'])->name('admin.schools.delete');
 
@@ -114,6 +137,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/schoolmis/import', [SchoolmisController::class, 'import'])->name('admin.schoolmis.import');
     Route::delete('/admin/schoolmis/data-set', [SchoolmisController::class, 'destroy'])->name('admin.schoolmis.delete');
 
+    Route::get('/admin/student-data-imports', [StudentDataImportController::class, 'index'])->name('admin.student-data-imports.index');
+    Route::get('/admin/student-data-imports/data', [StudentDataImportController::class, 'getData'])->name('admin.student-data-imports.data');
+    Route::get('/admin/student-data-imports/template/{dataType}', [StudentDataImportController::class, 'downloadTemplate'])->name('admin.student-data-imports.template');
+    Route::post('/admin/student-data-imports/preview', [StudentDataImportController::class, 'preview'])->name('admin.student-data-imports.preview');
+    Route::post('/admin/student-data-imports/import', [StudentDataImportController::class, 'import'])->name('admin.student-data-imports.import');
+
+    Route::get('/admin/nt', [NtImportController::class, 'index'])->name('admin.nt.index');
+    Route::get('/admin/nt/data', [NtImportController::class, 'getData'])->name('admin.nt.data');
+    Route::get('/admin/nt/template', [NtImportController::class, 'downloadTemplate'])->name('admin.nt.template');
+    Route::post('/admin/nt/preview', [NtImportController::class, 'preview'])->name('admin.nt.preview');
+    Route::post('/admin/nt/import', [NtImportController::class, 'import'])->name('admin.nt.import');
+    Route::delete('/admin/nt/data-set', [NtImportController::class, 'destroy'])->name('admin.nt.delete');
+
+    Route::get('/admin/rt', [RtImportController::class, 'index'])->name('admin.rt.index');
+    Route::get('/admin/rt/data', [RtImportController::class, 'getData'])->name('admin.rt.data');
+    Route::get('/admin/rt/template', [RtImportController::class, 'downloadTemplate'])->name('admin.rt.template');
+    Route::post('/admin/rt/preview', [RtImportController::class, 'preview'])->name('admin.rt.preview');
+    Route::post('/admin/rt/import', [RtImportController::class, 'import'])->name('admin.rt.import');
+    Route::delete('/admin/rt/data-set', [RtImportController::class, 'destroy'])->name('admin.rt.delete');
+
     Route::get('/admin/onet', [OnetImportController::class, 'index'])->name('admin.onet.index');
     Route::get('/admin/onet/data', [OnetImportController::class, 'getData'])->name('admin.onet.data');
     Route::post('/admin/onet/preview', [OnetImportController::class, 'preview'])->name('admin.onet.preview');
@@ -125,6 +168,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/personnel-overview/preview', [PersonnelOverviewImportController::class, 'preview'])->name('admin.personnel-overview.preview');
     Route::post('/admin/personnel-overview/import', [PersonnelOverviewImportController::class, 'import'])->name('admin.personnel-overview.import');
     Route::delete('/admin/personnel-overview/data-set', [PersonnelOverviewImportController::class, 'destroy'])->name('admin.personnel-overview.delete');
+
+    Route::get('/admin/obec-asset', [ObecAssetImportController::class, 'index'])->name('admin.obec-asset.index');
+    Route::get('/admin/obec-asset/data', [ObecAssetImportController::class, 'getData'])->name('admin.obec-asset.data');
+    Route::post('/admin/obec-asset/preview', [ObecAssetImportController::class, 'preview'])->name('admin.obec-asset.preview');
+    Route::post('/admin/obec-asset/import', [ObecAssetImportController::class, 'import'])->name('admin.obec-asset.import');
+    Route::delete('/admin/obec-asset/data-set', [ObecAssetImportController::class, 'destroy'])->name('admin.obec-asset.delete');
     
     Route::get('/admin/org', [OrgMemberController::class, 'index'])->name('admin.org.index');
     Route::get('/admin/org/data', [OrgMemberController::class, 'getData'])->name('admin.org.data');

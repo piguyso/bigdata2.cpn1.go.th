@@ -149,6 +149,12 @@
                                         <tr>
                                             <td class="px-4 py-3">
                                                 <div class="flex items-center gap-2 min-w-0">
+                                                    <template x-if="school.logo_url">
+                                                        <img :src="school.logo_url" :alt="school.school_name" class="w-8 h-8 rounded-xl object-contain bg-white border border-slate-100 p-1 shrink-0">
+                                                    </template>
+                                                    <div x-show="!school.logo_url" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                                                        <i class="fa-solid fa-school text-[11px]"></i>
+                                                    </div>
                                                     <div class="font-extrabold text-slate-800 truncate" x-text="school.school_name"></div>
                                                     <button type="button"
                                                             class="w-7 h-7 rounded-full bg-slate-100 text-slate-500 hover:bg-sky-50 hover:text-sky-600 transition shrink-0"
@@ -361,8 +367,13 @@
             <div class="w-full max-w-6xl max-h-[92vh] rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
                 <div class="flex items-start justify-between gap-4 px-6 py-5 border-b border-slate-100">
                     <div class="min-w-0">
-                        <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-school text-sky-500"></i>
+                        <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-3">
+                            <template x-if="topSchoolModal.school?.logo_url">
+                                <img :src="topSchoolModal.school.logo_url" :alt="topSchoolModal.school.school_name" class="w-10 h-10 rounded-2xl object-contain bg-white border border-slate-100 p-1.5 shrink-0">
+                            </template>
+                            <div x-show="!topSchoolModal.school?.logo_url" class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-500 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-school"></i>
+                            </div>
                             <span class="truncate" x-text="topSchoolModal.school?.school_name || 'ข้อมูลโรงเรียน'"></span>
                         </h3>
                         <p class="text-xs text-slate-500 mt-1">

@@ -75,16 +75,25 @@ class SchoolmisController extends Controller
             $validated = $request->validate([
                 'academic_year' => ['required', 'digits:4'],
                 'term' => ['required', 'integer', 'min:1', 'max:3'],
-                'csv' => ['required', 'file', 'mimes:csv,txt'],
+                'csv' => ['required', 'file', 'mimes:csv,txt,xlsx'],
             ]);
 
             $file = $request->file('csv');
-            $token = Str::uuid()->toString() . '.csv';
+            $extension = strtolower($file->getClientOriginalExtension() ?: 'csv');
+            $token = Str::uuid()->toString() . '.' . $extension;
             $storedPath = $file->storeAs('schoolmis-imports/tmp', $token);
             $absolutePath = Storage::path($storedPath);
 
             $preview = $this->importService->preview($absolutePath);
             $warnings = $preview['warnings'];
+
+            if (($preview['valid_rows'] ?? 0) === 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'โครงสร้างไฟล์ไม่ถูกต้อง หรือไม่พบแถวข้อมูล SchoolMIS ที่นำเข้าได้',
+                    'preview' => $preview,
+                ], 422);
+            }
 
             foreach ($preview['detected_year_terms'] as $detected) {
                 if ($detected !== $validated['academic_year'] . '-' . $validated['term']) {
@@ -109,7 +118,7 @@ class SchoolmisController extends Controller
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'ไม่สามารถตรวจสอบไฟล์ SchoolMIS ได้',
+                'message' => 'โครงสร้างไฟล์ไม่ถูกต้อง หรือไม่สามารถตรวจสอบไฟล์ SchoolMIS ได้',
             ], 500);
         }
     }

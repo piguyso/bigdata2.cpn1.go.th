@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\PersonnelOverviewImportService;
+use App\Support\AreaSettings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,8 @@ class PersonnelOverviewImportController extends Controller
             return response()->json([
                 'status' => 'success',
                 'current_remote' => $this->importService->getRemoteContext(),
+                'years' => DB::table('academic_years')->orderByDesc('sort_order')->orderByDesc('year')->get(),
+                'active_year' => DB::table('academic_years')->where('is_active', true)->value('year'),
                 'imports' => $this->getImports(),
                 'data_sets' => $this->getDataSets(),
                 'record_count' => $this->getRecordCount(),
@@ -41,13 +44,18 @@ class PersonnelOverviewImportController extends Controller
         }
     }
 
-    public function preview(): JsonResponse
+    public function preview(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'academic_year' => ['required', 'digits:4'],
+            'term' => ['required', 'max:10'],
+        ]);
+
         try {
             return response()->json([
                 'status' => 'success',
                 'message' => 'ตรวจสอบข้อมูลภาพรวมบุคลากรเรียบร้อยแล้ว',
-                'preview' => $this->importService->preview(),
+                'preview' => $this->importService->preview((int) $validated['academic_year'], (string) $validated['term']),
             ]);
         } catch (\Exception $e) {
             Log::error('PersonnelOverviewImportController@preview: '.$e->getMessage());
@@ -62,6 +70,8 @@ class PersonnelOverviewImportController extends Controller
     public function import(Request $request): JsonResponse
     {
         $validated = $request->validate([
+            'academic_year' => ['required', 'digits:4'],
+            'term' => ['required', 'max:10'],
             'mode' => ['nullable', 'in:replace'],
         ]);
 
@@ -69,7 +79,7 @@ class PersonnelOverviewImportController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'นำเข้าข้อมูลภาพรวมบุคลากรเรียบร้อยแล้ว',
-                'result' => $this->importService->import($validated['mode'] ?? 'replace', auth()->id()),
+                'result' => $this->importService->import($validated['mode'] ?? 'replace', auth()->id(), (int) $validated['academic_year'], (string) $validated['term']),
             ]);
         } catch (\Exception $e) {
             Log::error('PersonnelOverviewImportController@import: '.$e->getMessage());
@@ -92,12 +102,12 @@ class PersonnelOverviewImportController extends Controller
             $recordsQuery = DB::table('personnel_overview_records')
                 ->where('academic_year', $validated['academic_year'])
                 ->where('term', $validated['term'])
-                ->where('area_code', '1086010000');
+                ->where('area_code', AreaSettings::code());
 
             $importsQuery = DB::table('personnel_overview_imports')
                 ->where('academic_year', $validated['academic_year'])
                 ->where('term', $validated['term'])
-                ->where('area_code', '1086010000');
+                ->where('area_code', AreaSettings::code());
 
             $recordsCount = (clone $recordsQuery)->count();
             $importsCount = (clone $importsQuery)->count();
@@ -105,7 +115,7 @@ class PersonnelOverviewImportController extends Controller
                 ? DB::table('personnel_import_batches')
                     ->where('academic_year', $validated['academic_year'])
                     ->where('term', $validated['term'])
-                    ->where('area_code', '1086010000')
+                    ->where('area_code', AreaSettings::code())
                     ->count()
                 : 0;
 
@@ -142,6 +152,7 @@ class PersonnelOverviewImportController extends Controller
         if (Schema::hasTable('personnel_import_batches')) {
             return DB::table('personnel_import_batches as imports')
                 ->leftJoin('users', 'imports.created_by', '=', 'users.id')
+                ->where('imports.area_code', AreaSettings::code())
                 ->select('imports.*', 'users.name as created_by_name')
                 ->orderByDesc('imports.id')
                 ->limit(20)
@@ -150,6 +161,7 @@ class PersonnelOverviewImportController extends Controller
 
         return DB::table('personnel_overview_imports as imports')
             ->leftJoin('users', 'imports.created_by', '=', 'users.id')
+            ->where('imports.area_code', AreaSettings::code())
             ->select('imports.*', 'users.name as created_by_name')
             ->orderByDesc('imports.id')
             ->limit(20)
@@ -160,6 +172,7 @@ class PersonnelOverviewImportController extends Controller
     {
         if (Schema::hasTable('personnel_import_batches')) {
             return DB::table('personnel_import_batches')
+                ->where('area_code', AreaSettings::code())
                 ->select(
                     'academic_year',
                     'term',
@@ -176,6 +189,7 @@ class PersonnelOverviewImportController extends Controller
         }
 
         return DB::table('personnel_overview_records')
+            ->where('area_code', AreaSettings::code())
             ->select(
                 'academic_year',
                 'term',
@@ -192,16 +206,17 @@ class PersonnelOverviewImportController extends Controller
     private function getRecordCount(): int
     {
         if (Schema::hasTable('personnel_import_sources')) {
-            return DB::table('personnel_import_sources')->count();
+            return DB::table('personnel_import_sources')->where('area_code', AreaSettings::code())->count();
         }
 
-        return DB::table('personnel_overview_records')->count();
+        return DB::table('personnel_overview_records')->where('area_code', AreaSettings::code())->count();
     }
 
     private function getLatestImported()
     {
         if (Schema::hasTable('personnel_import_batches')) {
             return DB::table('personnel_import_batches')
+                ->where('area_code', AreaSettings::code())
                 ->select('academic_year', 'term')
                 ->orderByDesc('academic_year')
                 ->orderByDesc('term')
@@ -209,6 +224,7 @@ class PersonnelOverviewImportController extends Controller
         }
 
         return DB::table('personnel_overview_records')
+            ->where('area_code', AreaSettings::code())
             ->select('academic_year', 'term')
             ->orderByDesc('academic_year')
             ->orderByDesc('term')
