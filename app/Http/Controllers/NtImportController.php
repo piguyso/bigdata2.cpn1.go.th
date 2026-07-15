@@ -25,8 +25,8 @@ class NtImportController extends Controller
 
     public function downloadTemplate()
     {
-        return SimpleXlsxExporter::download(
-            'nt-import-template.xlsx',
+        return SimpleXlsxExporter::downloadCsv(
+            'nt-import-template.csv',
             [
                 'nt_school_code',
                 'school_name',
@@ -110,7 +110,7 @@ class NtImportController extends Controller
         try {
             $validated = $request->validate([
                 'academic_year' => ['required', 'digits:4'],
-                'csv' => ['required', 'file', 'mimes:csv,txt,xlsx'],
+                'csv' => ['required', 'file', 'mimes:csv,txt'],
             ]);
 
             $file = $request->file('csv');

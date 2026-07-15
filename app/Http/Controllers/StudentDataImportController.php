@@ -73,7 +73,7 @@ class StudentDataImportController extends Controller
                 'academic_year' => ['required', 'digits:4'],
                 'term' => ['required', 'integer', 'min:1', 'max:3'],
                 'data_type' => ['required', 'string', Rule::in(StudentDataTypes::keys())],
-                'file' => ['required', 'file', 'mimes:csv,txt,xlsx'],
+                'file' => ['required', 'file', 'mimes:csv,txt'],
             ]);
 
             $file = $request->file('file');
@@ -176,8 +176,8 @@ class StudentDataImportController extends Controller
         $definition = StudentDataTypes::get($dataType);
         abort_unless($definition, 404);
 
-        return SimpleXlsxExporter::download(
-            'student-data-' . $dataType . '-template.xlsx',
+        return SimpleXlsxExporter::downloadCsv(
+            'student-data-' . $dataType . '-template.csv',
             StudentDataTypes::headers($dataType),
             [StudentDataTypes::templateRow($dataType)]
         );

@@ -25,8 +25,8 @@ class RtImportController extends Controller
 
     public function downloadTemplate()
     {
-        return SimpleXlsxExporter::download(
-            'rt-import-template.xlsx',
+        return SimpleXlsxExporter::downloadCsv(
+            'rt-import-template.csv',
             [
                 'no',
                 'unused',
@@ -134,7 +134,7 @@ class RtImportController extends Controller
         try {
             $validated = $request->validate([
                 'academic_year' => ['required', 'digits:4'],
-                'xlsx' => ['required', 'file', 'mimes:csv,txt,xlsx'],
+                'xlsx' => ['required', 'file', 'mimes:csv,txt'],
             ]);
 
             $file = $request->file('xlsx');

@@ -68,14 +68,14 @@
                     </div>
 
                     <label class="block border-2 border-dashed border-slate-200 rounded-2xl p-5 bg-slate-50/50 hover:border-orange-300 transition cursor-pointer">
-                        <input type="file" class="hidden" accept=".csv,.txt,.xlsx,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @change="handleFileChange($event)">
+                        <input type="file" class="hidden" accept=".csv,.txt,text/csv,text/plain" @change="handleFileChange($event)">
                         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-xl shrink-0">
-                                <i class="fa-solid fa-file-excel"></i>
+                                <i class="fa-solid fa-file-lines"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-extrabold text-slate-800 truncate" x-text="form.fileName || 'เลือกไฟล์ RT .csv/.xlsx'"></p>
-                                <p class="text-xs text-slate-400 mt-1">รองรับไฟล์ RT เช่น RT2568.xlsx หรือ CSV โครงสร้างเดียวกัน</p>
+                                <p class="text-sm font-extrabold text-slate-800 truncate" x-text="form.fileName || 'เลือกไฟล์ RT (.csv)'"></p>
+                                <p class="text-xs text-slate-400 mt-1">รองรับไฟล์ข้อมูลดิบ RT (.csv)</p>
                             </div>
                             <span class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 shadow-sm">เลือกไฟล์</span>
                         </div>

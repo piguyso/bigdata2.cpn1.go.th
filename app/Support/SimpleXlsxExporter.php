@@ -7,6 +7,24 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class SimpleXlsxExporter
 {
+    public static function downloadCsv(string $filename, array $headers, array $rows): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        return response()->streamDownload(function () use ($headers, $rows) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+            fputcsv($file, $headers);
+            foreach ($rows as $row) {
+                $cleanRow = array_map(function ($val) {
+                    return is_array($val) ? json_encode($val, JSON_UNESCAPED_UNICODE) : (string) $val;
+                }, $row);
+                fputcsv($file, $cleanRow);
+            }
+            fclose($file);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=utf-8',
+        ]);
+    }
+
     public static function download(string $filename, array $headers, array $rows): BinaryFileResponse
     {
         $path = tempnam(sys_get_temp_dir(), 'xlsx_');

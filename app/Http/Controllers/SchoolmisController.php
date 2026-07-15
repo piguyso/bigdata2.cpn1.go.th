@@ -75,7 +75,7 @@ class SchoolmisController extends Controller
             $validated = $request->validate([
                 'academic_year' => ['required', 'digits:4'],
                 'term' => ['required', 'integer', 'min:1', 'max:3'],
-                'csv' => ['required', 'file', 'mimes:csv,txt,xlsx'],
+                'csv' => ['required', 'file', 'mimes:csv,txt'],
             ]);
 
             $file = $request->file('csv');

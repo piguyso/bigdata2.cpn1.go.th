@@ -19,10 +19,10 @@
                 <a href="{{ route('admin.schools.template') }}" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2">
                     <i class="fa-solid fa-file-arrow-down"></i> ดาวน์โหลด Template
                 </a>
-                <input type="file" x-ref="importFile" class="hidden" accept=".csv,.txt,.xlsx,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @change="importSchools($event)">
+                <input type="file" x-ref="importFile" class="hidden" accept=".csv,.txt,text/csv,text/plain" @change="importSchools($event)">
                 <button type="button" @click="$refs.importFile.click()" :disabled="importing" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2 disabled:opacity-50">
                     <i :class="importing ? 'fa-solid fa-circle-notch animate-spin' : 'fa-solid fa-file-import'"></i>
-                    <span x-text="importing ? 'กำลังนำเข้า...' : 'Import CSV/XLSX'"></span>
+                    <span x-text="importing ? 'กำลังนำเข้า...' : 'Import CSV'"></span>
                 </button>
                 <a href="{{ route('admin.school-group.index') }}" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2">
                     <i class="fa-solid fa-layer-group"></i> จัดการเครือข่าย

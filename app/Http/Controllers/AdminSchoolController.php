@@ -79,8 +79,8 @@ class AdminSchoolController extends Controller
 
     public function downloadTemplate()
     {
-        return SimpleXlsxExporter::download(
-            'school-import-template.xlsx',
+        return SimpleXlsxExporter::downloadCsv(
+            'school-import-template.csv',
             self::IMPORT_COLUMNS,
             []
         );
@@ -89,7 +89,7 @@ class AdminSchoolController extends Controller
     public function import(Request $request)
     {
         $validated = $request->validate([
-            'file' => ['required', 'file', 'mimes:csv,txt,xlsx', 'max:10240'],
+            'file' => ['required', 'file', 'mimes:csv,txt', 'max:10240'],
         ]);
 
         try {
