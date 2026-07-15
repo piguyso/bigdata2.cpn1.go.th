@@ -307,4 +307,25 @@ class NtImportController extends Controller
             ], 500);
         }
     }
+
+    public function deleteImport(int $id): JsonResponse
+    {
+        try {
+            DB::transaction(function () use ($id) {
+                DB::table('nt_records')->where('import_id', $id)->delete();
+                DB::table('nt_imports')->where('id', $id)->delete();
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'ลบข้อมูลนำเข้า NT เรียบร้อยแล้ว',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('NtImportController@deleteImport: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'เกิดข้อผิดพลาดในการลบข้อมูล',
+            ], 500);
+        }
+    }
 }

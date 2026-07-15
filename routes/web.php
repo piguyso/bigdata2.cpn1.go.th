@@ -137,6 +137,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/schoolmis/preview', [SchoolmisController::class, 'preview'])->name('admin.schoolmis.preview');
     Route::post('/admin/schoolmis/import', [SchoolmisController::class, 'import'])->name('admin.schoolmis.import');
     Route::delete('/admin/schoolmis/data-set', [SchoolmisController::class, 'destroy'])->name('admin.schoolmis.delete');
+    Route::delete('/admin/schoolmis/import/{id}', [SchoolmisController::class, 'deleteImport'])->name('admin.schoolmis.delete-import');
 
     Route::get('/admin/student-data-imports', [StudentDataImportController::class, 'index'])->name('admin.student-data-imports.index');
     Route::get('/admin/student-data-imports/data', [StudentDataImportController::class, 'getData'])->name('admin.student-data-imports.data');
@@ -151,6 +152,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/nt/preview', [NtImportController::class, 'preview'])->name('admin.nt.preview');
     Route::post('/admin/nt/import', [NtImportController::class, 'import'])->name('admin.nt.import');
     Route::delete('/admin/nt/data-set', [NtImportController::class, 'destroy'])->name('admin.nt.delete');
+    Route::delete('/admin/nt/import/{id}', [NtImportController::class, 'deleteImport'])->name('admin.nt.delete-import');
 
     Route::get('/admin/rt', [RtImportController::class, 'index'])->name('admin.rt.index');
     Route::get('/admin/rt/data', [RtImportController::class, 'getData'])->name('admin.rt.data');
@@ -158,6 +160,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/rt/preview', [RtImportController::class, 'preview'])->name('admin.rt.preview');
     Route::post('/admin/rt/import', [RtImportController::class, 'import'])->name('admin.rt.import');
     Route::delete('/admin/rt/data-set', [RtImportController::class, 'destroy'])->name('admin.rt.delete');
+    Route::delete('/admin/rt/import/{id}', [RtImportController::class, 'deleteImport'])->name('admin.rt.delete-import');
 
     Route::get('/admin/onet', [OnetImportController::class, 'index'])->name('admin.onet.index');
     Route::get('/admin/onet/data', [OnetImportController::class, 'getData'])->name('admin.onet.data');

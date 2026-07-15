@@ -180,11 +180,19 @@
                     <template x-for="item in imports" :key="item.id">
                         <div class="p-5 space-y-3">
                             <div class="flex items-start justify-between gap-3">
-                                <div>
+                                <div class="pr-2">
                                     <p class="text-sm font-extrabold text-slate-800" x-text="'ปี ' + item.academic_year"></p>
                                     <p class="text-[11px] text-slate-400 mt-1 break-all" x-text="item.source_filename"></p>
                                 </div>
-                                <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 text-orange-700" x-text="item.sheet_name || 'Local05'"></span>
+                                <div class="flex flex-col items-end gap-2 shrink-0">
+                                    <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 text-orange-700" x-text="item.sheet_name || 'Local05'"></span>
+                                    <button type="button" 
+                                            @click="confirmDeleteImport(item)" 
+                                            class="text-slate-400 hover:text-rose-600 transition p-1.5 rounded-lg hover:bg-rose-50 border border-slate-100 bg-white shadow-sm mt-0.5"
+                                            title="ลบชุดข้อมูลนี้">
+                                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-[11px]">
                                 <div class="bg-slate-50 rounded-xl px-3 py-2">
@@ -327,6 +335,22 @@
                             })
                             .catch(error => this.showToast(error.response?.data?.message || 'เกิดข้อผิดพลาดในการลบข้อมูล', 'error'))
                             .finally(() => this.deleteLoading = false);
+                    },
+                    confirmDeleteImport(item) {
+                        if (confirm(`คุณต้องการลบข้อมูลนำเข้า RT ปี ${item.academic_year} ใช่หรือไม่?\nข้อมูลผลคะแนน RT ทั้งหมดในชุดนี้จะถูกลบออกจากระบบด้วย`)) {
+                            axios.delete(`/admin/rt/import/${item.id}`)
+                                .then(response => {
+                                    if (response.data.status === 'success') {
+                                        this.showToast(response.data.message, 'success');
+                                        this.fetchData();
+                                    } else {
+                                        this.showToast(response.data.message || 'เกิดข้อผิดพลาดในการลบ', 'error');
+                                    }
+                                })
+                                .catch(error => {
+                                    this.showToast(error.response?.data?.message || 'ไม่สามารถลบข้อมูลได้', 'error');
+                                });
+                        }
                     },
                     summaryCards() {
                         if (!this.preview.summary) return [];

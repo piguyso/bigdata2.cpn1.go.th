@@ -342,4 +342,25 @@ class RtImportController extends Controller
             ], 500);
         }
     }
+
+    public function deleteImport(int $id): JsonResponse
+    {
+        try {
+            DB::transaction(function () use ($id) {
+                DB::table('rt_records')->where('import_id', $id)->delete();
+                DB::table('rt_imports')->where('id', $id)->delete();
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'ลบข้อมูลนำเข้า RT เรียบร้อยแล้ว',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('RtImportController@deleteImport: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'เกิดข้อผิดพลาดในการลบข้อมูล',
+            ], 500);
+        }
+    }
 }
