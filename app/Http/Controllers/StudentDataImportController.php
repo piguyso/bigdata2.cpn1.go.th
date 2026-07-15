@@ -89,9 +89,14 @@ class StudentDataImportController extends Controller
             );
 
             if (($preview['valid_rows'] ?? 0) === 0) {
+                $detail = '';
+                if (!empty($preview['invalid_samples'])) {
+                    $firstErr = $preview['invalid_samples'][0];
+                    $detail = ' (แถวที่ ' . $firstErr['row_number'] . ': ' . $firstErr['reason'] . ')';
+                }
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'โครงสร้างไฟล์ไม่ถูกต้อง หรือไม่พบข้อมูลที่นำเข้าได้',
+                    'message' => 'โครงสร้างไฟล์ไม่ถูกต้อง หรือไม่พบข้อมูลที่นำเข้าได้' . $detail,
                     'preview' => $preview,
                 ], 422);
             }
@@ -106,11 +111,11 @@ class StudentDataImportController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            Log::error('StudentDataImportController@preview: ' . $e->getMessage());
+            Log::error('StudentDataImportController@preview: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'โครงสร้างไฟล์ไม่ถูกต้อง หรือไม่สามารถอ่านไฟล์ได้',
+                'message' => 'โครงสร้างไฟล์ไม่ถูกต้อง หรือไม่สามารถอ่านไฟล์ได้: ' . $e->getMessage(),
             ], 500);
         }
     }
