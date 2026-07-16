@@ -306,11 +306,10 @@ class SurveyDashboardController extends Controller
 
     public function getStats(Request $request): JsonResponse
     {
-        $availableYears = DB::table('schoolmis_records')
-            ->select('academic_year')
-            ->distinct()
-            ->orderByDesc('academic_year')
-            ->pluck('academic_year')
+        $availableYears = DB::table('academic_years')
+            ->orderByDesc('sort_order')
+            ->orderByDesc('year')
+            ->pluck('year')
             ->values();
 
         $activeYear = DB::table('academic_years')
@@ -331,6 +330,10 @@ class SurveyDashboardController extends Controller
                 ->orderBy('term')
                 ->pluck('term')
                 ->values();
+
+            if ($availableTerms->isEmpty()) {
+                $availableTerms = collect([1, 2]);
+            }
         }
 
         $selectedTerm = (int) $request->input('term', 0);
