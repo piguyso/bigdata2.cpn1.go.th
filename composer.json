@@ -34,20 +34,10 @@
     },
     "scripts": {
         "setup": [
-            "composer install",
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate",
-            "@php artisan migrate --force",
-            "npm install",
-            "npm run build"
+            "@php database/setup.php"
         ],
         "post-install-cmd": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate --ansi",
-            "@php artisan migrate --force --seed",
-            "@php artisan storage:link --force --ansi --no-interaction",
-            "npm install",
-            "npm run build"
+            "@php database/setup.php"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",

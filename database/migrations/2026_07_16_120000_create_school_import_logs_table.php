@@ -16,13 +16,13 @@ return new class extends Migration
             $table->integer('rows_fetched')->default(0);
             $table->integer('rows_filtered')->default(0);
             $table->integer('rows_imported')->default(0);
+            $table->string('source_url', 500)->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
 
         // Force utf8mb4 charset for Thai text support
         \Illuminate\Support\Facades\DB::statement("ALTER TABLE school_import_logs CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    }
     }
 
     public function down(): void
