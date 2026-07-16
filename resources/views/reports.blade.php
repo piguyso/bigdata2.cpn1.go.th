@@ -21,7 +21,7 @@
         <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    <a href="/" class="hover:text-orange-600 transition">หน้าหลัก</a>
+                    <a href="{{ url('/') }}" class="hover:text-orange-600 transition">หน้าหลัก</a>
                     <i class="fa-solid fa-chevron-right text-[8px]"></i>
                     <span class="text-slate-600">ข้อมูลบุคลากรทั้งหมด</span>
                 </div>
@@ -659,3 +659,4 @@
     </script>
     @endpush
 </x-layout>
+

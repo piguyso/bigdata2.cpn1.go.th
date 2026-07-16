@@ -11,7 +11,7 @@
                 <p class="text-slate-500 text-sm mt-1">ดึง logo โรงเรียน รายชื่อโรงเรียน และข้อมูลสิ่งก่อสร้างจากระบบ OBEC Asset มาเก็บไว้ในฐานข้อมูล local</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-3">
-                <a href="/" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2"><i class="fa-solid fa-house"></i> กลับหน้าหลัก</a>
+                <a href="{{ url('/') }}" class="bg-white border border-slate-200 text-slate-650 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-50 transition shadow-sm inline-flex items-center justify-center gap-2"><i class="fa-solid fa-house"></i> กลับหน้าหลัก</a>
             </div>
         </header>
 
@@ -253,3 +253,4 @@
         </script>
     @endpush
 </x-layout>
+

@@ -33,20 +33,31 @@ class LocalOnetDashboardService
             ? $academicYear
             : ($availableYears[0] ?? null);
 
-        $schoolsQuery = DB::table('onet_records as records')
-            ->leftJoin('system_school as schools', 'records.school_smis', '=', 'schools.smis')
-            ->where('records.area_code', AreaSettings::code())
-            ->where('records.grade_code', $gradeCode);
+        $schoolsQuery = DB::table('onet_records')
+            ->where('area_code', AreaSettings::code())
+            ->where('grade_code', $gradeCode);
         if ($selectedYear !== null) {
-            $schoolsQuery->where('records.academic_year', $selectedYear);
+            $schoolsQuery->where('academic_year', $selectedYear);
         }
 
-        $schools = $schoolsQuery
-            ->select('records.school_code', 'records.school_smis', 'records.school_name', 'schools.logo_path')
+        $recordsSchools = $schoolsQuery
+            ->select('school_code', 'school_smis', 'school_name')
             ->distinct()
-            ->orderBy('records.school_smis')
-            ->orderBy('records.school_name')
+            ->orderBy('school_smis')
+            ->orderBy('school_name')
             ->get();
+
+        // Get logo maps
+        $logoMap = DB::table('system_school')
+            ->whereNotNull('logo_path')
+            ->where('logo_path', '!=', '')
+            ->pluck('logo_path', 'smis')
+            ->all();
+
+        $schools = $recordsSchools->map(function ($s) use ($logoMap) {
+            $s->logo_path = $logoMap[$s->school_smis] ?? null;
+            return $s;
+        });
 
         $areaOption = (object) [
             'school_code' => self::AREA_OPTION_CODE,

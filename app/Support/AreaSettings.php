@@ -40,6 +40,13 @@ class AreaSettings
         }
 
         $settingName = self::setting('area_name');
+        
+        if ($settingName === '') {
+            $webSubtitle = self::setting('web_subtitle') ?: self::setting('web_name');
+            if ($webSubtitle !== '') {
+                $settingName = str_replace(['ฐานข้อมูล BigData ', 'BigData '], '', $webSubtitle);
+            }
+        }
 
         return self::$name = ($settingName !== '' ? $settingName : self::DEFAULT_AREA_NAME);
     }

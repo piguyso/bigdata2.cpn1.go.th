@@ -43,7 +43,7 @@
         <!-- Back Navigation & Header breadcrumb -->
         <section class="max-w-7xl mx-auto px-6">
             <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
-                <a href="/" class="hover:text-orange-600 transition">หน้าหลัก</a>
+                <a href="{{ url('/') }}" class="hover:text-orange-600 transition">หน้าหลัก</a>
                 <i class="fa-solid fa-chevron-right text-[8px]"></i>
                 <a href="/#courses" class="hover:text-orange-600 transition">หลักสูตรฝึกอบรม</a>
                 <i class="fa-solid fa-chevron-right text-[8px]"></i>
@@ -260,7 +260,7 @@
                         </div>
                         <h4 class="font-bold text-sm">ต้องการสอบถามเพิ่มเติม?</h4>
                         <p class="text-[11px] text-slate-300 leading-relaxed">
-                            ติดต่อประสานงานวิชาการโครงการ หรือช่วยเหลือปัญหาเกี่ยวกับการสมัครลงทะเบียนอบรมพัฒนาครูและบุคลากรทางการศึกษา สพป.ชุมพร เขต 1
+                            ติดต่อประสานงานวิชาการโครงการ หรือช่วยเหลือปัญหาเกี่ยวกับการสมัครลงทะเบียนอบรมพัฒนาครูและบุคลากรทางการศึกษา {{ $webSubtitle }}
                         </p>
                         <a href="/#contact" class="inline-flex items-center gap-1 text-[11px] font-bold text-orange-300 hover:text-orange-400 transition">
                             ดูข้อมูลติดต่อประสานงานวิชาการ <i class="fa-solid fa-chevron-right text-[8px]"></i>
@@ -307,4 +307,5 @@
     </script>
     @endpush
 </x-layout>
+
 

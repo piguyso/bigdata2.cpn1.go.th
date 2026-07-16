@@ -46,13 +46,24 @@ class LoginRequest extends FormRequest
         $email = $this->input('email');
         $password = $this->input('password');
 
+        \Illuminate\Support\Facades\Log::info("Login attempt: Email: {$email}, Password length: " . strlen($password));
+
         // 1. Try local authentication first (for local admin/users with normal password)
         $user = \App\Models\User::where('email', $email)->first();
-        if ($user && $user->password !== '!external_api_login!') {
-            if (Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-                RateLimiter::clear($this->throttleKey());
-                return;
+        if ($user) {
+            \Illuminate\Support\Facades\Log::info("Local user found: Email: {$user->email}, DB Password hash: " . substr($user->password, 0, 15));
+            if ($user->password !== '!external_api_login!') {
+                $attempt = Auth::attempt($this->only('email', 'password'), $this->boolean('remember'));
+                \Illuminate\Support\Facades\Log::info("Local Auth attempt result: " . ($attempt ? 'SUCCESS' : 'FAILED'));
+                if ($attempt) {
+                    RateLimiter::clear($this->throttleKey());
+                    return;
+                }
+            } else {
+                \Illuminate\Support\Facades\Log::info("Local user has !external_api_login! password flag. Skipping local auth.");
             }
+        } else {
+            \Illuminate\Support\Facades\Log::info("Local user not found in database.");
         }
 
         // 2. Try external API authentication

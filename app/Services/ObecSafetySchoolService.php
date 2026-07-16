@@ -29,6 +29,7 @@ class ObecSafetySchoolService
         $cookies = new CookieJar();
 
         $registerResponse = $this->http
+            ->withoutVerifying()
             ->withOptions(['cookies' => $cookies])
             ->withHeaders(['User-Agent' => 'BigDataCPN1/1.0'])
             ->timeout($timeout)
@@ -43,6 +44,7 @@ class ObecSafetySchoolService
         }
 
         $response = $this->http
+            ->withoutVerifying()
             ->withOptions(['cookies' => $cookies])
             ->withHeaders([
                 'User-Agent' => 'BigDataCPN1/1.0',

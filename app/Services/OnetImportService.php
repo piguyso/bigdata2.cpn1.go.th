@@ -189,6 +189,7 @@ class OnetImportService
         }
 
         $response = $this->http
+            ->withoutVerifying()
             ->acceptJson()
             ->timeout($timeout)
             ->get($baseUrl.'/standardcode/schoolArea/'.AreaSettings::code())
@@ -218,6 +219,7 @@ class OnetImportService
                     $code = (string) ($school['onetSchoolCode'] ?? '');
 
                     return $pool->as($code)
+                        ->withoutVerifying()
                         ->acceptJson()
                         ->timeout($timeout)
                         ->get($baseUrl.'/onet/school/'.$academicYear, [

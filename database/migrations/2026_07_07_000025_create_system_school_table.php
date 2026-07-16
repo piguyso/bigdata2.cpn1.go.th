@@ -37,6 +37,9 @@ return new class extends Migration
             $table->string('statusID', 1);
             $table->string('statusDetail', 20);
         });
+
+        // Force utf8mb4 charset for Thai text support
+        \Illuminate\Support\Facades\DB::statement("ALTER TABLE system_school CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     }
     }
 

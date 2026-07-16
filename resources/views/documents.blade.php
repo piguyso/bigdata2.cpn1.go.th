@@ -57,7 +57,7 @@
                         </div>
                         <h4 class="font-bold text-slate-700 text-sm">ยังไม่มีเอกสารเผยแพร่</h4>
                         <p class="text-slate-400 text-xs mt-1">ศูนย์ฯ กำลังจัดเตรียมและอัปโหลดเอกสารวิชาการเข้าระบบ</p>
-                        <a href="/" class="mt-6 inline-block bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-sm">กลับหน้าหลัก</a>
+                        <a href="{{ url('/') }}" class="mt-6 inline-block bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-sm">กลับหน้าหลัก</a>
                     </div>
                 @else
                     <!-- Local Documents Array for client-side search -->
@@ -177,4 +177,5 @@
     </script>
     @endpush
 </x-layout>
+
 

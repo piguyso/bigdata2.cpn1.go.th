@@ -5,7 +5,7 @@
         <header class="mb-8 flex flex-col xl:flex-row xl:items-end xl:justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    <a href="/" class="hover:text-orange-600 transition">หน้าหลัก</a>
+                    <a href="{{ url('/') }}" class="hover:text-orange-600 transition">หน้าหลัก</a>
                     <i class="fa-solid fa-chevron-right text-[8px]"></i>
                     <span class="text-slate-600">ผลการทดสอบระดับชาติ</span>
                     <i class="fa-solid fa-chevron-right text-[8px]"></i>
@@ -13,14 +13,14 @@
                 </div>
                 <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight mt-1.5">ผลการทดสอบระดับชาติ ONET</h2>
                 <p class="text-slate-500 text-sm mt-1">
-                    แสดงข้อมูล O-NET ของ สพป.ชุมพร เขต 1 โดยอ่านจากฐานข้อมูลภายในที่นำเข้ามาจาก HRMS
+                    แสดงข้อมูล O-NET ของ {{ $webSubtitle }} โดยอ่านจากฐานข้อมูลภายในที่นำเข้ามาจาก HRMS
                 </p>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-xs font-extrabold text-slate-600">
                     <i class="fa-solid fa-location-dot text-orange-500 mr-2"></i>
-                    สพป.ชุมพร เขต 1
+                    {{ $webSubtitle }}
                 </div>
                 <button type="button"
                         @click="fetchDashboard(true)"
@@ -647,3 +647,4 @@
         </script>
     @endpush
 </x-layout>
+

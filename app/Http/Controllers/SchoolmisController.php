@@ -259,6 +259,53 @@ class SchoolmisController extends Controller
         }
     }
 
+    public function downloadTemplate(): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $schemaLabels = [
+            'k1' => 'อ.1',
+            'k2' => 'อ.2',
+            'k3' => 'อ.3',
+            'pre_primary_total' => 'รวมอนุบาล',
+            'p1' => 'ป.1',
+            'p2' => 'ป.2',
+            'p3' => 'ป.3',
+            'p4' => 'ป.4',
+            'p5' => 'ป.5',
+            'p6' => 'ป.6',
+            'primary_total' => 'รวมประถม',
+            'm1' => 'ม.1',
+            'm2' => 'ม.2',
+            'm3' => 'ม.3',
+            'lower_secondary_total' => 'รวม ม.ต้น',
+            'm4' => 'ม.4',
+            'm5' => 'ม.5',
+            'm6' => 'ม.6',
+            'upper_secondary_total' => 'รวม ม.ปลาย',
+            'all_total' => 'รวมทั้งหมด',
+        ];
+
+        $headers = ['ปีการศึกษา-ภาคเรียน', 'รหัส SMIS'];
+        $sampleRow = ['2569-1', '10012001'];
+
+        foreach ($schemaLabels as $label) {
+            $headers[] = $label . '_ชาย';
+            $headers[] = $label . '_หญิง';
+            $headers[] = $label . '_รวม';
+            $headers[] = $label . '_ห้อง';
+
+            $sampleRow[] = '10';
+            $sampleRow[] = '10';
+            $sampleRow[] = '20';
+            $sampleRow[] = '1';
+        }
+
+        return \App\Support\SimpleXlsxExporter::downloadCsv(
+            'schoolmis-template.csv',
+            $headers,
+            [$sampleRow]
+        );
+    }
+
     public function destroy(Request $request): JsonResponse
     {
         try {

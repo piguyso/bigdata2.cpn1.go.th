@@ -16,9 +16,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // สร้างผู้ใช้ Admin เริ่มต้น
+        // สร้างผู้ใช้ Admin เริ่มต้น และปีการศึกษา
         $this->call([
             AdminUserSeeder::class,
+            AcademicYearSeeder::class,
+        ]);
+
+        // นำเข้า dmc_schools จากไฟล์ DMC691.xlsx ที่วางไว้ที่ root โปรเจกต์
+        // (ถ้าไม่มีไฟล์จะ skip อัตโนมัติ)
+        $this->call([
+            DmcSchoolSeeder::class,
         ]);
 
         // หากต้องการนำเข้าข้อมูลตัวอย่างอื่น ๆ บนเว็บบอร์ด/เว็บใหม่ สามารถเอาคอมเมนต์ออกได้

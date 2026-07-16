@@ -386,6 +386,7 @@ class PersonnelOverviewImportService
     private function fetchSettingValue(string $settingKey): string
     {
         $response = $this->http
+            ->withoutVerifying()
             ->acceptJson()
             ->timeout($this->timeout())
             ->get($this->apiBaseUrl().'/settings/'.$settingKey)
@@ -404,6 +405,7 @@ class PersonnelOverviewImportService
     private function fetchJson(string $endpoint): mixed
     {
         $response = $this->http
+            ->withoutVerifying()
             ->acceptJson()
             ->timeout($this->timeout())
             ->get($endpoint)

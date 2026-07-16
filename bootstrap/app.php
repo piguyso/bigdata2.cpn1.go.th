@@ -11,6 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
+
         // เพิ่มบรรทัดนี้เพื่อลงทะเบียนชื่อ Alias ของ Middleware
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,

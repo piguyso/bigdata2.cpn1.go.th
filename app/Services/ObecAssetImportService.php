@@ -53,10 +53,15 @@ class ObecAssetImportService
 
     public function import(string $mode = 'replace', ?int $createdBy = null, ?int $academicYear = null, ?string $term = null): array
     {
-        $schools = $this->fetchSchoolRows();
-        $localSchools = $this->localSchoolMap();
-        $summary = $this->summarizeSchools($schools, $localSchools);
-        $details = $this->fetchBuildingDetails($schools);
+        // Temporarily raise execution limit as crawling hundreds of schools is slow
+        $originalMaxExec = ini_get('max_execution_time');
+        set_time_limit(600); // 10 minutes
+
+        try {
+            $schools = $this->fetchSchoolRows();
+            $localSchools = $this->localSchoolMap();
+            $summary = $this->summarizeSchools($schools, $localSchools);
+            $details = $this->fetchBuildingDetails($schools);
 
         $buildingRows = [];
         foreach ($schools as $school) {
@@ -72,7 +77,7 @@ class ObecAssetImportService
 
         $warnings = array_values(array_unique(array_merge($summary['warnings'], $this->detailWarnings($details))));
 
-        $importId = DB::transaction(function () use ($schools, $localSchools, $buildingRows, $warnings, $summary, $mode, $createdBy) {
+        $importId = DB::transaction(function () use ($schools, $localSchools, $buildingRows, $warnings, $summary, $mode, $createdBy, $academicYear, $term) {
             if ($mode === 'replace') {
                 DB::table('obec_asset_imports')
                     ->where('area_code', AreaSettings::code())
@@ -105,15 +110,18 @@ class ObecAssetImportService
             return $importId;
         });
 
-        return [
-            ...$this->getRemoteContext($academicYear, $term),
-            'import_id' => $importId,
-            'summary' => [
-                ...$summary,
-                'building_records_count' => count($buildingRows),
-            ],
-            'warnings' => $warnings,
-        ];
+            return [
+                ...$this->getRemoteContext($academicYear, $term),
+                'import_id' => $importId,
+                'summary' => [
+                    ...$summary,
+                    'building_records_count' => count($buildingRows),
+                ],
+                'warnings' => $warnings,
+            ];
+        } finally {
+            set_time_limit((int) $originalMaxExec);
+        }
     }
 
     public function deleteImport(int $importId): array
@@ -194,6 +202,7 @@ class ObecAssetImportService
                 $requests = [];
                 foreach ($chunk as $school) {
                     $requests[] = $pool->as($school['school_smis'])
+                        ->withoutVerifying()
                         ->timeout($this->timeout())
                         ->get($school['detail_url']);
                 }
@@ -422,6 +431,7 @@ class ObecAssetImportService
     private function fetchHtml(string $url): string
     {
         $response = $this->http
+            ->withoutVerifying()
             ->timeout($this->timeout())
             ->get($url)
             ->throw();

@@ -72,6 +72,7 @@ use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\OrgMemberController;
 use App\Http\Controllers\SchoolmisController;
+use App\Http\Controllers\SchoolImportController;
 
 Route::get('/api/academic-years', [AcademicYearController::class, 'getPublicList'])->name('api.academic-years.list');
 Route::get('/api/courses', [CourseController::class, 'getPublicList'])->name('api.courses.list');
@@ -121,6 +122,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/schools/save', [AdminSchoolController::class, 'store'])->name('admin.schools.save');
     Route::delete('/admin/schools/{id}', [AdminSchoolController::class, 'destroy'])->name('admin.schools.delete');
 
+    Route::get('/admin/school-import', [SchoolImportController::class, 'index'])->name('admin.school-import.index');
+    Route::get('/admin/school-import/data', [SchoolImportController::class, 'getData'])->name('admin.school-import.data');
+    Route::post('/admin/school-import/preview', [SchoolImportController::class, 'preview'])->name('admin.school-import.preview');
+    Route::post('/admin/school-import/import', [SchoolImportController::class, 'import'])->name('admin.school-import.import');
+    Route::delete('/admin/school-import/data-set', [SchoolImportController::class, 'destroy'])->name('admin.school-import.delete');
+    Route::delete('/admin/school-import/log/{id}', [SchoolImportController::class, 'deleteLog'])->name('admin.school-import.delete-log');
+
     Route::get('/admin/school-group', [SchoolGroupController::class, 'index'])->name('admin.school-group.index');
     Route::get('/admin/school-group/data', [SchoolGroupController::class, 'getData'])->name('admin.school-group.data');
     Route::post('/admin/school-group/save', [SchoolGroupController::class, 'store'])->name('admin.school-group.save');
@@ -134,6 +142,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/schoolmis', [SchoolmisController::class, 'index'])->name('admin.schoolmis.index');
     Route::get('/admin/schoolmis/data', [SchoolmisController::class, 'getData'])->name('admin.schoolmis.data');
+    Route::get('/admin/schoolmis/template', [SchoolmisController::class, 'downloadTemplate'])->name('admin.schoolmis.template');
     Route::post('/admin/schoolmis/preview', [SchoolmisController::class, 'preview'])->name('admin.schoolmis.preview');
     Route::post('/admin/schoolmis/import', [SchoolmisController::class, 'import'])->name('admin.schoolmis.import');
     Route::delete('/admin/schoolmis/data-set', [SchoolmisController::class, 'destroy'])->name('admin.schoolmis.delete');

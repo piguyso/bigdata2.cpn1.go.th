@@ -72,15 +72,8 @@ For any local database operations, CLI commands, or backups, use the following p
   * Log critical security events: login attempts (success/failure), administrative actions, access control failures.
   * Do **not** log raw passwords, credit cards, or personal identifiers in application log files. Protect logs from unauthorized modifications or deletions.
 
-## Mandatory Asset Building & Cache Clearing Rule
 
-1. **Automatic Asset Compiling & OPcache Clearing**:
-   * **Rule:** The assistant **MUST** perform the following steps after making edits to any frontend assets, views, blade files, configuration, backend code, or styles, before ending its turn or reporting task completion:
-     1. Run the compiled asset building command: `$env:PATH += ";C:\Program Files\nodejs"; npm run build`
-     2. Send an HTTP request to clear PHP OPcache: Run `Invoke-WebRequest -UseBasicParsing -Uri "https://ee.cpn1.go.th/clear_opcache.php" -ErrorAction SilentlyContinue` via the terminal command or use the `read_url_content` tool.
-   * This ensures that the Vite compiled bundle is up-to-date and the server's PHP OPcache is cleared, so that all changes are reflected immediately on the live server.
 
----
 
 ## API Design & Client-Side Integration Rules
 

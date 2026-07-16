@@ -203,7 +203,7 @@
                             </div>
                             <h4 class="font-bold text-slate-700 text-sm">อยู่ระหว่างการจัดทำข้อมูล</h4>
                             <p class="text-slate-400 text-xs mt-1">เจ้าหน้าที่กำลังดำเนินการปรับปรุงข้อมูลแผนผังโครงสร้างของศูนย์ฯ</p>
-                            <a href="/" class="mt-6 inline-block bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-sm">กลับหน้าหลัก</a>
+                            <a href="{{ url('/') }}" class="mt-6 inline-block bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-sm">กลับหน้าหลัก</a>
                         </div>
                     @else
                         @php
@@ -346,4 +346,5 @@
     </script>
     @endpush
 </x-layout>
+
 

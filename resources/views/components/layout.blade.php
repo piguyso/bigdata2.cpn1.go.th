@@ -3,6 +3,7 @@
         ? \Illuminate\Support\Facades\DB::table('settings')->pluck('value', 'key')->all() 
         : [];
     $webName = $settings['web_name'] ?? 'BigData สพป.ชพ.1';
+    $webSubtitle = $settings['web_subtitle'] ?? 'สพป.ชพ.1';
     $webLogo = $settings['web_logo'] ?? null;
     $contactEmail = $settings['contact_email'] ?? 'info@cpn1.go.th';
     $contactPhone = $settings['contact_phone'] ?? '077-511124';
@@ -15,7 +16,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? $webName }}</title>
+    <title>{{ str_replace(['BigData สพป.ชพ.1', 'สพป.ชพ. 1', 'สพป.ชพ.1'], [$webName, $webSubtitle, $webSubtitle], $title ?? $webName) }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -116,7 +117,7 @@
 
     <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100/80 transition-all duration-300" x-data="{ mobileMenuOpen: false }">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-3 group">
+            <a href="{{ url('/') }}" class="flex items-center gap-3 group">
                 @if($webLogo)
                     <img src="{{ asset('storage/' . $webLogo) }}" alt="Logo" class="h-10 w-auto object-contain group-hover:scale-105 transition-transform duration-300">
                 @else
@@ -149,7 +150,7 @@
                          x-transition:leave-end="opacity-0 translate-y-1"
                          class="absolute left-0 top-full mt-3 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl p-2 z-50"
                          x-cloak>
-                        <a href="/" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                        <a href="{{ url('/') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
                             <i class="fa-solid fa-house text-slate-400 w-4 text-center"></i>
                             หน้าหลัก
                         </a>
@@ -267,6 +268,10 @@
                                  x-transition:leave-end="opacity-0 translate-y-1"
                                  class="absolute left-0 top-full mt-3 w-60 bg-white border border-slate-100 rounded-2xl shadow-xl p-2 z-50"
                                  x-cloak>
+                                <a href="{{ route('admin.school-import.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
+                                    <i class="fa-solid fa-school text-slate-400 w-4 text-center"></i>
+                                    รายชื่อโรงเรียน (DMC)
+                                </a>
                                 <a href="{{ route('admin.schoolmis.index') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition duration-200">
                                     <i class="fa-solid fa-file-csv text-slate-450 w-4 text-center text-slate-400"></i>
                                     นำเข้าข้อมูล SchoolMIS
@@ -447,7 +452,7 @@
                 <div class="block text-sm font-bold text-slate-600 py-2 flex items-center gap-2">
                     <i class="fa-solid fa-house text-orange-500 w-4 text-center"></i> หน้าหลัก
                 </div>
-                <a href="/" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
+                <a href="{{ url('/') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-house text-slate-400 w-4 text-center"></i> หน้าหลัก
                 </a>
                 <a href="{{ route('student-data.dashboard') }}" class="ml-6 block text-sm font-bold text-slate-600 hover:text-orange-600 transition py-2 flex items-center gap-2" @click="mobileMenuOpen = false">
@@ -613,7 +618,7 @@
     <footer class="bg-slate-900 text-slate-400 py-16 border-t border-slate-800 mt-32">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="space-y-4">
-                <a href="/" class="flex items-center gap-3">
+                <a href="{{ url('/') }}" class="flex items-center gap-3">
                     @if($webLogo)
                         <img src="{{ asset('storage/' . $webLogo) }}" alt="Logo" class="h-10 w-auto object-contain">
                     @else
@@ -626,13 +631,13 @@
                     </span>
                 </a>
                 <p class="text-xs text-slate-400 leading-relaxed pt-2">
-                    {{ $webName }} รวบรวม วิเคราะห์ และแสดงผลข้อมูลกลาง สพป.ชพ. 1 เพื่อสนับสนุนการบริหารจัดการการศึกษาอย่างมีประสิทธิภาพ
+                    {{ $webName }} รวบรวม วิเคราะห์ และแสดงผลข้อมูลกลาง {{ $webSubtitle }} เพื่อสนับสนุนการบริหารจัดการการศึกษาอย่างมีประสิทธิภาพ
                 </p>
             </div>
             <div>
                 <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">ลิงก์ด่วน</h4>
                 <ul class="space-y-2 text-xs">
-                    <li><a href="/" class="hover:text-orange-400 transition">หน้าหลัก</a></li>
+                    <li><a href="{{ url('/') }}" class="hover:text-orange-400 transition">หน้าหลัก</a></li>
                     <li><a href="{{ route('onet.dashboard') }}" class="hover:text-orange-400 transition">ผลการทดสอบระดับชาติ ONET</a></li>
                     <li><a href="{{ route('nt.dashboard') }}" class="hover:text-orange-400 transition">ผลการทดสอบระดับชาติ NT</a></li>
                     <li><a href="{{ route('rt.dashboard') }}" class="hover:text-orange-400 transition">ผลการทดสอบระดับชาติ RT</a></li>
@@ -644,17 +649,16 @@
                     <li><a href="{{ route('personnel.education') }}" class="hover:text-orange-400 transition">ข้อมูลแยกตามการศึกษา</a></li>
                     <li><a href="{{ route('personnel.academic-standing') }}" class="hover:text-orange-400 transition">ข้อมูลแยกตามวิทยฐานะ</a></li>
                     <li><a href="{{ route('asset.dashboard') }}" class="hover:text-orange-400 transition">ข้อมูล asset</a></li>
-                    <li><a href="/#about" class="hover:text-orange-400 transition">เกี่ยวกับเรา</a></li>
+                    <li><a href="{{ url('/#about') }}" class="hover:text-orange-400 transition">เกี่ยวกับเรา</a></li>
                     <li><a href="{{ route('org.public') }}" class="hover:text-orange-400 transition">โครงสร้างศูนย์</a></li>
-                    <li><a href="/#courses" class="hover:text-orange-400 transition">หลักสูตรอบรม</a></li>
-                    <li><a href="/#schools" class="hover:text-orange-400 transition">เครือข่ายสถานศึกษา</a></li>
+                    <li><a href="{{ url('/#courses') }}" class="hover:text-orange-400 transition">หลักสูตรอบรม</a></li>
+                    <li><a href="{{ url('/#schools') }}" class="hover:text-orange-400 transition">เครือข่ายสถานศึกษา</a></li>
                     <li><a href="{{ route('documents.public') }}" class="hover:text-orange-400 transition">เอกสารเผยแพร่</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">ลิงก์ที่เป็นประโยชน์</h4>
                 <ul class="space-y-2 text-xs">
-                    <li><a href="https://cpn1.go.th" target="_blank" class="hover:text-orange-400 transition">สพป.ชุมพร เขต 1</a></li>
                     <li><a href="https://www.moe.go.th" target="_blank" class="hover:text-orange-400 transition">กระทรวงศึกษาธิการ</a></li>
                     <li><a href="{{ route('profile.edit') }}" class="hover:text-orange-400 transition">จัดการข้อมูลส่วนตัว (Profile)</a></li>
                 </ul>

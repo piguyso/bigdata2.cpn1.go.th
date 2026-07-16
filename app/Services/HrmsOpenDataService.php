@@ -160,6 +160,7 @@ class HrmsOpenDataService
 
             foreach (self::DATASET_IDS as $datasetId) {
                 $response = $this->http
+                    ->withoutVerifying()
                     ->acceptJson()
                     ->timeout($timeout)
                     ->get($baseUrl.'/dataset_personal/'.$datasetId)
