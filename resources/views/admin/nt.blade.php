@@ -192,7 +192,7 @@
                                     <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 text-orange-700" x-text="item.mode"></span>
                                     <button type="button" 
                                             @click="confirmDeleteImport(item)" 
-                                            class="text-slate-400 hover:text-rose-600 transition p-1 rounded-lg hover:bg-rose-50 border border-slate-100 bg-white shadow-sm"
+                                            class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-rose-600 transition rounded-lg hover:bg-rose-50 border border-slate-100 bg-white shadow-sm shrink-0"
                                             title="ลบชุดข้อมูลนี้">
                                         <i class="fa-solid fa-trash-can text-[10px]"></i>
                                     </button>

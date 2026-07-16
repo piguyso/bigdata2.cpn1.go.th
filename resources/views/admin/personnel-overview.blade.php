@@ -122,7 +122,29 @@
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70"><h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-orange-500"></i> ประวัติการนำเข้า</h3></div>
                 <div class="divide-y divide-slate-100">
                     <template x-if="imports.length === 0"><div class="p-8 text-center text-slate-400 text-xs font-medium">ยังไม่มีประวัติการนำเข้าข้อมูล</div></template>
-                    <template x-for="item in imports" :key="item.id"><div class="p-5 space-y-3"><div class="flex items-start justify-between gap-3"><div><p class="text-sm font-extrabold text-slate-800" x-text="'ปี ' + item.academic_year + ' รอบ ' + item.term"></p><p class="text-[11px] text-slate-400 mt-1" x-text="item.area_name"></p></div><span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 text-orange-700" x-text="item.mode"></span></div><div class="flex items-center justify-between gap-3 text-[11px]"><span class="text-slate-400" x-text="item.created_by_name || 'system'"></span><span class="text-slate-400" x-text="formatDateTime(item.created_at)"></span></div></div></template>
+                    <template x-for="item in imports" :key="item.id">
+                        <div class="p-5 space-y-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="pr-2">
+                                    <p class="text-sm font-extrabold text-slate-800" x-text="'ปี ' + item.academic_year + ' รอบ ' + item.term"></p>
+                                    <p class="text-[11px] text-slate-400 mt-1" x-text="item.area_name"></p>
+                                </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 text-orange-700" x-text="item.mode"></span>
+                                    <button type="button" 
+                                            @click="confirmDeleteImport(item)" 
+                                            class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-rose-600 transition rounded-lg hover:bg-rose-50 border border-slate-100 bg-white shadow-sm shrink-0"
+                                            title="ลบชุดข้อมูลนี้">
+                                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between gap-3 text-[11px]">
+                                <span class="text-slate-400" x-text="item.created_by_name || 'system'"></span>
+                                <span class="text-slate-400" x-text="formatDateTime(item.created_at)"></span>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </aside>
         </div>
@@ -132,7 +154,7 @@
                 <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-xl mx-auto mb-4"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <h3 class="font-extrabold text-slate-800 text-sm">ยืนยันการลบข้อมูลภาพรวมบุคลากร</h3>
                 <p class="text-xs text-slate-400 leading-relaxed mt-2 mb-6">ต้องการลบข้อมูลของ <span class="font-bold text-slate-700" x-text="'ปี ' + deleteModal.academicYear + ' รอบ ' + deleteModal.term"></span> หรือไม่?</p>
-                <div class="flex gap-2.5"><button type="button" @click="deleteModal.open = false" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-xs transition">ยกเลิก</button><button type="button" @click="deleteDataSet()" class="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold text-xs transition">ยืนยันการลบ</button></div>
+                <div class="flex gap-2.5"><button type="button" @click="deleteModal.open = false" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 rounded-xl font-bold text-xs transition border border-slate-200 shadow-sm cursor-pointer">ยกเลิก</button><button type="button" @click="deleteDataSet()" class="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold text-xs transition shadow-lg shadow-rose-100 cursor-pointer">ยืนยันการลบ</button></div>
             </div>
         </div>
     </div>
@@ -195,6 +217,25 @@
                             .then(response => { this.showToast(response.data.message || 'ลบข้อมูลเรียบร้อยแล้ว', 'success'); this.deleteModal.open = false; this.preview.summary = null; this.fetchData(); })
                             .catch(error => this.showToast(error.response?.data?.message || 'เกิดข้อผิดพลาดในการลบข้อมูลภาพรวมบุคลากร', 'error'))
                             .finally(() => this.deleteLoading = false);
+                    },
+                    confirmDeleteImport(item) {
+                        window.showConfirm({
+                            title: 'ยืนยันการลบข้อมูลนำเข้าภาพรวมบุคลากร',
+                            text: `คุณต้องการลบข้อมูลภาพรวมบุคลากร ปี ${item.academic_year} รอบ ${item.term} ใช่หรือไม่? ข้อมูลภาพรวมบุคลากรทั้งหมดของชุดนี้จะถูกลบออกจากระบบโดยสมบูรณ์`,
+                            confirmButtonText: 'ลบข้อมูล',
+                            cancelButtonText: 'ยกเลิก',
+                            type: 'danger',
+                            onConfirm: () => {
+                                axios.delete('{{ route('admin.personnel-overview.delete') }}', { data: { academic_year: item.academic_year, term: item.term } })
+                                    .then(response => {
+                                        this.showToast(response.data.message || 'ลบข้อมูลเรียบร้อยแล้ว', 'success');
+                                        this.fetchData();
+                                    })
+                                    .catch(error => {
+                                        this.showToast(error.response?.data?.message || 'ไม่สามารถลบข้อมูลได้', 'error');
+                                    });
+                            }
+                        });
                     },
                     selectedDataSetSummary() {
                         return this.dataSets.find(item => String(item.academic_year) === String(this.form.academic_year) && String(item.term) === String(this.form.term)) || null;
