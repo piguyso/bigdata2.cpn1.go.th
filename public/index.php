@@ -13,7 +13,8 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 // Check if the application is installed
 if (!file_exists(__DIR__.'/../.env')) {
     if (php_sapi_name() !== 'cli') {
-        header('Location: /install.php');
+        http_response_code(500);
+        echo '<html><head><title>Configuration Error</title><link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;700&display=swap" rel="stylesheet"><style>body{font-family:\'Anuphan\',sans-serif;background:#f8fafc;color:#334155;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center}.card{background:#fff;padding:2.5rem;border-radius:1.5rem;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);max-width:500px;border:1px solid #fee2e2}h1{color:#e11d48;font-size:1.3rem;margin-bottom:1rem;font-weight:700}p{font-size:0.825rem;line-height:1.6;margin-bottom:1.5rem}code{background:#f1f5f9;padding:0.25rem 0.5rem;border-radius:0.375rem;font-family:monospace;font-size:0.75rem;color:#e11d48;font-weight:bold}</style></head><body><div class="card"><h1>ไม่พบไฟล์คอนฟิก (.env Missing)</h1><p>ไม่พบไฟล์ <code>.env</code> ในระบบ กรุณาคัดลอกไฟล์ <code>.env.example</code> ไปเป็น <code>.env</code> และตั้งค่าข้อมูลให้เรียบร้อย หรือรันคำสั่ง <code>composer install</code> ในโฟลเดอร์หลักเพื่อเริ่มการตั้งค่าระบบอัตโนมัติ</p></div></body></html>';
         exit;
     }
 }
