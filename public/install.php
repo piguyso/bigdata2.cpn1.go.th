@@ -341,9 +341,9 @@ $state = checkServerRequirements();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ติดตั้งระบบ | Setup Wizard</title>
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;850&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <script src="vendor/tailwindcss.js"></script>
+    <script src="vendor/alpine.min.js" defer></script>
+    <script src="vendor/axios.min.js"></script>
     <style>
         body { font-family: 'Anuphan', 'Inter', sans-serif; background-color: #f8fafc; color: #475569; }
         [x-cloak] { display: none !important; }
